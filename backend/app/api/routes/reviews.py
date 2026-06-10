@@ -23,6 +23,8 @@ import time
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
+from backend.app.agent.cases.indexer import get_indexer
+from backend.app.agent.cases.retriever import get_retriever
 from backend.app.agent.review.graph import get_compiled_review_graph
 from backend.app.api.routes.crud import build_crud_router
 from backend.app.models.review import Review
@@ -131,7 +133,7 @@ async def analyze_document(
     violations = [_coerce_violation(v) for v in raw_violations if isinstance(v, dict)]
     gaps       = [_coerce_gap(g)       for g in raw_gaps       if isinstance(g, dict)]
 
-    return ReviewReport(
+    report = ReviewReport(
         document_name=filename,
         document_type=final_state.get("document_type", "unknown"),
         compliance_score=final_state.get("compliance_score", 0.0),
@@ -142,6 +144,15 @@ async def analyze_document(
         model=final_state.get("model", "unknown"),
         latency_ms=latency_ms,
     )
+
+    # ── Phase 11: retrieve similar historical cases ────────────────────────────
+    similar_cases = _find_similar_cases(report)
+    report = report.model_copy(update={"similar_cases": similar_cases})
+
+    # ── Phase 11: index this review for future similarity searches ────────────
+    _index_review(report)
+
+    return report
 
 
 # ── Schema coercers ────────────────────────────────────────────────────────────
@@ -168,3 +179,26 @@ def _coerce_gap(g: dict) -> IdentifiedGap:
         regulation_reference=g.get("regulation_reference"),
         recommendation=g.get("recommendation", ""),
     )
+
+
+# ── Phase 11 helpers ───────────────────────────────────────────────────────────
+
+def _find_similar_cases(report: ReviewReport) -> list:
+    """Retrieve similar historical cases — never raises, returns [] on failure."""
+    try:
+        query_parts = [report.document_type]
+        if report.violations:
+            query_parts.extend(v.title for v in report.violations[:3])
+        query = " ".join(query_parts)
+        return get_retriever().search(query=query, top_k=3)
+    except Exception as exc:
+        logger.warning("Similar-case retrieval failed: %s", exc)
+        return []
+
+
+def _index_review(report: ReviewReport) -> None:
+    """Index the completed review into historical_reviews — never raises."""
+    try:
+        get_indexer().index(report)
+    except Exception as exc:
+        logger.warning("Review indexing failed: %s", exc)
