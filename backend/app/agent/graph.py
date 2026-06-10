@@ -36,6 +36,7 @@ from langgraph.graph import END, START, StateGraph
 
 from backend.app.agent.crag.nodes import build_crag_nodes, select_crag_path
 from backend.app.agent.nodes import build_nodes, select_path
+from backend.app.agent.self_rag.nodes import build_self_rag_nodes
 from backend.app.agent.state import AgentState
 from backend.app.core.config import get_settings
 from backend.app.db.qdrant import get_qdrant_client
@@ -62,25 +63,32 @@ def build_compliance_graph(retriever: object, gemini: GeminiClient) -> object:
         ``GeminiClient`` shared by all nodes (intent router, generate,
         re-ranker, CRAG evaluator, query rewriter).
 
-    Graph topology (Phase 14)
+    Graph topology (Phase 15)
     -------------------------
     START → route_intent → {
       compliance_chat:
-        retrieve → crag_evaluate ──(relevant/ambiguous)──► generate → END
-                                 └─(irrelevant)──► rewrite_and_retrieve → generate → END
+        retrieve
+          → crag_evaluate
+              ──(relevant/ambiguous)──► self_check_evidence
+              └─(irrelevant)──► rewrite_and_retrieve → self_check_evidence
+          → generate
+          → self_grade_answer → END
       compliance_review     → handle_review     → END
       clause_generation     → handle_clause_gen → END
       analytics             → handle_analytics  → END
     }
     """
-    nodes      = build_nodes(retriever=retriever, gemini=gemini)
-    crag_nodes = build_crag_nodes(retriever=retriever, gemini=gemini)
+    nodes          = build_nodes(retriever=retriever, gemini=gemini)
+    crag_nodes     = build_crag_nodes(retriever=retriever, gemini=gemini)
+    self_rag_nodes = build_self_rag_nodes(gemini=gemini)
 
     graph: StateGraph = StateGraph(AgentState)
 
     for name, fn in nodes.items():
         graph.add_node(name, fn)
     for name, fn in crag_nodes.items():
+        graph.add_node(name, fn)
+    for name, fn in self_rag_nodes.items():
         graph.add_node(name, fn)
 
     # Entry point
@@ -98,18 +106,22 @@ def build_compliance_graph(retriever: object, gemini: GeminiClient) -> object:
         },
     )
 
-    # Phase 14: CRAG gate between retrieve and generate
+    # Phase 14: CRAG gate — routes to self_check_evidence, not directly to generate
     graph.add_edge("retrieve", "crag_evaluate")
     graph.add_conditional_edges(
         "crag_evaluate",
         select_crag_path,
         {
-            "generate":             "generate",
+            "generate":             "self_check_evidence",  # Phase 15 inserted here
             "rewrite_and_retrieve": "rewrite_and_retrieve",
         },
     )
-    graph.add_edge("rewrite_and_retrieve", "generate")
-    graph.add_edge("generate", END)
+    graph.add_edge("rewrite_and_retrieve", "self_check_evidence")  # Phase 15
+
+    # Phase 15: Self-RAG — evidence check before generate, grounding check after
+    graph.add_edge("self_check_evidence", "generate")
+    graph.add_edge("generate",            "self_grade_answer")
+    graph.add_edge("self_grade_answer",   END)
 
     # Non-chat paths terminate immediately
     graph.add_edge("handle_review",     END)
@@ -117,7 +129,7 @@ def build_compliance_graph(retriever: object, gemini: GeminiClient) -> object:
     graph.add_edge("handle_analytics",  END)
 
     compiled = graph.compile()
-    logger.info("Compliance workflow graph compiled (with CRAG gate).")
+    logger.info("Compliance workflow graph compiled (CRAG + Self-RAG active).")
     return compiled
 
 

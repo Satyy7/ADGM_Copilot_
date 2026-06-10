@@ -92,6 +92,10 @@ class AgentState(TypedDict, total=False):
     retrieval_grade: str          # "relevant" | "irrelevant" | "ambiguous"
     rewritten_query: str          # query rewritten by CRAG when grade==irrelevant
 
+    # ── Phase 15: Self-RAG ────────────────────────────────────────────────────
+    evidence_sufficiency: str     # "sufficient" | "insufficient"
+    answer_grade: str             # "grounded" | "ungrounded"
+
 
 def initial_state(
     question: str,
@@ -123,4 +127,6 @@ def initial_state(
         analytics_result=[],
         retrieval_grade="",
         rewritten_query="",
+        evidence_sufficiency="",
+        answer_grade="",
     )
