@@ -1,1 +1,456 @@
 warning: `VIRTUAL_ENV=c:\Users\Satya\.virtualenvs\HealthBot-BYXYe7aL` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+INFO:     Started server process [30212]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\db\qdrant.py:24: UserWarning: Api key is used with an insecure connection.
+  return QdrantClient(
+2026-06-11 05:03:41,061 INFO [httpx] HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2026-06-11 05:03:41,468 INFO [httpx] HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2026-06-11 05:04:06,330 INFO [backend.app.services.embeddings] EmbeddingsService ready — model=gemini-embedding-001 dim=768
+2026-06-11 05:04:06,340 INFO [backend.app.services.bm25_retriever] BM25 index ready — collection=guidance  docs=49
+2026-06-11 05:04:06,345 INFO [backend.app.services.bm25_retriever] BM25 index ready — collection=templates  docs=97
+2026-06-11 05:04:06,347 INFO [backend.app.services.bm25_retriever] BM25 index ready — collection=checklists  docs=22
+2026-06-11 05:04:06,348 INFO [backend.app.services.bm25_retriever] BM25 index ready — collection=regulations  docs=2
+2026-06-11 05:04:07,600 INFO [backend.app.services.generation] GroqClient ready — model=llama-3.3-70b-versatile
+2026-06-11 05:04:07,603 INFO [backend.app.services.generation] GeminiClient ready — primary=gemini-2.0-flash  fallback=llama-3.3-70b-versatile
+2026-06-11 05:04:07,614 INFO [backend.app.agent.graph] Compliance workflow graph compiled (CRAG + Self-RAG active).
+2026-06-11 05:04:07,619 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:10,358 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:10,363 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:12,835 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:12,853 INFO [backend.app.agent.nodes] Intent classified as 'compliance_chat' | question: What are the annual filing obligations for an ADGM private company?…
+2026-06-11 05:04:12,854 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:12,996 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:12,996 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:13,919 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:13,921 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): Pursuant to Article 12 of the Companies Regulations 2020, a private company incorporated in the Abu Dhabi Global Market …
+2026-06-11 05:04:13,921 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:04:14,759 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:04:14,793 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:14,802 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:14,823 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:14,825 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: Pursuant to Article 12 of the Companies Regulations 2020, a private co…
+2026-06-11 05:04:14,832 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=71  fused=73  \u2192 top_k=20 | Pursuant to Article 12 of the Companies Regulations 2020, a …
+2026-06-11 05:04:14,833 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:15,125 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:15,130 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:15,754 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:15,758 INFO [backend.app.services.reranker] Re-ranked 20 \u2192 top-5 | top chunk_id=b7077e27700f1457-0000 score=0.01514
+2026-06-11 05:04:15,759 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:04:15,759 INFO [backend.app.agent.nodes] Retrieved 5 chunks from ['regulations', 'guidance', 'checklists'].
+2026-06-11 05:04:15,760 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:16,288 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:16,291 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:16,467 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:16,469 INFO [backend.app.agent.crag.nodes] CRAG grade: RELEVANT | question=What are the annual filing obligations for an ADGM private company?…  chunks=5
+2026-06-11 05:04:16,469 INFO [backend.app.agent.crag.nodes] CRAG routing to generate (grade=relevant).
+2026-06-11 05:04:16,470 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:16,641 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:16,647 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:16,801 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:16,806 INFO [backend.app.agent.self_rag.nodes] Self-RAG evidence: SUFFICIENT | chunks=5 | question=What are the annual filing obligations for an ADGM private c…
+2026-06-11 05:04:16,807 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:16,961 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:16,966 WARNING [backend.app.services.generation] Gemini generation failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.).
+2026-06-11 05:04:16,966 INFO [backend.app.services.generation] Retrying with Groq fallback (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:16,967 INFO [backend.app.services.generation] Generating answer via Groq (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:18,329 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:18,334 INFO [backend.app.agent.nodes] Generated answer via groq/llama-3.3-70b-versatile | 1 sources.
+2026-06-11 05:04:18,335 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:18,608 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:18,609 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:19,252 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:19,256 INFO [backend.app.agent.self_rag.nodes] Self-RAG answer grade: GROUNDED
+2026-06-11 05:04:21,352 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:21,510 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:21,515 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:21,664 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:21,667 INFO [backend.app.agent.nodes] Intent classified as 'compliance_chat' | question: What is the threshold ownership percentage that triggers UBO disclosur…
+2026-06-11 05:04:21,668 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:22,478 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:22,479 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:23,747 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:23,748 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): Pursuant to Article 12 of the Beneficial Ownership Regulations 2018, a Registered Person is required to maintain a regis…
+2026-06-11 05:04:23,749 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:04:24,724 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:04:24,745 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:24,778 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:24,788 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:24,790 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: Pursuant to Article 12 of the Beneficial Ownership Regulations 2018, a…
+2026-06-11 05:04:24,796 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=70  fused=73  \u2192 top_k=20 | Pursuant to Article 12 of the Beneficial Ownership Regulatio…
+2026-06-11 05:04:24,797 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:25,558 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:25,563 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:26,072 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:26,076 INFO [backend.app.services.reranker] Re-ranked 20 \u2192 top-5 | top chunk_id=d9904d76fc5887cb-0009 score=0.01621
+2026-06-11 05:04:26,077 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:04:26,077 INFO [backend.app.agent.nodes] Retrieved 5 chunks from ['regulations', 'guidance', 'checklists'].
+2026-06-11 05:04:26,078 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:26,229 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:26,234 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:26,516 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:26,526 INFO [backend.app.agent.crag.nodes] CRAG grade: IRRELEVANT | question=What is the threshold ownership percentage that triggers UBO disclosur…  chunks=5
+2026-06-11 05:04:26,526 INFO [backend.app.agent.crag.nodes] CRAG routing to rewrite_and_retrieve (grade=IRRELEVANT).
+2026-06-11 05:04:26,527 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:26,682 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:26,686 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:26,980 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:26,981 INFO [backend.app.agent.crag.nodes] CRAG rewrite: 'What is the threshold ownership percentage that triggers UBO' \u2192 'What is the percentage of ownership that requires disclosure'
+2026-06-11 05:04:26,982 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:27,119 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:27,124 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:27,966 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:27,971 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): Pursuant to Article 12 of the Companies Regulations 2020, a beneficial owner of a company incorporated in the Abu Dhabi …
+2026-06-11 05:04:27,971 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:04:29,315 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:04:29,348 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:29,381 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:29,390 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:29,391 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: Pursuant to Article 12 of the Companies Regulations 2020, a beneficial…
+2026-06-11 05:04:29,398 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=71  fused=73  \u2192 top_k=20 | Pursuant to Article 12 of the Companies Regulations 2020, a …
+2026-06-11 05:04:29,399 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:29,637 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:29,638 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:30,407 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:30,413 INFO [backend.app.services.reranker] Re-ranked 20 \u2192 top-5 | top chunk_id=380bca9c4e464fd2-0002 score=0.01440
+2026-06-11 05:04:30,414 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:04:30,415 INFO [backend.app.agent.crag.nodes] CRAG re-retrieval: 5 chunks for rewritten query.
+2026-06-11 05:04:30,417 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:30,565 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:30,566 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:30,726 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:30,731 INFO [backend.app.agent.self_rag.nodes] Self-RAG evidence: INSUFFICIENT | chunks=5 | question=What is the percentage of ownership that requires disclosure…
+2026-06-11 05:04:30,732 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:31,268 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:31,269 WARNING [backend.app.services.generation] Gemini generation failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.).
+2026-06-11 05:04:31,270 INFO [backend.app.services.generation] Retrying with Groq fallback (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:31,270 INFO [backend.app.services.generation] Generating answer via Groq (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:31,545 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:31,551 INFO [backend.app.agent.nodes] Generated answer via groq/llama-3.3-70b-versatile | 4 sources.
+2026-06-11 05:04:31,553 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:31,711 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:31,717 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:31,890 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:31,895 INFO [backend.app.agent.self_rag.nodes] Self-RAG answer grade: UNGROUNDED
+2026-06-11 05:04:31,895 WARNING [backend.app.agent.self_rag.nodes] Self-RAG: answer is UNGROUNDED — replacing with conservative response.
+2026-06-11 05:04:33,948 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:34,494 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:34,498 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:34,636 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:34,641 INFO [backend.app.agent.nodes] Intent classified as 'compliance_chat' | question: What documents are needed to incorporate an ADGM company?…
+2026-06-11 05:04:34,642 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:34,792 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:34,796 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:36,352 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:36,353 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): Incorporation of an ADGM company requires submission of specific documents as outlined in Article 12 of the Companies Re…
+2026-06-11 05:04:36,354 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:04:37,674 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:04:37,708 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:37,717 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:37,726 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:04:37,727 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: Incorporation of an ADGM company requires submission of specific docum…
+2026-06-11 05:04:37,734 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=71  fused=73  \u2192 top_k=20 | Incorporation of an ADGM company requires submission of spec…
+2026-06-11 05:04:37,735 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:38,904 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:38,908 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:39,450 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:39,452 INFO [backend.app.services.reranker] Re-ranked 20 \u2192 top-5 | top chunk_id=4cc7bc66d75302fd-0008 score=0.01466
+2026-06-11 05:04:39,452 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:04:39,453 INFO [backend.app.agent.nodes] Retrieved 5 chunks from ['regulations', 'guidance', 'checklists'].
+2026-06-11 05:04:39,454 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:39,710 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:39,715 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:39,865 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:39,867 INFO [backend.app.agent.crag.nodes] CRAG grade: RELEVANT | question=What documents are needed to incorporate an ADGM company?…  chunks=5
+2026-06-11 05:04:39,868 INFO [backend.app.agent.crag.nodes] CRAG routing to generate (grade=relevant).
+2026-06-11 05:04:39,870 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:40,041 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:40,042 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:04:40,200 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:04:40,205 INFO [backend.app.agent.self_rag.nodes] Self-RAG evidence: INSUFFICIENT | chunks=5 | question=What documents are needed to incorporate an ADGM company?…
+2026-06-11 05:04:40,207 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:04:40,429 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:40,430 WARNING [backend.app.services.generation] Gemini generation failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.).
+2026-06-11 05:04:40,431 INFO [backend.app.services.generation] Retrying with Groq fallback (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:40,431 INFO [backend.app.services.generation] Generating answer via Groq (model=llama-3.3-70b-versatile).
+2026-06-11 05:04:41,024 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:04:41,028 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 20.000000 seconds
+2026-06-11 05:05:03,319 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 05:05:03,326 INFO [backend.app.agent.nodes] Generated answer via groq/llama-3.3-70b-versatile | 1 sources.
+2026-06-11 05:05:03,327 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:06,007 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:06,013 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:06,785 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:06,789 WARNING [backend.app.agent.self_rag.nodes] Self-RAG grounding check failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99996, Requested 681. Please try again in 9m44.928s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — defaulting to GROUNDED.
+2026-06-11 05:05:06,790 INFO [backend.app.agent.self_rag.nodes] Self-RAG answer grade: GROUNDED
+2026-06-11 05:05:08,856 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:09,015 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:09,019 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:09,114 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:09,115 WARNING [backend.app.agent.nodes] Intent routing failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99994, Requested 425. Please try again in 6m2.016s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}), defaulting to compliance_chat.
+2026-06-11 05:05:09,116 INFO [backend.app.agent.nodes] Intent classified as 'compliance_chat' | question: What are the employment contract requirements in ADGM?…
+2026-06-11 05:05:09,118 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:09,314 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:09,319 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:09,408 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:09,409 WARNING [backend.app.services.hyde_retriever] HyDE generation failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99993, Requested 435. Please try again in 6m9.792s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — falling back to original query.
+2026-06-11 05:05:09,411 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): What are the employment contract requirements in ADGM?…
+2026-06-11 05:05:09,411 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:05:10,035 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:05:10,059 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:10,067 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:10,090 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:10,091 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: What are the employment contract requirements in ADGM?…
+2026-06-11 05:05:10,093 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=69  fused=73  \u2192 top_k=20 | What are the employment contract requirements in ADGM?…
+2026-06-11 05:05:10,094 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:10,569 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:10,573 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:10,826 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:10,828 WARNING [backend.app.services.reranker] Re-ranking failed (RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k), falling back to hybrid order.
+2026-06-11 05:05:10,828 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:05:10,829 INFO [backend.app.agent.nodes] Retrieved 5 chunks from ['regulations', 'guidance', 'checklists'].
+2026-06-11 05:05:10,831 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:11,093 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:11,098 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:11,331 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:11,335 WARNING [backend.app.agent.crag.nodes] CRAG evaluation failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99991, Requested 521. Please try again in 7m22.368s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — defaulting to AMBIGUOUS.
+2026-06-11 05:05:11,336 INFO [backend.app.agent.crag.nodes] CRAG grade: AMBIGUOUS | question=What are the employment contract requirements in ADGM?…  chunks=5
+2026-06-11 05:05:11,336 INFO [backend.app.agent.crag.nodes] CRAG routing to generate (grade=ambiguous).
+2026-06-11 05:05:11,337 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:11,486 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:11,490 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:11,585 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:11,587 WARNING [backend.app.agent.self_rag.nodes] Self-RAG evidence check failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99991, Requested 551. Please try again in 7m48.288s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — defaulting to SUFFICIENT.
+2026-06-11 05:05:11,587 INFO [backend.app.agent.self_rag.nodes] Self-RAG evidence: SUFFICIENT | chunks=5 | question=What are the employment contract requirements in ADGM?…
+2026-06-11 05:05:11,588 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:12,032 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:12,036 WARNING [backend.app.services.generation] Gemini generation failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.).
+2026-06-11 05:05:12,037 INFO [backend.app.services.generation] Retrying with Groq fallback (model=llama-3.3-70b-versatile).
+2026-06-11 05:05:12,037 INFO [backend.app.services.generation] Generating answer via Groq (model=llama-3.3-70b-versatile).
+2026-06-11 05:05:14,477 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:14,481 ERROR [backend.app.services.generation] Groq fallback also failed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99988, Requested 1175. Please try again in 16m44.832s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}. Both providers exhausted.
+2026-06-11 05:05:14,482 ERROR [backend.app.api.routes.chat] Compliance graph failed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99988, Requested 1175. Please try again in 16m44.832s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+Traceback (most recent call last):
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 235, in generate_compliance_answer
+    response = self._client.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\models.py", line 6480, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\models.py", line 4916, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1611, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1404, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1381, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\errors.py", line 155, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\errors.py", line 184, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 47.266983019s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.0-flash', 'location': 'global'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '47s'}]}}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\api\routes\chat.py", line 75, in compliance_chat
+    final_state = graph.invoke(state)  # type: ignore[union-attr]
+                  ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\main.py", line 3884, in invoke
+    for chunk in self.stream(
+                 ^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\main.py", line 2938, in stream
+    for _ in runner.tick(
+             ^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\_runner.py", line 207, in tick
+    run_with_retry(
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\_retry.py", line 617, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 684, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 426, in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\agent\nodes.py", line 162, in generate
+    answer: str = gemini.generate_compliance_answer(  # type: ignore[union-attr]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 271, in generate_compliance_answer
+    raise groq_exc from gemini_exc
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 263, in generate_compliance_answer
+    answer = self._fallback.generate_compliance_answer(question, chunks)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 130, in generate_compliance_answer
+    response = self._client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\resources\chat\completions.py", line 461, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\_base_client.py", line 1284, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\_base_client.py", line 1071, in request
+    raise self._make_status_error_from_response(err.response) from None
+groq.RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99988, Requested 1175. Please try again in 16m44.832s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+During task with name 'generate' and id '6c9b7503-1b17-ff52-3a1a-fdaa420bedb9'
+2026-06-11 05:05:16,713 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:19,122 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:19,127 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:19,646 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:19,650 WARNING [backend.app.agent.nodes] Intent routing failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99982, Requested 370. Please try again in 5m4.128s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}), defaulting to compliance_chat.
+2026-06-11 05:05:19,651 INFO [backend.app.agent.nodes] Intent classified as 'compliance_chat' | question: How many clause records are in the database?…
+2026-06-11 05:05:19,652 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:19,817 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:19,818 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:19,905 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:19,906 WARNING [backend.app.services.hyde_retriever] HyDE generation failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99981, Requested 434. Please try again in 5m58.56s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — falling back to original query.
+2026-06-11 05:05:19,907 INFO [backend.app.services.hyde_retriever] HyDE query (first 120 chars): How many clause records are in the database?…
+2026-06-11 05:05:19,907 INFO [backend.app.services.embeddings] Requesting 1 embeddings from Gemini (task=RETRIEVAL_QUERY).
+2026-06-11 05:05:20,826 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-06-11 05:05:20,848 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/regulations/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:20,856 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/guidance/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:20,879 INFO [httpx] HTTP Request: POST http://localhost:6333/collections/checklists/points/query "HTTP/1.1 200 OK"
+2026-06-11 05:05:20,881 INFO [backend.app.services.retrieval] Retrieved 73 chunks from ['regulations', 'guidance', 'checklists'] for: How many clause records are in the database?…
+2026-06-11 05:05:20,884 INFO [backend.app.services.hybrid_retriever] Hybrid search — dense=73  sparse=69  fused=73  \u2192 top_k=20 | How many clause records are in the database?…
+2026-06-11 05:05:20,885 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:21,281 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:21,287 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:21,544 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:21,545 WARNING [backend.app.services.reranker] Re-ranking failed (RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k), falling back to hybrid order.
+2026-06-11 05:05:21,545 INFO [backend.app.services.hyde_retriever] HyDE search returned 5 chunks.
+2026-06-11 05:05:21,545 INFO [backend.app.agent.nodes] Retrieved 5 chunks from ['regulations', 'guidance', 'checklists'].
+2026-06-11 05:05:21,546 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:21,803 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:21,807 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:21,890 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:21,892 WARNING [backend.app.agent.crag.nodes] CRAG evaluation failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99979, Requested 516. Please try again in 7m7.68s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — defaulting to AMBIGUOUS.
+2026-06-11 05:05:21,892 INFO [backend.app.agent.crag.nodes] CRAG grade: AMBIGUOUS | question=How many clause records are in the database?…  chunks=5
+2026-06-11 05:05:21,892 INFO [backend.app.agent.crag.nodes] CRAG routing to generate (grade=ambiguous).
+2026-06-11 05:05:21,894 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:22,031 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:22,032 WARNING [backend.app.services.generation] Gemini generate_text failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and ), trying Groq.
+2026-06-11 05:05:22,245 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:22,249 WARNING [backend.app.agent.self_rag.nodes] Self-RAG evidence check failed (Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99979, Requested 545. Please try again in 7m32.736s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}) — defaulting to SUFFICIENT.
+2026-06-11 05:05:22,250 INFO [backend.app.agent.self_rag.nodes] Self-RAG evidence: SUFFICIENT | chunks=5 | question=How many clause records are in the database?…
+2026-06-11 05:05:22,251 INFO [google_genai.models] AFC is enabled with max remote calls: 10.
+2026-06-11 05:05:22,920 INFO [httpx] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:22,924 WARNING [backend.app.services.generation] Gemini generation failed (ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.).
+2026-06-11 05:05:22,924 INFO [backend.app.services.generation] Retrying with Groq fallback (model=llama-3.3-70b-versatile).
+2026-06-11 05:05:22,925 INFO [backend.app.services.generation] Generating answer via Groq (model=llama-3.3-70b-versatile).
+2026-06-11 05:05:23,365 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-06-11 05:05:23,371 ERROR [backend.app.services.generation] Groq fallback also failed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99977, Requested 1091. Please try again in 15m22.752s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}. Both providers exhausted.
+2026-06-11 05:05:23,371 ERROR [backend.app.api.routes.chat] Compliance graph failed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99977, Requested 1091. Please try again in 15m22.752s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+Traceback (most recent call last):
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 235, in generate_compliance_answer
+    response = self._client.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\models.py", line 6480, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\models.py", line 4916, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1611, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1404, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\_api_client.py", line 1381, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\errors.py", line 155, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\google\genai\errors.py", line 184, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 36.379868589s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'model': 'gemini-2.0-flash', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.0-flash', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.0-flash', 'location': 'global'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '36s'}]}}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\api\routes\chat.py", line 75, in compliance_chat
+    final_state = graph.invoke(state)  # type: ignore[union-attr]
+                  ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\main.py", line 3884, in invoke
+    for chunk in self.stream(
+                 ^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\main.py", line 2938, in stream
+    for _ in runner.tick(
+             ^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\_runner.py", line 207, in tick
+    run_with_retry(
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\pregel\_retry.py", line 617, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 684, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 426, in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\agent\nodes.py", line 162, in generate
+    answer: str = gemini.generate_compliance_answer(  # type: ignore[union-attr]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 271, in generate_compliance_answer
+    raise groq_exc from gemini_exc
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 263, in generate_compliance_answer
+    answer = self._fallback.generate_compliance_answer(question, chunks)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\backend\app\services\generation.py", line 130, in generate_compliance_answer
+    response = self._client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\resources\chat\completions.py", line 461, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\_base_client.py", line 1284, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Satya\OneDrive - Mahindra University\Desktop\ADGM_Compliance_Copilot\.venv\Lib\site-packages\groq\_base_client.py", line 1071, in request
+    raise self._make_status_error_from_response(err.response) from None
+groq.RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kk8f3h06fg4bq9r9yzw0x0fm` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99977, Requested 1091. Please try again in 15m22.752s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+During task with name 'generate' and id '5a96cb2b-3a8f-4ead-dbaf-e654277c91f3'

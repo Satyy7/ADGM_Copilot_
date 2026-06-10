@@ -30,13 +30,19 @@ Groq does not offer embedding models. The fallback is generation-only.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
+from typing import TYPE_CHECKING
 
 from google import genai
 from google.genai import types
 
 from backend.app.core.config import Settings, get_settings
 from backend.app.schemas.rag import RetrievedChunk
+
+if TYPE_CHECKING:
+    import redis as redis_lib
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +174,11 @@ class GeminiClient:
         Application settings. Reads ``gemini_*`` and ``groq_*`` fields.
     """
 
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        redis_client: "redis_lib.Redis | None" = None,
+    ) -> None:
         resolved = settings or get_settings()
         if resolved.gemini_api_key is None:
             raise ValueError("GEMINI_API_KEY is not set. Add it to your .env file.")
@@ -190,12 +200,17 @@ class GeminiClient:
             except Exception as exc:
                 logger.warning("Groq fallback could not be initialised: %s", exc)
 
+        # Phase 16: Redis for generate_text caching (HyDE, CRAG, Self-RAG, re-ranker)
+        self._redis = redis_client
+        self._gentext_ttl = 60 * 60  # 1 hour
+
         # Tracks the provider that answered the most recent request
         self._active_model: str = self._gemini_model
         logger.info(
-            "GeminiClient ready — primary=%s  fallback=%s",
+            "GeminiClient ready — primary=%s  fallback=%s  cache=%s",
             self._gemini_model,
             self._fallback.model_name if self._fallback else "none",
+            "redis" if self._redis else "none",
         )
 
     @property
@@ -276,11 +291,28 @@ class GeminiClient:
         Used by the re-ranker and other utility tasks (classification,
         structured extraction) that need a short, deterministic response.
         Falls back to Groq on Gemini failure, same as ``generate_compliance_answer``.
+
+        Phase 16: results are cached in Redis by SHA-256(prompt) with a 1-hour TTL.
+        Cache is provider-agnostic — a Groq answer is equally cacheable.
         """
+        cache_key = self._gentext_cache_key(prompt)
+
+        # ── Cache hit ──────────────────────────────────────────────────────────
+        if self._redis is not None:
+            try:
+                cached = self._redis.get(cache_key)
+                if cached:
+                    logger.debug("generate_text cache HIT  key=%.20s…", cache_key)
+                    return json.loads(cached)
+            except Exception as exc:
+                logger.debug("generate_text cache get failed: %s", exc)
+
+        # ── LLM call ───────────────────────────────────────────────────────────
         config = types.GenerateContentConfig(
             temperature=0.0,
             max_output_tokens=256,
         )
+        result: str
         try:
             response = self._client.models.generate_content(
                 model=self._gemini_model,
@@ -288,7 +320,7 @@ class GeminiClient:
                 config=config,
             )
             self._active_model = f"gemini/{self._gemini_model}"
-            return self._extract_text(response)
+            result = self._extract_text(response)
         except Exception as exc:
             logger.warning(
                 "Gemini generate_text failed (%s: %s), trying Groq.",
@@ -299,7 +331,20 @@ class GeminiClient:
                 raise
             result = self._fallback.generate_text(prompt)
             self._active_model = f"groq/{self._fallback.model_name}"
-            return result
+
+        # ── Cache store ────────────────────────────────────────────────────────
+        if self._redis is not None and result:
+            try:
+                self._redis.set(cache_key, json.dumps(result), ex=self._gentext_ttl)
+                logger.debug("generate_text cache SET  key=%.20s…  ttl=%ds", cache_key, self._gentext_ttl)
+            except Exception as exc:
+                logger.debug("generate_text cache set failed: %s", exc)
+
+        return result
+
+    def _gentext_cache_key(self, prompt: str) -> str:
+        digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:24]
+        return f"gentext:{digest}"
 
     # ── Static helpers ─────────────────────────────────────────────────────────
 

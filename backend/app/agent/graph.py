@@ -40,7 +40,9 @@ from backend.app.agent.self_rag.nodes import build_self_rag_nodes
 from backend.app.agent.state import AgentState
 from backend.app.core.config import get_settings
 from backend.app.db.qdrant import get_qdrant_client
+from backend.app.db.redis import get_redis_client
 from backend.app.services.bm25_retriever import BM25Retriever
+from backend.app.services.cached_retriever import CachedRetriever
 from backend.app.services.embeddings import get_embeddings_service
 from backend.app.services.generation import GeminiClient
 from backend.app.services.hybrid_retriever import HybridRetriever
@@ -140,26 +142,34 @@ def get_compiled_graph() -> object:
     Called once per process lifetime.  Call ``get_compiled_graph.cache_clear()``
     in tests to reset between test cases.
 
-    Retrieval stack (Phase 13)
+    Retrieval stack (Phase 16)
     --------------------------
     QdrantRetriever (dense)  ─┐
     BM25Retriever   (sparse) ─┤→ HybridRetriever (RRF)
                                └→ RerankedRetriever (LLM listwise)
                                     └→ HyDERetriever (hypothetical doc expansion)
+                                         └→ CachedRetriever (Redis, 30-min TTL)
     """
     settings   = get_settings()
-    embeddings = get_embeddings_service(settings=settings)
+    redis      = get_redis_client()           # Phase 16: shared cache client
+    embeddings = get_embeddings_service(      # Phase 16: embedding cache active
+        settings=settings,
+        redis_client=redis,
+    )
     qdrant     = get_qdrant_client()
 
     dense    = QdrantRetriever(qdrant_client=qdrant, embeddings_service=embeddings)
     sparse   = BM25Retriever()
     hybrid   = HybridRetriever(dense=dense, sparse=sparse)
 
-    gemini   = GeminiClient(settings=settings)
+    gemini   = GeminiClient(settings=settings, redis_client=redis)  # Phase 16: generate_text cache
     reranker = LLMReranker(client=gemini)
     reranked = RerankedRetriever(base=hybrid, reranker=reranker, candidate_pool=20)
 
     # Phase 13: wrap the full reranked stack with HyDE
-    retriever = HyDERetriever(base=reranked, gemini=gemini, enabled=True)
+    hyde      = HyDERetriever(base=reranked, gemini=gemini, enabled=True)
+
+    # Phase 16: cache the entire retrieval stack (HyDE → Rerank → Hybrid → Dense+Sparse)
+    retriever = CachedRetriever(base=hyde, redis_client=redis)
 
     return build_compliance_graph(retriever=retriever, gemini=gemini)
