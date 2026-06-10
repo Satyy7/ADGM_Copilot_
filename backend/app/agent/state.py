@@ -88,6 +88,10 @@ class AgentState(TypedDict, total=False):
     analytics_sql: str
     analytics_result: list[dict[str, Any]]
 
+    # ── Phase 14: CRAG ────────────────────────────────────────────────────────
+    retrieval_grade: str          # "relevant" | "irrelevant" | "ambiguous"
+    rewritten_query: str          # query rewritten by CRAG when grade==irrelevant
+
 
 def initial_state(
     question: str,
@@ -117,4 +121,6 @@ def initial_state(
         similar_cases=[],
         analytics_sql="",
         analytics_result=[],
+        retrieval_grade="",
+        rewritten_query="",
     )

@@ -19,8 +19,8 @@ Phase 8:  current file — chat path fully functional, others stubbed.
 Phase 9:  replace ``handle_review`` with a sub-graph of 6 specialist agents.
 Phase 10: replace ``handle_clause_gen`` with the clause generator sub-graph.
 Phase 12: replace ``handle_analytics`` with the Text2SQL sub-graph.
-Phase 13: add HyDE node between ``route_intent`` and ``retrieve``.
-Phase 14: add CRAG self-evaluation loop around ``retrieve``/``generate``.
+Phase 13: HyDE wraps the retrieval stack (service layer, graph unchanged).
+Phase 14: CRAG gate — retrieve → crag_evaluate → (rewrite?) → generate.
 Phase 15: add Self-RAG scoring node before ``generate``.
 
 Because every capability is a separate branch off ``route_intent``, adding
@@ -34,6 +34,7 @@ from functools import lru_cache
 
 from langgraph.graph import END, START, StateGraph
 
+from backend.app.agent.crag.nodes import build_crag_nodes, select_crag_path
 from backend.app.agent.nodes import build_nodes, select_path
 from backend.app.agent.state import AgentState
 from backend.app.core.config import get_settings
@@ -55,28 +56,37 @@ def build_compliance_graph(retriever: object, gemini: GeminiClient) -> object:
     Parameters
     ----------
     retriever:
-        Any ``Retriever``-protocol object.  In Phase 7+ this is a
-        ``RerankedRetriever`` wrapping ``HybridRetriever``.
+        Any ``Retriever``-protocol object.  In Phase 13+ this is a
+        ``HyDERetriever`` wrapping the full Hybrid+Reranked stack.
     gemini:
-        ``GeminiClient`` used by the intent router, generate node, and
-        re-ranker (all share the same instance and Groq fallback).
+        ``GeminiClient`` shared by all nodes (intent router, generate,
+        re-ranker, CRAG evaluator, query rewriter).
 
-    Returns
-    -------
-    Compiled LangGraph ``CompiledGraph`` — call ``.invoke(state_dict)``.
+    Graph topology (Phase 14)
+    -------------------------
+    START → route_intent → {
+      compliance_chat:
+        retrieve → crag_evaluate ──(relevant/ambiguous)──► generate → END
+                                 └─(irrelevant)──► rewrite_and_retrieve → generate → END
+      compliance_review     → handle_review     → END
+      clause_generation     → handle_clause_gen → END
+      analytics             → handle_analytics  → END
+    }
     """
-    nodes = build_nodes(retriever=retriever, gemini=gemini)
+    nodes      = build_nodes(retriever=retriever, gemini=gemini)
+    crag_nodes = build_crag_nodes(retriever=retriever, gemini=gemini)
 
     graph: StateGraph = StateGraph(AgentState)
 
-    # Register nodes
     for name, fn in nodes.items():
+        graph.add_node(name, fn)
+    for name, fn in crag_nodes.items():
         graph.add_node(name, fn)
 
     # Entry point
     graph.add_edge(START, "route_intent")
 
-    # Conditional routing after intent classification
+    # Intent routing
     graph.add_conditional_edges(
         "route_intent",
         select_path,
@@ -88,17 +98,26 @@ def build_compliance_graph(retriever: object, gemini: GeminiClient) -> object:
         },
     )
 
-    # compliance_chat path: retrieve → generate → END
-    graph.add_edge("retrieve", "generate")
+    # Phase 14: CRAG gate between retrieve and generate
+    graph.add_edge("retrieve", "crag_evaluate")
+    graph.add_conditional_edges(
+        "crag_evaluate",
+        select_crag_path,
+        {
+            "generate":             "generate",
+            "rewrite_and_retrieve": "rewrite_and_retrieve",
+        },
+    )
+    graph.add_edge("rewrite_and_retrieve", "generate")
     graph.add_edge("generate", END)
 
-    # Stub paths terminate immediately
+    # Non-chat paths terminate immediately
     graph.add_edge("handle_review",     END)
     graph.add_edge("handle_clause_gen", END)
     graph.add_edge("handle_analytics",  END)
 
     compiled = graph.compile()
-    logger.info("Compliance workflow graph compiled successfully.")
+    logger.info("Compliance workflow graph compiled (with CRAG gate).")
     return compiled
 
 
