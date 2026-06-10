@@ -42,6 +42,7 @@ from backend.app.services.bm25_retriever import BM25Retriever
 from backend.app.services.embeddings import get_embeddings_service
 from backend.app.services.generation import GeminiClient
 from backend.app.services.hybrid_retriever import HybridRetriever
+from backend.app.services.hyde_retriever import HyDERetriever
 from backend.app.services.reranker import LLMReranker, RerankedRetriever
 from backend.app.services.retrieval import QdrantRetriever
 
@@ -108,21 +109,26 @@ def get_compiled_graph() -> object:
     Called once per process lifetime.  Call ``get_compiled_graph.cache_clear()``
     in tests to reset between test cases.
 
-    Retrieval stack
-    ---------------
+    Retrieval stack (Phase 13)
+    --------------------------
     QdrantRetriever (dense)  ─┐
-    BM25Retriever   (sparse) ─┤→ HybridRetriever (RRF) → RerankedRetriever → top-K
+    BM25Retriever   (sparse) ─┤→ HybridRetriever (RRF)
+                               └→ RerankedRetriever (LLM listwise)
+                                    └→ HyDERetriever (hypothetical doc expansion)
     """
-    settings = get_settings()
+    settings   = get_settings()
     embeddings = get_embeddings_service(settings=settings)
-    qdrant = get_qdrant_client()
+    qdrant     = get_qdrant_client()
 
-    dense   = QdrantRetriever(qdrant_client=qdrant, embeddings_service=embeddings)
-    sparse  = BM25Retriever()
-    hybrid  = HybridRetriever(dense=dense, sparse=sparse)
+    dense    = QdrantRetriever(qdrant_client=qdrant, embeddings_service=embeddings)
+    sparse   = BM25Retriever()
+    hybrid   = HybridRetriever(dense=dense, sparse=sparse)
 
-    gemini  = GeminiClient(settings=settings)
+    gemini   = GeminiClient(settings=settings)
     reranker = LLMReranker(client=gemini)
-    retriever = RerankedRetriever(base=hybrid, reranker=reranker, candidate_pool=20)
+    reranked = RerankedRetriever(base=hybrid, reranker=reranker, candidate_pool=20)
+
+    # Phase 13: wrap the full reranked stack with HyDE
+    retriever = HyDERetriever(base=reranked, gemini=gemini, enabled=True)
 
     return build_compliance_graph(retriever=retriever, gemini=gemini)
