@@ -11,7 +11,7 @@ Phase 8 (this file):
   retrieve              — hybrid + re-ranked vector search
   generate              — Gemini/Groq answer generation with citations
   handle_review         — stub (Phase 9)
-  handle_clause_gen     — stub (Phase 10)
+  handle_clause_gen     — clause sub-graph (Phase 10)
   handle_analytics      — stub (Phase 12)
 
 Phase 9+:
@@ -181,13 +181,33 @@ def build_nodes(retriever: Retriever, gemini: object) -> dict[str, object]:
         }
 
     def handle_clause_gen(state: AgentState) -> dict:
-        return {
-            "answer": _STUB_MESSAGES[INTENT_CLAUSE],
-            "sources": [],
-            "model": "n/a",
-            "retrieved_chunks": [],
-            "collections_searched": [],
-        }
+        """Route clause generation requests through the Phase 10 clause sub-graph."""
+        from backend.app.agent.clause.graph import get_compiled_clause_graph  # lazy import avoids circular dep
+        question = state.get("question", "")
+        try:
+            clause_graph = get_compiled_clause_graph()
+            clause_state: dict = clause_graph.invoke(  # type: ignore[union-attr]
+                {
+                    "request": question,
+                    "document_type_hint": "",
+                    "top_k": state.get("top_k", 8),
+                }
+            )
+            return {
+                "answer":               clause_state.get("clause_text", ""),
+                "sources":              clause_state.get("citations", []),
+                "model":                clause_state.get("model", "unknown"),
+                "retrieved_chunks":     clause_state.get("retrieved_chunks", []),
+                "collections_searched": ["regulations", "guidance", "templates", "checklists"],
+                "clause_text":          clause_state.get("clause_text", ""),
+            }
+        except Exception as exc:
+            logger.error("Clause sub-graph failed: %s", exc)
+            return {
+                "answer":  f"Clause generation failed: {exc}",
+                "sources": [],
+                "model":   "error",
+            }
 
     def handle_analytics(state: AgentState) -> dict:
         return {
