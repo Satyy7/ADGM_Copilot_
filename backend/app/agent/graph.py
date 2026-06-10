@@ -8,20 +8,21 @@ Graph topology
       ▼
   route_intent          ← LLM classifies question into one of four intents
       │
-      ├─► retrieve ──► generate ──► END   (compliance_chat)
-      ├─► handle_review          ──► END   (compliance_review  — Phase 9 stub)
-      ├─► handle_clause_gen      ──► END   (clause_generation  — Phase 10 stub)
-      └─► handle_analytics       ──► END   (analytics          — Phase 12 stub)
+      ├─► retrieve ──► crag_evaluate ──► self_check_evidence ──► generate ──► self_grade_answer ──► END   (compliance_chat)
+      ├─► handle_review     ──► END   (compliance_review  — redirects to /reviews/analyze)
+      ├─► handle_clause_gen ──► END   (clause_generation  — Phase 10 sub-graph)
+      └─► handle_analytics  ──► END   (analytics          — Phase 12 Text2SQL sub-graph)
 
 Evolution
 ---------
-Phase 8:  current file — chat path fully functional, others stubbed.
-Phase 9:  replace ``handle_review`` with a sub-graph of 6 specialist agents.
-Phase 10: replace ``handle_clause_gen`` with the clause generator sub-graph.
-Phase 12: replace ``handle_analytics`` with the Text2SQL sub-graph.
+Phase 8:  intent routing, compliance_chat path, other paths stubbed.
+Phase 9:  6-agent review pipeline wired via POST /reviews/analyze (file upload).
+Phase 10: clause sub-graph replaces handle_clause_gen stub.
+Phase 12: Text2SQL sub-graph replaces handle_analytics stub.
 Phase 13: HyDE wraps the retrieval stack (service layer, graph unchanged).
 Phase 14: CRAG gate — retrieve → crag_evaluate → (rewrite?) → generate.
-Phase 15: add Self-RAG scoring node before ``generate``.
+Phase 15: Self-RAG — self_check_evidence before generate, self_grade_answer after.
+Phase 16: Redis caching — embeddings (7d), generate_text (1h), retrieval (30m).
 
 Because every capability is a separate branch off ``route_intent``, adding
 or replacing a branch never affects the other paths.

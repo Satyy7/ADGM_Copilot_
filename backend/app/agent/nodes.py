@@ -10,12 +10,15 @@ Phase 8 (this file):
   route_intent          — classify query intent via LLM
   retrieve              — hybrid + re-ranked vector search
   generate              — Gemini/Groq answer generation with citations
-  handle_review         — stub (Phase 9)
-  handle_clause_gen     — clause sub-graph (Phase 10)
-  handle_analytics      — stub (Phase 12)
 
-Phase 9+:
-  Each capability gets its own set of sub-agent nodes added here.
+Phase 9  (this file, handle_review):
+  handle_review         — redirects to /reviews/analyze (file upload required)
+
+Phase 10 (this file, handle_clause_gen):
+  handle_clause_gen     — clause sub-graph (get_compiled_clause_graph)
+
+Phase 12 (this file, handle_analytics):
+  handle_analytics      — Text2SQL sub-graph (get_compiled_analytics_graph)
 
 Design: closure factory
 -----------------------
@@ -58,26 +61,17 @@ Query: {question}
 
 Reply with ONLY the category name (e.g. compliance_chat). Nothing else."""
 
-# ── Capability stub responses ──────────────────────────────────────────────────
+# ── Review redirect message ────────────────────────────────────────────────────
+# Compliance review requires a document file upload and cannot be performed
+# through the text-only /chat endpoint.  The message below redirects users to
+# the dedicated /reviews/analyze endpoint which accepts PDF/DOCX uploads.
 
-_STUB_MESSAGES: dict[str, str] = {
-    INTENT_REVIEW: (
-        "Compliance Document Review (Phase 9) is under development. "
-        "Upload your document once this capability is enabled. "
-        "For now, use the compliance chat to ask specific regulatory questions."
-    ),
-    INTENT_CLAUSE: (
-        "Clause Generation (Phase 10) is under development. "
-        "This capability will draft compliant ADGM clauses with full citations. "
-        "For now, use the compliance chat to retrieve template language from the knowledge base."
-    ),
-    INTENT_ANALYTICS: (
-        "Compliance Analytics (Phase 12) is under development. "
-        "This capability will translate natural language into SQL queries against "
-        "the compliance records database. "
-        "For now, use the compliance chat for regulatory Q&A."
-    ),
-}
+_REVIEW_REDIRECT = (
+    "Compliance document review requires uploading a PDF or DOCX file. "
+    "Please use the POST /api/v1/reviews/analyze endpoint to submit your document "
+    "for a full ADGM compliance review, including violation detection, gap analysis, "
+    "and a scored compliance report."
+)
 
 
 # ── Node factory ───────────────────────────────────────────────────────────────
@@ -169,11 +163,15 @@ def build_nodes(retriever: Retriever, gemini: object) -> dict[str, object]:
         logger.info("Generated answer via %s | %d sources.", model, len(sources))
         return {"answer": answer, "sources": sources, "model": model}
 
-    # ── Stub nodes (Phases 9, 10, 12) ─────────────────────────────────────────
-
     def handle_review(state: AgentState) -> dict:
+        """Redirect review intents to the file-upload endpoint.
+
+        Document review cannot be performed through the text-only /chat endpoint
+        because it requires an actual PDF or DOCX file.  Users must call
+        POST /api/v1/reviews/analyze with a multipart upload.
+        """
         return {
-            "answer": _STUB_MESSAGES[INTENT_REVIEW],
+            "answer": _REVIEW_REDIRECT,
             "sources": [],
             "model": "n/a",
             "retrieved_chunks": [],
