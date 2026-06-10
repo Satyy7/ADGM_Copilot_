@@ -1,0 +1,130 @@
+{
+  "source": {
+    "source_id": "57c3a05fcfdf2e00",
+    "category": "Company Formation & Governance",
+    "document_type": "General Incorporation, AoA, MoA, Registers, UBO, Board Resolutions",
+    "url": "https://www.adgm.com/registration-authority/registration-and-incorporation",
+    "source_format": "html",
+    "collection": "guidance",
+    "authority": "ADGM",
+    "jurisdiction": "ADGM",
+    "official_source": true,
+    "notes": null
+  },
+  "title": "General Incorporation, AoA, MoA, Registers, UBO, Board Resolutions",
+  "downloaded_path": "data\\raw\\guidance\\57c3a05fcfdf2e00.html",
+  "file_hash": "5c9c5123f5f1ce3abcc9247964bdb15c66379cafec2ca53089802abe860430b5",
+  "extracted_at": "2026-06-10T11:36:37.312715Z",
+  "sections": [
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "The Registration Authority, an independent body which has the powers to license and register ADGM establishments, is one of the core pillars of ADGM. The Registrar’s main functions under Companies and Commercial Licensing Regulations include:",
+      "page_number": null,
+      "tables": [],
+      "links": [],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "Registration of ADGM establishments Registration of business names and maintenance of the public register of companies in ADGM Registration of post-incorporation documentation Registration of changes in business name particulars",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal"
+      ],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "Registration of changes in directors, officers, shareholders and share capital Enforcement of ADGM companies regulations, Cancellation of Commercial Licences, prosecution and strike off Dissolution or restoration of ADGM establishments",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal"
+      ],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "Each business will be required to fill out the required forms online through our ADGM Online Registry Solution . We also support applications through paper based forms however, please be aware that additional fees apply for paper submissions. To learn more about the steps involved in establishing a presence and incorporating a company in ADGM, please read the documents below, or click here to view FAQ’s.",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/faqs"
+      ],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "All forms are made available on the ADGM Online Registry Solution . Should you require to submit hard copy paper form, please contact the Registration Authority by sending an email to ra@adgm.com Please note that filing of forms and supporting documents is accepted by the office of the Registration Authority in good faith without any need for the Registrar to inquire into the veracity and accuracy of every filing received by this office.",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/faqs",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "mailto:ra@adgm.com"
+      ],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "* Use this template if the company is being incorporated by a body corporate. If the company has more than one shareholder (that is body corporate), each will have to pass the resolution and provide a register of directors or similar evidence of signing authority (that should not be older than three months). This template must be adjusted to indicate that the body corporate will be one of the shareholders/intends to acquire shares. ** Use this template if the company is being incorporated by one or more individuals. If the company has more than one shareholder ( that is an individual), amend this template to include all individuals in one resolution.",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/faqs",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "mailto:ra@adgm.com",
+        "https://www.adgm.com/documents/registration-authority/registration-and-incorporation/templates/incorporation-by-individual.docx"
+      ],
+      "metadata": {}
+    },
+    {
+      "heading": "Registration and Incorporation",
+      "section_path": [
+        "Registration and Incorporation"
+      ],
+      "text": "We use cookies and similar technologies that are necessary to operate the website. Additional cookies are used to perform analysis of website usage. By continuing to use our website, you consent to our use of cookies. For more information, please read our Cookies Policy .",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "/faqs",
+        "/operating-in-adgm/e-services/online-registry-solution-portal",
+        "mailto:ra@adgm.com",
+        "https://www.adgm.com/documents/registration-authority/registration-and-incorporation/templates/incorporation-by-individual.docx",
+        "/information/cookies-policy"
+      ],
+      "metadata": {}
+    }
+  ]
+}

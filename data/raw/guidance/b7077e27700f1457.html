@@ -1,0 +1,995 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/js/adgm-components-v4.3.umd.js"></script>
+    <link rel="shortcut icon" href="/Adgm/images/favicon.png" type="image/x-icon" />
+    <script src="/js/ADGM/jQuery.js"></script>
+    <script src="/js/lib/mustache.js"></script>
+    <link href="/css/bootstrap.css" rel="stylesheet" />
+    <link href="/css/ADGM/Forms/style.css" rel="stylesheet" />
+    <link href="/css/ADGM/loader.css" rel="stylesheet" />
+
+    <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" integrity="sha256-1tqylytcbuAWBFBOlWMr2kGIIT49lQb5xruJh6a4UzA=" crossorigin="anonymous" type="text/javascript"></script>
+    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" integrity="sha256-vv8YcBRyeWnfJC8EPuJ0g3eaR6mAI3l4cUWTsRmQVL8=" crossorigin="anonymous" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" integrity="sha256-0n6YDYIexWJmHyTKtRRHTXvoanQrXpFfpsfv0h53qvk=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha256-CTSx/A06dm1B063156EVh15m6Y67pAjZZaQc89LLSrU=" crossorigin="anonymous">
+    
+
+
+
+    <title>Annual Accounts</title>
+    <meta name="description" content="Generally, every ADGM Company and Limited Liability Partnership (LLP) must file annual accounts with the ADGM Registration Authority." />
+    <meta key="keywords" name="keywords" />
+    <link rel="canonical" href="https://www.adgm.com/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings/annual-accounts">
+            <link rel="alternate" href="https://www.adgm.com/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings/annual-accounts" hreflang="en" />
+    <!-- Robots -->
+            <meta key="robots" name="robots" content="index, follow" />
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="Annual Accounts">
+    <meta property="og:url" content="https://www.adgm.com/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings/annual-accounts">
+    <meta property="og:description" content="Generally, every ADGM Company and Limited Liability Partnership (LLP) must file annual accounts with the ADGM Registration Authority.">
+    <meta property="og:type">
+    <!-- Twitter meta tags -->
+    <meta name="twitter:title" content="Annual Accounts">
+    <meta name="twitter:description" content="Generally, every ADGM Company and Limited Liability Partnership (LLP) must file annual accounts with the ADGM Registration Authority.">
+    <meta name="twitter:card">
+    <meta name="twitter:site" content="ADGM">
+    <meta name="twitter:properties">
+    <meta name="twitter:url" content="https://www.adgm.com/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings/annual-accounts">
+    <meta property="article:author" content="">
+    <meta property="article:published_time" content="29/08/2024 03:00:38 PM">
+
+ <!-- Verification code is missing -->
+     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PJKKFG7');</script>
+
+
+    <link href="/css/main.css" rel="stylesheet" />
+
+
+    <div class="leader-modal modal-hidden">
+        <div class="leader-modal__container">
+            <div class="loader-sec"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        /* Loading Stuff*/
+        function showLoading() {
+            var loadingCheck = document.getElementById("leader-modal");
+            if (loadingCheck == null || loadingCheck == undefined) {
+
+                const scrollHide = document.querySelector('body');
+                scrollHide.style.overflow = 'hidden';
+
+                const loadingDiv = document.createElement('div');
+                loadingDiv.setAttribute("id", "leader-modal");
+                loadingDiv.setAttribute("class", "leader-modal active");
+
+                const loadingContainer = document.createElement('div');
+                loadingContainer.setAttribute("class", "leader-modal__container active");
+
+                const loadingImage = document.createElement('div');
+                loadingImage.setAttribute("class", "loader-sec");
+                loadingImage.style.visibility = "visible";
+
+                loadingContainer.appendChild(loadingImage);
+                loadingDiv.appendChild(loadingContainer);
+
+                var loadingMaster = document.getElementById("loading-master");
+                loadingMaster.appendChild(loadingDiv);
+            }
+        }
+
+        function hideLoading() {
+            const scrollHide = document.querySelector('body');
+            scrollHide.style.overflow = 'auto';
+            const loadingMaster = document.getElementById("loading-master");
+            loadingMaster.innerText = '';
+        }
+    </script>
+
+    <!--Application Insights-->
+<script>
+!function(T,l,y){var S=T.location,k="script",D="instrumentationKey",C="ingestionendpoint",I="disableExceptionTracking",E="ai.device.",b="toLowerCase",w="crossOrigin",N="POST",e="appInsightsSDK",t=y.name||"appInsights";(y.name||T[e])&&(T[e]=t);var n=T[t]||function(d){var g=!1,f=!1,m={initialize:!0,queue:[],sv:"5",version:2,config:d};function v(e,t){var n={},a="Browser";return n[E+"id"]=a[b](),n[E+"type"]=a,n["ai.operation.name"]=S&&S.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(m.sv||m.version),{time:function(){var e=new Date;function t(e){var t=""+e;return 1===t.length&&(t="0"+t),t}return e.getUTCFullYear()+"-"+t(1+e.getUTCMonth())+"-"+t(e.getUTCDate())+"T"+t(e.getUTCHours())+":"+t(e.getUTCMinutes())+":"+t(e.getUTCSeconds())+"."+((e.getUTCMilliseconds()/1e3).toFixed(3)+"").slice(2,5)+"Z"}(),iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}}}}var h=d.url||y.src;if(h){function a(e){var t,n,a,i,r,o,s,c,u,p,l;g=!0,m.queue=[],f||(f=!0,t=h,s=function(){var e={},t=d.connectionString;if(t)for(var n=t.split(";"),a=0;a<n.length;a++){var i=n[a].split("=");2===i.length&&(e[i[0][b]()]=i[1])}if(!e[C]){var r=e.endpointsuffix,o=r?e.location:null;e[C]="https://"+(o?o+".":"")+"dc."+(r||"services.visualstudio.com")}return e}(),c=s[D]||d[D]||"",u=s[C],p=u?u+"/v2/track":d.endpointUrl,(l=[]).push((n="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",a=t,i=p,(o=(r=v(c,"Exception")).data).baseType="ExceptionData",o.baseData.exceptions=[{typeName:"SDKLoadFailed",message:n.replace(/\./g,"-"),hasFullStack:!1,stack:n+"\nSnippet failed to load ["+a+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(S&&S.pathname||"_unknown_")+"\nEndpoint: "+i,parsedStack:[]}],r)),l.push(function(e,t,n,a){var i=v(c,"Message"),r=i.data;r.baseType="MessageData";var o=r.baseData;return o.message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+n+")").replace(/\"/g,"")+'"',o.properties={endpoint:a},i}(0,0,t,p)),function(e,t){if(JSON){var n=T.fetch;if(n&&!y.useXhr)n(t,{method:N,body:JSON.stringify(e),mode:"cors"});else if(XMLHttpRequest){var a=new XMLHttpRequest;a.open(N,t),a.setRequestHeader("Content-type","application/json"),a.send(JSON.stringify(e))}}}(l,p))}function i(e,t){f||setTimeout(function(){!t&&m.core||a()},500)}var e=function(){var n=l.createElement(k);n.src=h;var e=y[w];return!e&&""!==e||"undefined"==n[w]||(n[w]=e),n.onload=i,n.onerror=a,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||i(0,t)},n}();y.ld<0?l.getElementsByTagName("head")[0].appendChild(e):setTimeout(function(){l.getElementsByTagName(k)[0].parentNode.appendChild(e)},y.ld||0)}try{m.cookie=l.cookie}catch(p){}function t(e){for(;e.length;)!function(t){m[t]=function(){var e=arguments;g||m.queue.push(function(){m[t].apply(m,e)})}}(e.pop())}var n="track",r="TrackPage",o="TrackEvent";t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+r,"stop"+r,"start"+o,"stop"+o,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),m.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4};var s=(d.extensionConfig||{}).ApplicationInsightsAnalytics||{};if(!0!==d[I]&&!0!==s[I]){var c="onerror";t(["_"+c]);var u=T[c];T[c]=function(e,t,n,a,i){var r=u&&u(e,t,n,a,i);return!0!==r&&m["_"+c]({message:e,url:t,lineNumber:n,columnNumber:a,error:i}),r},d.autoExceptionInstrumented=!0}return m}(y.cfg);function a(){y.onInit&&y.onInit(n)}(T[t]=n).queue&&0===n.queue.length?(n.queue.push(a),n.trackPageView({})):a()}(window,document,{src: "https://js.monitor.azure.com/scripts/b/ai.2.gbl.min.js", crossOrigin: "anonymous", cfg: {connectionString: 'InstrumentationKey=7d6f3f3f-e2c9-47eb-8779-8b867d3a0b4c;IngestionEndpoint=https://uaenorth-0.in.applicationinsights.azure.com/;LiveEndpoint=https://uaenorth.livediagnostics.monitor.azure.com/;ApplicationId=df66a777-0a52-4947-a167-9cfb8466cc67', disableCookiesUsage: true }});
+</script>
+</head>
+<body style="margin: 0px;">
+
+    
+
+
+    <div id="loading-master"></div>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJKKFG7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <adgm-application font-path="/fonts/">
+        <adgm-page>
+
+        <adgm-navigation float="true" 
+>
+
+<svg slot="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220.17 52.84" xmlns:v="https://vecta.io/nano"><defs><clipPath id="svg2_A"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg2_B"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg2_C"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg2_D"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg2_E"><path d="M203.31,20.82c.13.85.19,1.8.19,2.84,0,5.3-1.61,8.17-4.91,8.17-2.84,0-4.43-2.12-4.81-6.09-2.02.77-4.05,1.41-6.04,1.94,1.11,6.25,4.93,10.28,10.85,10.28,7.11,0,11.19-5.81,11.19-14.3,0-2.7-.42-5.13-1.21-7.19-1.63,1.64-3.4,3.08-5.26,4.35" fill="none"/></clipPath><linearGradient id="svg2_F" x1="-19.14" y1="831.14" x2="-18.8" y2="831.14" gradientTransform="translate(-32009.62 763.78) rotate(90) scale(38.75 -38.75)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient><clipPath id="svg2_G"><path d="M178.12 29.5v8.45h.67a5.61 5.61 0 0 0 5.61-5.61v-3.91l-6.28 1.07" fill="none"/></clipPath><linearGradient id="svg2_H" y1="830.68" y2="830.68" gradientTransform="translate(-32009.29 767.03) rotate(90) scale(38.75 -38.75)" href="#svg2_F"/><clipPath id="svg2_I"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><path id="svg2_J" d="M70.78 42.68c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23" fill="#FFFFFF"/><path id="svg2_K" d="M73.24 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23" fill="#FFFFFF"/></defs><g clip-path="url(#svg2_A)" fill="#FFFFFF"><use href="#svg2_J"/><use href="#svg2_K"/><path d="M86 40.31l.04.13c.11.35.31.62.59.81s.64.29 1.06.29h.49c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-.49c-.28 0-.51-.09-.67-.27-.16-.17-.24-.41-.24-.7v-.85c0-.88-.33-1.65-.97-2.28s-1.43-.94-2.33-.94-1.69.32-2.33.94a3.09 3.09 0 0 0-.97 2.28 1.96 1.96 0 0 0 .86 1.68l.18.13h-2.06c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41V39c0 .77.21 1.4.63 1.85.41.45 1 .68 1.75.68h4.32c1 0 1.81-.38 2.43-1.13l.09-.11zm-2.51-.14a1.78 1.78 0 0 1-1.32-.55c-.36-.35-.55-.79-.55-1.29a1.73 1.73 0 0 1 .55-1.29 1.81 1.81 0 0 1 1.32-.54 1.81 1.81 0 0 1 1.32.54 1.77 1.77 0 0 1 .55 1.29 1.73 1.73 0 0 1-.55 1.29 1.81 1.81 0 0 1-1.32.54m8.78-7.73v6.51c0 .77.23 1.41.67 1.88.44.48 1.04.72 1.77.72h9.89c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-3.18l.12-.12.73-.79.58-.73c.21-.29.37-.56.47-.82a2.13 2.13 0 0 0 .14-.77c0-.62-.22-1.06-.69-1.35-.47-.3-1.1-.45-1.88-.45h-5.09v2.21l1.94 2.82h-3.03c-.67 0-1-.41-1-1.23v-6.51h-1.43zm7.56 7.74h-.42l-1.91-2.83v-.83h2.81c.51 0 .88.06 1.13.19.26.13.39.38.39.75 0 .08 0 .17-.03.25-.02.09-.06.18-.11.27l-.14.26a2.73 2.73 0 0 1-.22.3l-.24.28-.28.32-.29.32-.33.35-.34.35-.02.02z"/></g><path d="M108.61 32.43h1.43v9.11h-1.43z" fill="#FFFFFF"/><g clip-path="url(#svg2_B)" fill="#FFFFFF"><path d="M119.64 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23m-2.45 0c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23m10.53-.07c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59.37.24.6.24.43-.08.61-.24c.17-.16.25-.35.25-.59s-.08-.43-.25-.59-.37-.24-.6-.24m.02-1.96l.06.09c.37.54.93.81 1.67.81h7.16c.77 0 1.37-.22 1.8-.65s.66-1.05.67-1.84v-.58c0-.97-.3-1.78-.89-2.4s-1.36-.93-2.3-.93c-1.12 0-2.26.58-3.37 1.72l-.13.13v-4.56H131v7.74h-1.53c-.68 0-1.02-.41-1.02-1.23v-3.81h-1.43v3.81c0 .81-.34 1.23-1 1.23h-.44c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41v2.53c0 .77.21 1.4.63 1.85s1.01.68 1.75.68h.44c.72 0 1.28-.27 1.67-.81l.06-.08zm8.89-.48h-4.21v-1.6l.02-.02c1.22-1.36 2.34-2.04 3.31-2.04.6 0 1.08.18 1.43.54s.52.84.52 1.42v.49c0 .81-.36 1.21-1.06 1.21m-1.21-7.76c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59a.83.83 0 0 0 .6.24c.24 0 .43-.08.61-.25.17-.16.25-.35.25-.58s-.08-.42-.25-.58c-.17-.17-.37-.25-.6-.25m5.08 10.92c.3.37.7.67 1.18.89.51.23 1.05.34 1.6.34.93 0 1.69-.28 2.28-.84.58-.56.92-1.27 1-2.11v-.07h1.21c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-2.51h-1.43v2.51c0 .81-.34 1.23-1 1.23h-1.19v-1.59c0-1.02-.31-1.86-.92-2.5s-1.42-.97-2.39-.97a3.26 3.26 0 0 0-2.34.94c-.65.62-.98 1.38-.98 2.27s.33 1.69.98 2.31c.65.61 1.48.92 2.47.92h1.76v.08c-.06.42-.25.79-.59 1.1s-.77.47-1.29.47a2.48 2.48 0 0 1-1.03-.22 2.02 2.02 0 0 1-.76-.54l-.99.9zm4.64-3.16h-1.75c-.58 0-1.07-.17-1.44-.52-.38-.34-.58-.79-.58-1.34 0-.51.18-.94.55-1.3a1.85 1.85 0 0 1 1.33-.53c.56 0 1.02.19 1.36.55.34.37.52.84.52 1.41v1.73zm4.32 2.39c-.23 0-.43.08-.6.24s-.25.35-.25.58a.78.78 0 0 0 .25.59.83.83 0 0 0 .6.24.86.86 0 0 0 .62-.25c.17-.17.25-.36.25-.58s-.08-.41-.25-.58a.86.86 0 0 0-.62-.24"/></g><path d="M151.66 34.72h1.43v6.82h-1.43z" fill="#FFFFFF"/><g clip-path="url(#svg2_C)" fill="#FFFFFF"><path d="M152.6 33.46a.52.52 0 0 1-.38-.16.49.49 0 0 1-.16-.38.43.43 0 0 1 .16-.35c.1-.1.23-.14.38-.14.2 0 .35.07.46.21l.44-.41c-.27-.28-.58-.42-.93-.42-.31 0-.58.1-.8.3a.96.96 0 0 0-.33.73.93.93 0 0 0 .24.62h-.57v.63h2.51v-.63h-1.03z"/><path d="M24.48,26.09l-5.71,5.71c-.81.81-1.88,1.25-3.02,1.25s-2.22-.44-3.03-1.25l-.06-.06,5.65-5.65-5.65-5.65.06-.06c1.67-1.67,4.38-1.67,6.05,0l5.71,5.71ZM33.88,5.61v45.22h.08c2.36,0,4.28-1.92,4.28-4.28V1.33h-.08c-2.36,0-4.28,1.92-4.28,4.28M20.22,8.19l-.08.03,7.22,17.86-7.22,17.85.08.03c.52.21,1.06.31,1.6.31,1.69,0,3.3-1.01,3.97-2.68l6.27-15.52-6.27-15.53c-.88-2.19-3.38-3.25-5.57-2.36M59.47,20.43l-.06-.06c-1.67-1.67-4.38-1.67-6.05,0l-5.71,5.71,5.71,5.71c.83.83,1.93,1.25,3.03,1.25s2.19-.42,3.03-1.25l.06-.06-5.65-5.65,5.65-5.65ZM51.99,8.22l-.08-.03c-2.19-.88-4.69.18-5.57,2.36l-6.27,15.52,6.27,15.53c.43,1.06,1.24,1.89,2.3,2.34.54.23,1.1.34,1.67.34s1.09-.1,1.6-.31l.08-.03-7.22-17.86,7.22-17.86Z" fill="#FFFFFF"/><path d="M91.26 9.41a1.61 1.61 0 0 0-1.61 1.61V27.5a1.61 1.61 0 0 0 1.61 1.61h6.86c5.43 0 9.85-4.42 9.85-9.85s-4.42-9.85-9.85-9.85h-6.86zm6.86 16.07h-4.84V13.04h4.84a6.23 6.23 0 0 1 6.22 6.22 6.23 6.23 0 0 1-6.22 6.22m-14.27 3.63h4.02l-8.14-18.66c-.28-.64-.92-1.05-1.62-1.05h-1.26a1.76 1.76 0 0 0-1.62 1.06l-8.14 18.65h4.02l1.71-3.96h9.31v.03l1.71 3.93zm-3.2-7.39h-6.33l3.17-7.31 3.17 7.31zm69.43 7.4h3.63V9.42h-3.9l-6.87 11.06-6.86-11.06h-3.91v19.7h3.63V15.41l5.64 8.97c.3.49.86.79 1.5.79s1.21-.31 1.5-.79l5.64-8.97v13.71zm-24.37-7.17v6.81l.17-.05c1.97-.55 3.29-2.06 3.29-3.76v-6.46h-6.66c-1.83 0-3.34 1.49-3.36 3.32v.14h6.56zm-5.33-12.88a10.2 10.2 0 0 0-10.19 10.18c0 5.9 4.4 10.19 10.47 10.19 1.3 0 2.38-.1 3.37-.32v-3.73c-.83.31-1.88.45-3.37.45-4 0-6.79-2.71-6.79-6.59a6.52 6.52 0 0 1 6.51-6.51 6.48 6.48 0 0 1 4.88 2.22l.09.1 2.69-2.51-.09-.1c-1.93-2.16-4.7-3.39-7.58-3.39"/></g><path d="M166.55 44.54V9.4" fill="none" stroke="#FFFFFF" stroke-width=".25"/><g clip-path="url(#svg2_D)" fill="#FFFFFF"><path d="M193.68 23.66c0-5.3 1.61-8.17 4.91-8.17 2.65 0 4.21 1.85 4.72 5.33 1.86-1.27 3.63-2.71 5.26-4.35-1.7-4.4-5.14-7.1-9.98-7.1-7.11 0-11.19 5.81-11.19 14.3 0 1.42.12 2.76.34 4.02 1.99-.53 4.02-1.17 6.04-1.94-.06-.64-.1-1.33-.1-2.08M184.4 9.36h-.55a5.73 5.73 0 0 0-5.73 5.73V29.5l6.28-1.07V9.36z"/></g><g clip-path="url(#svg2_E)"><path transform="matrix(.982935 -.183951 .183951 .982935 -1.61 37.03)" d="M185.95 14.62h25.62V39.8h-25.62z" fill="url(#svg2_F)"/></g><g clip-path="url(#svg2_G)"><path transform="matrix(.982935 -.183951 .183951 .982935 -3.01 33.91)" d="M177.3 27.94h7.93v10.51h-7.93z" fill="url(#svg2_H)"/></g><g clip-path="url(#svg2_I)" fill="#FFFFFF"><path d="M193.28 41.89c0-.32.31-.47.62-.47s.62.13.75.45l.51-.29c-.22-.46-.69-.73-1.26-.73-.71 0-1.24.43-1.24 1.05 0 1.27 1.96.84 1.96 1.59 0 .34-.32.48-.69.48-.44 0-.76-.21-.87-.55l-.53.3c.2.48.69.82 1.4.82.75 0 1.31-.4 1.31-1.05 0-1.29-1.96-.85-1.96-1.6m-2.08-.36v-.59h-.61v3.51h.61v-1.86c0-.83.57-1.09 1.09-1.07v-.64c-.44 0-.87.16-1.09.65m-3.4 2.42c-.7 0-1.24-.54-1.24-1.26s.54-1.26 1.24-1.26 1.25.54 1.25 1.26-.54 1.26-1.25 1.26m1.25-3.01v.6c-.28-.43-.73-.69-1.33-.69-.98 0-1.78.81-1.78 1.85s.8 1.85 1.78 1.85c.6 0 1.05-.27 1.33-.69v.6h.61v-3.51h-.61zm-5.34.49c.53 0 1.02.32 1.13 1.02h-2.34a1.16 1.16 0 0 1 1.21-1.02m-1.22 1.55h2.94l.02-.27c0-.98-.69-1.85-1.75-1.85s-1.84.81-1.84 1.85.75 1.85 1.88 1.85c.7 0 1.23-.32 1.54-.79l-.52-.29c-.18.29-.53.51-1.01.51-.65 0-1.15-.36-1.27-.99m-.23-3.46h-.73l-1.33 2.3-1.33-2.3h-.73l1.73 2.92v1.99h.65v-1.99l1.74-2.93z"/></g></svg><svg slot ="logoAlternative" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220.17 52.84" xmlns:v="https://vecta.io/nano"><defs><clipPath id="svg1_A"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg1_B"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg1_C"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg1_D"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><clipPath id="svg1_E"><path d="M203.31,20.82c.13.85.19,1.8.19,2.84,0,5.3-1.61,8.17-4.91,8.17-2.84,0-4.43-2.12-4.81-6.09-2.02.77-4.05,1.41-6.04,1.94,1.11,6.25,4.93,10.28,10.85,10.28,7.11,0,11.19-5.81,11.19-14.3,0-2.7-.42-5.13-1.21-7.19-1.63,1.64-3.4,3.08-5.26,4.35" fill="none"/></clipPath><linearGradient id="svg1_F" x1="-19.14" y1="831.14" x2="-18.8" y2="831.14" gradientTransform="translate(-32009.62 763.78) rotate(90) scale(38.75 -38.75)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#002ed9"/><stop offset="1" stop-color="#008aff"/></linearGradient><clipPath id="svg1_G"><path d="M178.12 29.5v8.45h.67a5.61 5.61 0 0 0 5.61-5.61v-3.91l-6.28 1.07" fill="none"/></clipPath><linearGradient id="svg1_H" y1="830.68" y2="830.68" gradientTransform="translate(-32009.29 767.03) rotate(90) scale(38.75 -38.75)" href="#svg1_F"/><clipPath id="svg1_I"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"/></clipPath><path id="svg1_J" d="M70.78 42.68c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23"/><path id="svg1_K" d="M73.24 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23"/></defs><g style="fill:initial;" clip-path="url(#svg1_A)"><use href="#svg1_J"/><use href="#svg1_K"/><path d="M86 40.31l.04.13c.11.35.31.62.59.81s.64.29 1.06.29h.49c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-.49c-.28 0-.51-.09-.67-.27-.16-.17-.24-.41-.24-.7v-.85c0-.88-.33-1.65-.97-2.28s-1.43-.94-2.33-.94-1.69.32-2.33.94a3.09 3.09 0 0 0-.97 2.28 1.96 1.96 0 0 0 .86 1.68l.18.13h-2.06c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41V39c0 .77.21 1.4.63 1.85.41.45 1 .68 1.75.68h4.32c1 0 1.81-.38 2.43-1.13l.09-.11zm-2.51-.14a1.78 1.78 0 0 1-1.32-.55c-.36-.35-.55-.79-.55-1.29a1.73 1.73 0 0 1 .55-1.29 1.81 1.81 0 0 1 1.32-.54 1.81 1.81 0 0 1 1.32.54 1.77 1.77 0 0 1 .55 1.29 1.73 1.73 0 0 1-.55 1.29 1.81 1.81 0 0 1-1.32.54m8.78-7.73v6.51c0 .77.23 1.41.67 1.88.44.48 1.04.72 1.77.72h9.89c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-3.18l.12-.12.73-.79.58-.73c.21-.29.37-.56.47-.82a2.13 2.13 0 0 0 .14-.77c0-.62-.22-1.06-.69-1.35-.47-.3-1.1-.45-1.88-.45h-5.09v2.21l1.94 2.82h-3.03c-.67 0-1-.41-1-1.23v-6.51h-1.43zm7.56 7.74h-.42l-1.91-2.83v-.83h2.81c.51 0 .88.06 1.13.19.26.13.39.38.39.75 0 .08 0 .17-.03.25-.02.09-.06.18-.11.27l-.14.26a2.73 2.73 0 0 1-.22.3l-.24.28-.28.32-.29.32-.33.35-.34.35-.02.02z"/></g><path style="fill:initial;" d="M108.61 32.43h1.43v9.11h-1.43z"/><g style="fill:initial;" clip-path="url(#svg1_B)"><path d="M119.64 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23m-2.45 0c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23m10.53-.07c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59.37.24.6.24.43-.08.61-.24c.17-.16.25-.35.25-.59s-.08-.43-.25-.59-.37-.24-.6-.24m.02-1.96l.06.09c.37.54.93.81 1.67.81h7.16c.77 0 1.37-.22 1.8-.65s.66-1.05.67-1.84v-.58c0-.97-.3-1.78-.89-2.4s-1.36-.93-2.3-.93c-1.12 0-2.26.58-3.37 1.72l-.13.13v-4.56H131v7.74h-1.53c-.68 0-1.02-.41-1.02-1.23v-3.81h-1.43v3.81c0 .81-.34 1.23-1 1.23h-.44c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41v2.53c0 .77.21 1.4.63 1.85s1.01.68 1.75.68h.44c.72 0 1.28-.27 1.67-.81l.06-.08zm8.89-.48h-4.21v-1.6l.02-.02c1.22-1.36 2.34-2.04 3.31-2.04.6 0 1.08.18 1.43.54s.52.84.52 1.42v.49c0 .81-.36 1.21-1.06 1.21m-1.21-7.76c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59a.83.83 0 0 0 .6.24c.24 0 .43-.08.61-.25.17-.16.25-.35.25-.58s-.08-.42-.25-.58c-.17-.17-.37-.25-.6-.25m5.08 10.92c.3.37.7.67 1.18.89.51.23 1.05.34 1.6.34.93 0 1.69-.28 2.28-.84.58-.56.92-1.27 1-2.11v-.07h1.21c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-2.51h-1.43v2.51c0 .81-.34 1.23-1 1.23h-1.19v-1.59c0-1.02-.31-1.86-.92-2.5s-1.42-.97-2.39-.97a3.26 3.26 0 0 0-2.34.94c-.65.62-.98 1.38-.98 2.27s.33 1.69.98 2.31c.65.61 1.48.92 2.47.92h1.76v.08c-.06.42-.25.79-.59 1.1s-.77.47-1.29.47a2.48 2.48 0 0 1-1.03-.22 2.02 2.02 0 0 1-.76-.54l-.99.9zm4.64-3.16h-1.75c-.58 0-1.07-.17-1.44-.52-.38-.34-.58-.79-.58-1.34 0-.51.18-.94.55-1.3a1.85 1.85 0 0 1 1.33-.53c.56 0 1.02.19 1.36.55.34.37.52.84.52 1.41v1.73zm4.32 2.39c-.23 0-.43.08-.6.24s-.25.35-.25.58a.78.78 0 0 0 .25.59.83.83 0 0 0 .6.24.86.86 0 0 0 .62-.25c.17-.17.25-.36.25-.58s-.08-.41-.25-.58a.86.86 0 0 0-.62-.24"/></g><path style="fill:initial;" d="M151.66 34.72h1.43v6.82h-1.43z"/><g style="fill:initial;" clip-path="url(#svg1_C)"><path d="M152.6 33.46a.52.52 0 0 1-.38-.16.49.49 0 0 1-.16-.38.43.43 0 0 1 .16-.35c.1-.1.23-.14.38-.14.2 0 .35.07.46.21l.44-.41c-.27-.28-.58-.42-.93-.42-.31 0-.58.1-.8.3a.96.96 0 0 0-.33.73.93.93 0 0 0 .24.62h-.57v.63h2.51v-.63h-1.03z"/><path d="M24.48,26.09l-5.71,5.71c-.81.81-1.88,1.25-3.02,1.25s-2.22-.44-3.03-1.25l-.06-.06,5.65-5.65-5.65-5.65.06-.06c1.67-1.67,4.38-1.67,6.05,0l5.71,5.71ZM33.88,5.61v45.22h.08c2.36,0,4.28-1.92,4.28-4.28V1.33h-.08c-2.36,0-4.28,1.92-4.28,4.28M20.22,8.19l-.08.03,7.22,17.86-7.22,17.85.08.03c.52.21,1.06.31,1.6.31,1.69,0,3.3-1.01,3.97-2.68l6.27-15.52-6.27-15.53c-.88-2.19-3.38-3.25-5.57-2.36M59.47,20.43l-.06-.06c-1.67-1.67-4.38-1.67-6.05,0l-5.71,5.71,5.71,5.71c.83.83,1.93,1.25,3.03,1.25s2.19-.42,3.03-1.25l.06-.06-5.65-5.65,5.65-5.65ZM51.99,8.22l-.08-.03c-2.19-.88-4.69.18-5.57,2.36l-6.27,15.52,6.27,15.53c.43,1.06,1.24,1.89,2.3,2.34.54.23,1.1.34,1.67.34s1.09-.1,1.6-.31l.08-.03-7.22-17.86,7.22-17.86Z" fill="#0087ff"/><path d="M91.26 9.41a1.61 1.61 0 0 0-1.61 1.61V27.5a1.61 1.61 0 0 0 1.61 1.61h6.86c5.43 0 9.85-4.42 9.85-9.85s-4.42-9.85-9.85-9.85h-6.86zm6.86 16.07h-4.84V13.04h4.84a6.23 6.23 0 0 1 6.22 6.22 6.23 6.23 0 0 1-6.22 6.22m-14.27 3.63h4.02l-8.14-18.66c-.28-.64-.92-1.05-1.62-1.05h-1.26a1.76 1.76 0 0 0-1.62 1.06l-8.14 18.65h4.02l1.71-3.96h9.31v.03l1.71 3.93zm-3.2-7.39h-6.33l3.17-7.31 3.17 7.31zm69.43 7.4h3.63V9.42h-3.9l-6.87 11.06-6.86-11.06h-3.91v19.7h3.63V15.41l5.64 8.97c.3.49.86.79 1.5.79s1.21-.31 1.5-.79l5.64-8.97v13.71zm-24.37-7.17v6.81l.17-.05c1.97-.55 3.29-2.06 3.29-3.76v-6.46h-6.66c-1.83 0-3.34 1.49-3.36 3.32v.14h6.56zm-5.33-12.88a10.2 10.2 0 0 0-10.19 10.18c0 5.9 4.4 10.19 10.47 10.19 1.3 0 2.38-.1 3.37-.32v-3.73c-.83.31-1.88.45-3.37.45-4 0-6.79-2.71-6.79-6.59a6.52 6.52 0 0 1 6.51-6.51 6.48 6.48 0 0 1 4.88 2.22l.09.1 2.69-2.51-.09-.1c-1.93-2.16-4.7-3.39-7.58-3.39"/></g><path d="M166.55 44.54V9.4" fill="none" stroke="#231f20" stroke-width=".25"/><g clip-path="url(#svg1_D)" fill="#0085ff"><path d="M193.68 23.66c0-5.3 1.61-8.17 4.91-8.17 2.65 0 4.21 1.85 4.72 5.33 1.86-1.27 3.63-2.71 5.26-4.35-1.7-4.4-5.14-7.1-9.98-7.1-7.11 0-11.19 5.81-11.19 14.3 0 1.42.12 2.76.34 4.02 1.99-.53 4.02-1.17 6.04-1.94-.06-.64-.1-1.33-.1-2.08M184.4 9.36h-.55a5.73 5.73 0 0 0-5.73 5.73V29.5l6.28-1.07V9.36z"/></g><g clip-path="url(#svg1_E)"><path transform="matrix(.982935 -.183951 .183951 .982935 -1.61 37.03)" d="M185.95 14.62h25.62V39.8h-25.62z" fill="url(#svg1_F)"/></g><g clip-path="url(#svg1_G)"><path transform="matrix(.982935 -.183951 .183951 .982935 -3.01 33.91)" d="M177.3 27.94h7.93v10.51h-7.93z" fill="url(#svg1_H)"/></g><g clip-path="url(#svg1_I)"><path d="M193.28 41.89c0-.32.31-.47.62-.47s.62.13.75.45l.51-.29c-.22-.46-.69-.73-1.26-.73-.71 0-1.24.43-1.24 1.05 0 1.27 1.96.84 1.96 1.59 0 .34-.32.48-.69.48-.44 0-.76-.21-.87-.55l-.53.3c.2.48.69.82 1.4.82.75 0 1.31-.4 1.31-1.05 0-1.29-1.96-.85-1.96-1.6m-2.08-.36v-.59h-.61v3.51h.61v-1.86c0-.83.57-1.09 1.09-1.07v-.64c-.44 0-.87.16-1.09.65m-3.4 2.42c-.7 0-1.24-.54-1.24-1.26s.54-1.26 1.24-1.26 1.25.54 1.25 1.26-.54 1.26-1.25 1.26m1.25-3.01v.6c-.28-.43-.73-.69-1.33-.69-.98 0-1.78.81-1.78 1.85s.8 1.85 1.78 1.85c.6 0 1.05-.27 1.33-.69v.6h.61v-3.51h-.61zm-5.34.49c.53 0 1.02.32 1.13 1.02h-2.34a1.16 1.16 0 0 1 1.21-1.02m-1.22 1.55h2.94l.02-.27c0-.98-.69-1.85-1.75-1.85s-1.84.81-1.84 1.85.75 1.85 1.88 1.85c.7 0 1.23-.32 1.54-.79l-.52-.29c-.18.29-.53.51-1.01.51-.65 0-1.15-.36-1.27-.99m-.23-3.46h-.73l-1.33 2.3-1.33-2.3h-.73l1.73 2.92v1.99h.65v-1.99l1.74-2.93z" fill="#231f20"/></g></svg>                            <adgm-navigation-item title="About" href="/about/the-abu-dhabi-lifestyle" key="About">
+                                                       
+                                            <div class="mobile-expansion-panel">
+                                                           <a href="/about"
+                                                                >
+                                                                    Overview
+                                                           </a>
+                                                           <a href="/about/jurisdiction"
+                                                                >
+                                                                    Jurisdiction
+                                                           </a>
+                                                           <a href="/about/authorities"
+                                                                >
+                                                                    Authorities
+                                                           </a>
+                                                           <a href="/initiatives"
+                                                                >
+                                                                    Initiatives
+                                                           </a>
+                                                           <a href="https://academy.adgm.com"
+                                                                target="_blank">
+                                                                    ADGM Academy
+                                                           </a>
+                                                           <a href="https://disputeresolution.adgm.com"
+                                                                target="_blank">
+                                                                    Dispute Resolution
+                                                           </a>
+                                                           <a href="/careers"
+                                                                >
+                                                                    Careers
+                                                           </a>
+                                            </div>
+                             </adgm-navigation-item>
+                                            <adgm-navigation-item-content slot="About">
+                                                                        <div>
+                                                                            <adgm-text variant="text2XL" weight="300">
+                                                A platform that offers limitless opportunities and paves the way for a brighter future
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-text variant="textS" weight="300">
+                                                
+<p>Abu Dhabi boasts first-class infrastructure and unparalleled global connectivity, making it a premier international destination. Its exceptional qualities make it an ideal location to live, work, and conduct business.</p>
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-link-button href="/about/the-abu-dhabi-lifestyle" icon="arrowM" size="m" variant="secondary" anim>
+                                                Read about Abu Dhabi&#x2019;s life style
+                                                                            </adgm-link-button>
+                                                                        </div>
+                                                                 <div>
+                                                                          <adgm-text variant="text2XL" weight="300">
+                                            Latest Initiatives
+                                                                          </adgm-text>
+                                                                          <adgm-spacer height="rBodyM"></adgm-spacer>
+
+                                                                                    <adgm-flex direction="row" gap="s16">
+                                                                                                <adgm-highlight-card href="/media/announcements/adfw-2025-delivers-its-most-successful-edition-showcasing-abu-dhabis-next-decade-of-growth-with-over-35000-attendees"
+                                                         style="display : block;" chip='ADGM 'date='19 Dec 2025'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" src='https://assets.adgm.com/images/assets/adfw_wrapup_871x491.jpg/Zz1mZThkZmFmNGRjYWYxMWYwYTQ3ZmI2ZDIyMTRlYjAxNg==' blur-hash="" alt="ADFW 2025 Delivers its Most Successful Edition, Showcasing Abu Dhabi&#x2019;s Next Decade of Growth with Over 35,000 Attendees"></adgm-image>
+ADFW 2025 Delivers its Most Successful Edition, Showcasing Abu Dhabi&#x2019;s Next Decade of Growth with Over 35,000 Attendees                                                                                                </adgm-highlight-card>
+                                                                                                <adgm-highlight-card href="/media/announcements/adfw-2025-opens-with-a-spotlight-on-abu-dhabis-global-ambition-and-major-humanitarian-pledge"
+                                                         style="display : block;" chip='ADGM 'date='08 Dec 2025'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" src='https://assets.adgm.com/images/assets/he-jasim-adfw-871-491.jpg/Zz1lMmFlNzVkMGQ0YzAxMWYwYjQ3OGRhNjVjNGE0MjMwZg==' blur-hash="" alt="Under the Patronage of H.H. Sheikh Khaled bin Mohamed bin Zayed Al Nahyan ADFW 2025 Opens with a Spotlight on Abu Dhabi&#x2019;s Global Ambition and Major Humanitarian Pledge"></adgm-image>
+Under the Patronage of H.H. Sheikh Khaled bin Mohamed bin Zayed Al Nahyan ADFW 2025 Opens with a Spotlight on Abu Dhabi&#x2019;s Global Ambition and Major Humanitarian Pledge                                                                                                </adgm-highlight-card>
+                                                                                    </adgm-flex>
+
+
+                                                                 </div>
+                                          </adgm-navigation-item-content>
+                            <adgm-navigation-item title="Business" href="/setting-up" key="Business">
+                                                       
+                                            <div class="mobile-expansion-panel">
+                                                           <a href="/business"
+                                                                >
+                                                                    Overview
+                                                           </a>
+                                                           <a href="/business-areas"
+                                                                >
+                                                                    Business Areas
+                                                           </a>
+                                                           <a href="/setting-up"
+                                                                >
+                                                                    Setting up
+                                                           </a>
+                                                           <a href="/operating-in-adgm"
+                                                                >
+                                                                    Operating in
+                                                           </a>
+                                                           <a href="/public-registers"
+                                                                >
+                                                                    Public Registers
+                                                           </a>
+                                                           <a href="/legal-framework"
+                                                                >
+                                                                    Legal Framework
+                                                           </a>
+                                            </div>
+                             </adgm-navigation-item>
+                                            <adgm-navigation-item-content slot="Business">
+                                                                        <div>
+                                                                            <adgm-text variant="text2XL" weight="300">
+                                                Providing an environment that empowers the future
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-text variant="textS" weight="300">
+                                                
+<p>A financial centre that provides transparency, efficiency, and integrity, through its progressive frameworks, future focused infrastructure, all within a familiar independent legal jurisdiction &ndash; ADGM is the perfect platform for success.</p>
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-link-button href="/setting-up" target="_self" icon="arrowM" size="m" variant="secondary" anim>
+                                                Find out how to setup in ADGM
+                                                                            </adgm-link-button>
+                                                                        </div>
+                                                                 <div>
+                                                                          <adgm-text variant="text2XL" weight="300">
+                                            Latest News
+                                                                          </adgm-text>
+                                                                          <adgm-spacer height="rBodyM"></adgm-spacer>
+
+                                                                                    <adgm-flex direction="row" gap="s16">
+                                                                                                <adgm-highlight-card href="/media/announcements/adgm-and-hashed-publish-policy-report-following-web3-leaders-roundtable-at-adfw-2025"
+                                                         style="display : block;" chip='ADGM 'date='28 Apr 2026'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" fit="cover" src='https://assets.adgm.com/images/assets/ADFW-2025-Web3-Leaders-Roundtable-871x491.jpg/Zz0yZDZjOGMxYTNlMjAxMWYxYjAxMzRlMWRmNTAwODU3Nw==' blur-hash="" alt="ADGM and Hashed Publish Policy Report Following Web3 Leaders Roundtable at ADFW 2025"></adgm-image>
+ADGM and Hashed Publish Policy Report Following Web3 Leaders Roundtable at ADFW 2025                                                                                                </adgm-highlight-card>
+                                                                                                <adgm-highlight-card href="/media/announcements/abu-dhabi-strengthens-its-strategic-financial-engagement-with-italy"
+                                                         style="display : block;" chip='ADGM 'date='23 Apr 2026'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" fit="cover" src='https://assets.adgm.com/images/assets/adgm_milan_871x491.jpg/Zz1lZDkwOTI5YzNmMDIxMWYxYjZiODFhMTQ1Y2M3NjNkZA==' blur-hash="" alt="Abu Dhabi Strengthens its Strategic Financial Engagement with Italy"></adgm-image>
+Abu Dhabi Strengthens its Strategic Financial Engagement with Italy                                                                                                </adgm-highlight-card>
+                                                                                    </adgm-flex>
+
+
+                                                                 </div>
+                                          </adgm-navigation-item-content>
+                            <adgm-navigation-item title="eServices" href="https://accessrp.adgm.com" key="eServices">
+                                                       
+                                            <div class="mobile-expansion-panel">
+                                                           <a href="/operating-in-adgm/e-services/accessrp"
+                                                                >
+                                                                    AccessRP
+                                                           </a>
+                                                           <a href="/operating-in-adgm/e-services/accessadgm-government-services-portal"
+                                                                target="_blank">
+                                                                    ACCESSADGM
+                                                           </a>
+                                                           <a href="/operating-in-adgm/e-services/online-registry-solution"
+                                                                target="_blank">
+                                                                    Online Registry Solution
+                                                           </a>
+                                                           <a href="/operating-in-adgm/e-services/electronic-prudential-reporting"
+                                                                >
+                                                                    Electronic Prudential Reporting
+                                                           </a>
+                                                           <a href="/operating-in-adgm/e-services/fsra-connect"
+                                                                target="_blank">
+                                                                    FSRA Connect
+                                                           </a>
+                                                           <a href="/adgm-courts/digital-approach"
+                                                                >
+                                                                    ADGM eCourts Platform
+                                                           </a>
+                                            </div>
+                             </adgm-navigation-item>
+                                            <adgm-navigation-item-content slot="eServices">
+                                                                        <div>
+                                                                            <adgm-text variant="text2XL" weight="300">
+                                                All Your Real Property Needs in One Platform on AccessRP
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-text variant="textS" weight="300">
+                                                
+<p>AccessRP is a next-generation digital platform transforming the real estate experience in ADGM. Designed to streamline interactions across the ecosystem, AccessRP brings together landlords, developers, and tenants in one seamless environment, providing real-time access to services, data, and insights.</p>
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-link-button href="https://accessrp.adgm.com" target="_blank" icon="arrowM" size="m" variant="secondary" anim>
+                                                Explore AccessRP
+                                                                            </adgm-link-button>
+                                                                        </div>
+                                                                 <div>
+                                                                          <adgm-text variant="text2XL" weight="300">
+                                            Latest News
+                                                                          </adgm-text>
+                                                                          <adgm-spacer height="rBodyM"></adgm-spacer>
+
+                                                                                    <adgm-flex direction="row" gap="s16">
+                                                                                                <adgm-highlight-card href="/media/announcements/adgm-and-hashed-publish-policy-report-following-web3-leaders-roundtable-at-adfw-2025"
+                                                         style="display : block;" chip='ADGM 'date='28 Apr 2026'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" fit="cover" src='https://assets.adgm.com/images/assets/ADFW-2025-Web3-Leaders-Roundtable-871x491.jpg/Zz0yZDZjOGMxYTNlMjAxMWYxYjAxMzRlMWRmNTAwODU3Nw==' blur-hash="" alt="ADGM and Hashed Publish Policy Report Following Web3 Leaders Roundtable at ADFW 2025"></adgm-image>
+ADGM and Hashed Publish Policy Report Following Web3 Leaders Roundtable at ADFW 2025                                                                                                </adgm-highlight-card>
+                                                                                                <adgm-highlight-card href="/media/announcements/abu-dhabi-strengthens-its-strategic-financial-engagement-with-italy"
+                                                         style="display : block;" chip='ADGM 'date='23 Apr 2026'
+                                                                                                                                                                                     variant='primary'>
+                                                                                                                                                                                                      <adgm-image slot="image" fit="cover" src='https://assets.adgm.com/images/assets/adgm_milan_871x491.jpg/Zz1lZDkwOTI5YzNmMDIxMWYxYjZiODFhMTQ1Y2M3NjNkZA==' blur-hash="" alt="Abu Dhabi Strengthens its Strategic Financial Engagement with Italy"></adgm-image>
+Abu Dhabi Strengthens its Strategic Financial Engagement with Italy                                                                                                </adgm-highlight-card>
+                                                                                    </adgm-flex>
+
+
+                                                                 </div>
+                                          </adgm-navigation-item-content>
+                            <adgm-navigation-item title="Resources" href="/media" key="Resources">
+                                                       
+                                            <div class="mobile-expansion-panel">
+                                                           <a href="/media/announcements"
+                                                                >
+                                                                    News
+                                                           </a>
+                                                           <a href="/events"
+                                                                >
+                                                                    Events
+                                                           </a>
+                                                           <a href="/spotlight"
+                                                                >
+                                                                    Spotlight
+                                                           </a>
+                                                           <a href="/think-by-adgm"
+                                                                >
+                                                                    Podcasts
+                                                           </a>
+                                            </div>
+                             </adgm-navigation-item>
+                                            <adgm-navigation-item-content slot="Resources">
+                                                                        <div>
+                                                                            <adgm-text variant="text2XL" weight="300">
+                                                Stay up-to-date with our wide range of available resources
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-text variant="textS" weight="300">
+                                                
+<p>Our community of business professionals, entrepreneurs, and investors can depend on ADGM to provide timely news and reliable insights.</p>
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-link-button href="/media" target="_self" icon="arrowM" size="m" variant="secondary" anim>
+                                                Read our latest news articles
+                                                                            </adgm-link-button>
+                                                                        </div>
+                                                                 <div>
+                                                                          <adgm-text variant="text2XL" weight="300">
+                                            Upcoming Events
+                                                                          </adgm-text>
+                                                                          <adgm-spacer height="rBodyM"></adgm-spacer>
+
+
+                                                                                      <adgm-text variant="textL" weight="300" color="Gold">
+                                                    No Upcoming Event
+                                                                                      </adgm-text>
+
+                                                                 </div>
+                                          </adgm-navigation-item-content>
+                            <adgm-navigation-item title="Contact &amp; Support" href="/contact-us" key="Contact &amp; Support">
+                                                       
+                                            <div class="mobile-expansion-panel">
+                                                           <a href="/contact-us"
+                                                                >
+                                                                    Support
+                                                           </a>
+                                                           <a href="/contact-us/make-an-enquiry"
+                                                                >
+                                                                    Make an enquiry
+                                                           </a>
+                                                           <a href="/contact-us/speaking-up"
+                                                                >
+                                                                    Speaking Up
+                                                           </a>
+                                                           <a href="/faqs"
+                                                                >
+                                                                    FAQs
+                                                           </a>
+                                            </div>
+                             </adgm-navigation-item>
+                                            <adgm-navigation-item-content slot="Contact &amp; Support">
+                                                                        <div>
+                                                                            <adgm-text variant="text2XL" weight="300">
+                                                We are here to help
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-text variant="textS" weight="300">
+                                                
+<p>At ADGM, we offer various support options, including contact details, FAQs, enquiry forms, and a whistleblowing form.</p>
+                                                                            </adgm-text>
+                                                                            <adgm-spacer height="rBodyM"></adgm-spacer>
+                                                                            <adgm-link-button href="/contact-us" icon="arrowM" size="m" variant="secondary" anim>
+                                                View available support options
+                                                                            </adgm-link-button>
+                                                                        </div>
+                                                                 <div>
+                                                                          <adgm-text variant="text2XL" weight="300">
+                                            Some of our FAQ topics
+                                                                          </adgm-text>
+                                                                          <adgm-spacer height="rBodyM"></adgm-spacer>
+
+                                                                                    <adgm-flex direction="row" gap="s16">
+                                                                                                <adgm-highlight-card href="/faqs/setting-up"
+                                                        chip='Setting up 'date=''
+                                                                                                                                                                                     variant='secondary'>
+                                                    <adgm-ul slot="content">
+                                                                <li>Getting started</li>
+                                                                <li>Foundations regime</li>
+                                                                <li>Resolution for incorporation</li>
+                                                    </adgm-ul>
+                                                                                                </adgm-highlight-card>
+                                                                                                <adgm-highlight-card href="/faqs/operating-in-adgm"
+                                                        chip='Operating in 'date=''
+                                                                                                                                                                                     variant='secondary'>
+                                                    <adgm-ul slot="content">
+                                                                <li>Existing auditors</li>
+                                                                <li>New auditors</li>
+                                                                <li>ACCESSADGM</li>
+                                                    </adgm-ul>
+                                                                                                </adgm-highlight-card>
+                                                                                    </adgm-flex>
+
+
+                                                                 </div>
+                                          </adgm-navigation-item-content>
+
+                        </adgm-navigation>
+
+<script>
+    function eventCardAlignment() {
+        const eventCard = document.querySelectorAll('adgm-event-card');
+
+        if (eventCard) {
+            eventCard.forEach(item => {
+                item.shadowRoot.querySelector('.date').setAttribute("style", "width: 90px !important;");
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        eventCardAlignment();
+    });
+
+</script>
+            
+
+
+
+
+	<span>
+		<span>
+        <adgm-hero size='s' color='Sky100'>
+                    <div slot="content">
+                            <adgm-text variant="tagLine" >
+                                Annual Filings
+                            </adgm-text>
+                            <adgm-spacer height="rBodyXS"></adgm-spacer>
+                            <adgm-text variant='heroTitleM' >
+                                <h1>Annual Accounts</h1>
+                            </adgm-text>
+                    </div>
+        </adgm-hero>
+</span>
+	
+		<span>
+
+
+
+<adgm-container>
+    <adgm-breadcrumbs>
+                        <adgm-breadcrumb href='/operating-in-adgm'>Operating in ADGM</adgm-breadcrumb>
+                <adgm-breadcrumb href='/operating-in-adgm/obligations-of-adgm-registered-entities'>Obligations of ADGM Registered Entities</adgm-breadcrumb>
+                <adgm-breadcrumb href='/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings'>Annual Filings</adgm-breadcrumb>
+                <adgm-breadcrumb>Annual Accounts</adgm-breadcrumb>
+
+    </adgm-breadcrumbs>
+</adgm-container>
+
+<adgm-spacer height="s80"></adgm-spacer>
+
+</span>
+	
+		<span>
+<adgm-section variant='primary'>
+        <adgm-container>
+            
+<div>
+        <adgm-presentation-grid variant="eightFour">
+            <div>
+                        <adgm-text  variant="pageIntroTitle"                        >When and how to file annual accounts with ADGM</adgm-text>
+                        <adgm-spacer height="rBodyXL"></adgm-spacer>
+                        <adgm-text variant="textL" weight="400" indent="">
+                            
+<p>Generally, every ADGM Company and Limited Liability Partnership (LLP) must file annual accounts with the ADGM Registration Authority. Annual accounts are prepared after the end of a financial year and show how the company or LLP has performed over that financial year.</p>
+                        </adgm-text>
+            </div>
+        </adgm-presentation-grid>
+</div><div>
+    <adgm-spacer height='rBodyL'></adgm-spacer>
+</div><div>
+    <adgm-presentation-grid variant='eightFour'>
+        
+<div>
+    <adgm-message variant="info">
+            <adgm-text weight="600" variant="textS">
+                Note
+                    </adgm-text>
+            <adgm-spacer height="s4"></adgm-spacer>
+            <adgm-text weight="400"
+            variant="textS">
+                
+<p><span>Whilst branches and Foundations must maintain accounting records, they are not required to file them annually with the Registrar.</span></p>
+                    </adgm-text>
+    </adgm-message>
+</div>
+    </adgm-presentation-grid>
+</div><div>
+    <adgm-spacer height='rSectionM'></adgm-spacer>
+</div>
+        </adgm-container>
+
+</adgm-section></span>
+	
+		<span>
+<adgm-section variant='secondary'>
+        <adgm-container>
+            <adgm-spacer height="rSectionM"></adgm-spacer>
+            
+<div>
+    <adgm-text
+     variant='headingTwo'    > Frequently Asked Questions
+     </adgm-text>
+</div><div>
+    <adgm-spacer height='rBodyXL'></adgm-spacer>
+</div><div>
+    <adgm-expansion-panel         type='plus' variant='primary'>
+                    <adgm-text slot="title" variant="textL" weight="400">
+                        <h3>What type of accounts do you need to file?</h3>
+                    </adgm-text>
+        
+<div>        <adgm-body ><p>What type of accounts you need to file will depend on the type and size of the company or LLP, and the activities conducted. Usually copies of the following must be filed:</p>
+<ul class="pl20">
+<li>Audited annual accounts audited by an ADGM Recognised Auditor (to find a Recognised Auditor, click<span>&nbsp;</span><a href="/operating-in-adgm/auditors/find-an-auditor">here</a>);</li>
+<li>Auditors Report;</li>
+<li>Director&rsquo;s Report; and</li>
+<li>Board resolution approving the accounts.</li>
+</ul>
+<p><br /><strong>Small companies</strong></p>
+<p>However, if your firm qualifies as a &ldquo;small&rdquo; company or LLP under the small companies regime, it may file a simplified version of accounts instead that includes a copy of the following:</p>
+<ul class="pl20">
+<li>Unaudited balance sheet.</li>
+</ul>
+<p>To be eligible as a &ldquo;small&rdquo; company or LLP, your firm&rsquo;s turnover must not be more than USD 13.5 million and your firm must not have not more than 35 employees. Public interest entities and firms providing financial services are not eligible to file simplified accounts under the small companies regime.</p>
+<p>If your firm qualifies for and files an unaudited balance sheet under the small companies regime, the unaudited balance sheet must contain a statement that it has been delivered in accordance with the provisions applicable to companies subject to the small companies regime.</p>
+<p><br /><strong>Formal requirements</strong></p>
+<p>There are other formal legal requirements that must be followed when preparing annual accounts. Some of these include the following:</p>
+<ul class="pl20">
+<li>Annual accounts must be denominated in U.S. Dollars (USD);</li>
+<li>All balance sheets must be signed on behalf of the board by a director and the name of that director must also be stated on the balance sheet;</li>
+<li>For audited accounts only, the directors report must be signed by a director or the company secretary and the name of that person must be stated; and</li>
+<li>For audited accounts only, the auditor&rsquo;s report must state the name of the audit firm and state the name of the person who signed it as senior auditor.</li>
+</ul>
+<p>If the incorrect type of accounts has been filed, or they do not comply with legal requirements, the Registration Authority may return the accounts to you for revision.</p>
+<p><br /><strong>Restricted Scope Companies</strong></p>
+<p>A Restricted Scope Company will not be required to file annual accounts unless the Registrar has given notice to it to deliver its annual accounts.</p></adgm-body>
+</div>
+            </adgm-expansion-panel>
+
+</div><div>
+    <adgm-expansion-panel         type='plus' variant='primary'>
+                    <adgm-text slot="title" variant="textL" weight="400">
+                        <h3>When do you need to file your annual accounts?</h3>
+                    </adgm-text>
+        
+<div>        <adgm-body ><p>Every ADGM company or LLP will have an Accounting Reference Date or ARD. For example, 31 December 2020. This will be the date from which your deadline for filing your accounts will be calculated.</p>
+<p>The ARD is set at the time of incorporation and registration and can be viewed on the ADGM online registry system.</p>
+<p>Generally, filing deadlines for annual accounts will be as follows:</p>
+<ul class="pl20">
+<li>
+<p><strong>First annual accounts</strong><span>&nbsp;</span>- For new private companies or LLPs filing their first annual accounts, the deadline for filing its annual accounts will depend if they have a short or long first financial year.</p>
+<p>If the financial year is 12 months or less, then the first set of annual accounts<span>&nbsp;</span><strong>must be filed within nine (9) months of its ARD.</strong></p>
+<p>If the financial year is more than 12 months, then the first set of annual accounts<span>&nbsp;</span><strong>must be filed within nine months of its first anniversary of incorporation;</strong><span>&nbsp;</span>and</p>
+</li>
+<li>
+<p><strong>Subsequent annual accounts</strong><span>&nbsp;</span>- For existing private companies or LLPs filing their second or subsequent annual accounts, the annual accounts<span>&nbsp;</span><strong>must be filed within nine (9) months of its ARD.</strong></p>
+</li>
+</ul>
+<p>For example, a company incorporated on 11 November 2019 with an ARD of 31 December 2020 will have a first financial year greater than 12 months. That is, it has a long first financial year (being the period from incorporation, 11 November 2019, through to 31 December 2020).</p>
+<p>Therefore, its annual accounts must be filed within nine (9) months of its first anniversary of incorporation. In this case, by 11 August 2021 (i.e. nine months from 11 Nov 2020).</p>
+<p>Using the above example further, in the following year the company&rsquo;s ARD will be 31 December 2021. Its deadline to file its next annual accounts will then be nine (9) months from the ARD, namely 30 September 2022.</p>
+<p>Please note that the descriptions above refer to private companies or LLPs. For public companies, the period for filing is six (6) months, rather than nine.</p>
+<p><strong>Changing an ARD</strong></p>
+<p>Subject to satisfying eligibility requirements, a company or LLP may notify the Registration Authority of a change in ARD via the ADGM online registry solution. A directors&rsquo; resolution for the approval or change in ARD must be submitted in support of the change. Directors&rsquo; resolution templates can be found<span>&nbsp;</span><a href="/legal-framework/guidance-and-policy-statements">here</a><span>&nbsp;</span>under Resolution Templates.</p>
+<p><strong>Account filing extension applications</strong></p>
+<p>The Registrar may, for any special reason he thinks fit, approve an application to extend a deadline for filing accounts. Applications requesting approval for extending the period of filing must be submitted prior to the filing due date. Guidance on Application for Annual Accounts Filing Extensions can be found here: <a href="/legal-framework/guidance-and-policy-statements#guidance-for-registered">ADGM Guidance, Templates and Policy Statements</a> under Guidance for registered entities..</p></adgm-body>
+</div>
+            </adgm-expansion-panel>
+
+</div><div>
+    <adgm-expansion-panel         type='plus' variant='primary'>
+                    <adgm-text slot="title" variant="textL" weight="400">
+                        <h3>How can you file your annual accounts?</h3>
+                    </adgm-text>
+        
+<div>        <adgm-body ><p>All annual accounts must be filed via the ADGM online registry solution.</p>
+<p>Access your firm&rsquo;s account on the ADGM online registry solution, then select &ldquo;Maintain Company&rdquo; button from the top menu bar, and then from the drop down menu click on &ldquo;Lodge Annual Accounts&rdquo;. Follow the instructions and upload a copy of the annual accounts and any other supporting documents.</p>
+<p>After you have submitted your annual return, you will be emailed an automatic acknowledgment.</p>
+<p>Your annual accounts may be subject of review by the Registration Authority before being accepted. If so, the annual accounts may be returned to you for revision.</p>
+<p>Once your annual accounts filing has been accepted, you will be notified immediately via the online registry solution.</p></adgm-body>
+</div>
+            </adgm-expansion-panel>
+
+</div><div>
+    <adgm-expansion-panel         type='plus' variant='primary'>
+                    <adgm-text slot="title" variant="textL" weight="400">
+                        <h3>Further Guidance</h3>
+                    </adgm-text>
+        
+<div>        <adgm-body ><p><span>For further guidance on accounts requirements, please refer to the Annual Accounts guidance note published&nbsp;</span><a href="/legal-framework/guidance-and-policy-statements#guidance-for-registered">here</a><span>.</span></p></adgm-body>
+</div>
+            </adgm-expansion-panel>
+
+</div>
+            <adgm-spacer height="rSectionM"></adgm-spacer>
+        </adgm-container>
+
+</adgm-section></span>
+	
+		<span>
+<adgm-section variant='primary'>
+        <adgm-container>
+            <adgm-spacer height="rSectionM"></adgm-spacer>
+            
+<div>
+    <adgm-message-banner>
+            <adgm-flex direction="column" justify="center" align="center" gap="rBodyM">
+
+                    <adgm-text variant="displayL" weight="300" color="night100" align="center">We’re here to help</adgm-text>
+                        <adgm-text variant="textL" weight="400" color="night80" align="center">If you have any questions relating to real property in ADGM, do not hesitate to reach out. Our AccessRP team will address your enquiries at the earliest possible time.</adgm-text>
+                    <adgm-button   href='mailto:accessrp.support@adgm.com'>Contact & Support</adgm-button>
+            </adgm-flex>
+    </adgm-message-banner>
+
+</div>
+            <adgm-spacer height="rSectionM"></adgm-spacer>
+        </adgm-container>
+
+</adgm-section></span>
+	</span>
+
+
+
+        <adgm-footer>
+<svg slot="logo" xmlns="http://www.w3.org/2000/svg" xmlns:v="https://vecta.io/nano" viewBox="0 0 220.17 52.84"><defs><clipPath id="svg2_A1"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"></path></clipPath><clipPath id="svg2_B1"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"></path></clipPath><clipPath id="svg2_C1"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"></path></clipPath><clipPath id="svg2_D1"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"></path></clipPath><clipPath id="svg2_E1"><path d="M203.31,20.82c.13.85.19,1.8.19,2.84,0,5.3-1.61,8.17-4.91,8.17-2.84,0-4.43-2.12-4.81-6.09-2.02.77-4.05,1.41-6.04,1.94,1.11,6.25,4.93,10.28,10.85,10.28,7.11,0,11.19-5.81,11.19-14.3,0-2.7-.42-5.13-1.21-7.19-1.63,1.64-3.4,3.08-5.26,4.35" fill="none"></path></clipPath><linearGradient id="svg2_F1" x1="-19.14" y1="831.14" x2="-18.8" y2="831.14" gradientTransform="translate(-32009.62 763.78) rotate(90) scale(38.75 -38.75)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset="1" stop-color="#FFFFFF"></stop></linearGradient><clipPath id="svg2_G1"><path d="M178.12 29.5v8.45h.67a5.61 5.61 0 0 0 5.61-5.61v-3.91l-6.28 1.07" fill="none"></path></clipPath><linearGradient id="svg2_H1" y1="830.68" y2="830.68" gradientTransform="translate(-32009.29 767.03) rotate(90) scale(38.75 -38.75)" href="#svg2_F1"></linearGradient><clipPath id="svg2_I1"><path d="M12.66 1.33h197.12v49.5H12.66z" fill="none"></path></clipPath><path id="svg2_J1" d="M70.78 42.68c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23" fill="#FFFFFF"></path><path id="svg2_K1" d="M73.24 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23" fill="#FFFFFF"></path></defs><g clip-path="url(#svg2_A1)" fill="#FFFFFF"><use href="#svg2_J1"></use><use href="#svg2_K1"></use><path d="M86 40.31l.04.13c.11.35.31.62.59.81s.64.29 1.06.29h.49c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-.49c-.28 0-.51-.09-.67-.27-.16-.17-.24-.41-.24-.7v-.85c0-.88-.33-1.65-.97-2.28s-1.43-.94-2.33-.94-1.69.32-2.33.94a3.09 3.09 0 0 0-.97 2.28 1.96 1.96 0 0 0 .86 1.68l.18.13h-2.06c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41V39c0 .77.21 1.4.63 1.85.41.45 1 .68 1.75.68h4.32c1 0 1.81-.38 2.43-1.13l.09-.11zm-2.51-.14a1.78 1.78 0 0 1-1.32-.55c-.36-.35-.55-.79-.55-1.29a1.73 1.73 0 0 1 .55-1.29 1.81 1.81 0 0 1 1.32-.54 1.81 1.81 0 0 1 1.32.54 1.77 1.77 0 0 1 .55 1.29 1.73 1.73 0 0 1-.55 1.29 1.81 1.81 0 0 1-1.32.54m8.78-7.73v6.51c0 .77.23 1.41.67 1.88.44.48 1.04.72 1.77.72h9.89c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-6.51h-1.43v6.51c0 .81-.34 1.23-1 1.23h-3.18l.12-.12.73-.79.58-.73c.21-.29.37-.56.47-.82a2.13 2.13 0 0 0 .14-.77c0-.62-.22-1.06-.69-1.35-.47-.3-1.1-.45-1.88-.45h-5.09v2.21l1.94 2.82h-3.03c-.67 0-1-.41-1-1.23v-6.51h-1.43zm7.56 7.74h-.42l-1.91-2.83v-.83h2.81c.51 0 .88.06 1.13.19.26.13.39.38.39.75 0 .08 0 .17-.03.25-.02.09-.06.18-.11.27l-.14.26a2.73 2.73 0 0 1-.22.3l-.24.28-.28.32-.29.32-.33.35-.34.35-.02.02z"></path></g><path d="M108.61 32.43h1.43v9.11h-1.43z" fill="#FFFFFF"></path><g clip-path="url(#svg2_B1)" fill="#FFFFFF"><path d="M119.64 42.68a.78.78 0 0 0-.57.24c-.17.16-.25.34-.25.55s.08.4.24.56.35.24.58.24.43-.08.59-.24.24-.35.24-.56-.08-.4-.24-.56-.36-.23-.59-.23m-2.45 0c-.23 0-.42.08-.58.23-.16.16-.23.34-.23.56s.08.4.24.56.35.24.58.24.42-.08.58-.24a.76.76 0 0 0 .23-.56c0-.21-.08-.4-.24-.56s-.35-.23-.58-.23m10.53-.07c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59.37.24.6.24.43-.08.61-.24c.17-.16.25-.35.25-.59s-.08-.43-.25-.59-.37-.24-.6-.24m.02-1.96l.06.09c.37.54.93.81 1.67.81h7.16c.77 0 1.37-.22 1.8-.65s.66-1.05.67-1.84v-.58c0-.97-.3-1.78-.89-2.4s-1.36-.93-2.3-.93c-1.12 0-2.26.58-3.37 1.72l-.13.13v-4.56H131v7.74h-1.53c-.68 0-1.02-.41-1.02-1.23v-3.81h-1.43v3.81c0 .81-.34 1.23-1 1.23h-.44c-.63 0-.95-.39-.95-1.16v-3.87h-1.87c-1.14 0-2.02.3-2.63.88-.61.59-.92 1.45-.92 2.57v1.58h-1.29c-.84 0-1.5-.21-1.95-.64-.45-.42-.68-1.05-.68-1.85v-1.24h-1.43v1.24c0 1.17.36 2.12 1.08 2.81.72.7 1.72 1.05 2.99 1.05h2.71v-2.97c0-.71.18-1.24.53-1.58s.9-.51 1.64-.51h.41v2.53c0 .77.21 1.4.63 1.85s1.01.68 1.75.68h.44c.72 0 1.28-.27 1.67-.81l.06-.08zm8.89-.48h-4.21v-1.6l.02-.02c1.22-1.36 2.34-2.04 3.31-2.04.6 0 1.08.18 1.43.54s.52.84.52 1.42v.49c0 .81-.36 1.21-1.06 1.21m-1.21-7.76c-.23 0-.43.08-.6.24s-.25.35-.25.59.08.43.25.59a.83.83 0 0 0 .6.24c.24 0 .43-.08.61-.25.17-.16.25-.35.25-.58s-.08-.42-.25-.58c-.17-.17-.37-.25-.6-.25m5.08 10.92c.3.37.7.67 1.18.89.51.23 1.05.34 1.6.34.93 0 1.69-.28 2.28-.84.58-.56.92-1.27 1-2.11v-.07h1.21c.73 0 1.33-.24 1.77-.72s.67-1.11.67-1.88v-2.51h-1.43v2.51c0 .81-.34 1.23-1 1.23h-1.19v-1.59c0-1.02-.31-1.86-.92-2.5s-1.42-.97-2.39-.97a3.26 3.26 0 0 0-2.34.94c-.65.62-.98 1.38-.98 2.27s.33 1.69.98 2.31c.65.61 1.48.92 2.47.92h1.76v.08c-.06.42-.25.79-.59 1.1s-.77.47-1.29.47a2.48 2.48 0 0 1-1.03-.22 2.02 2.02 0 0 1-.76-.54l-.99.9zm4.64-3.16h-1.75c-.58 0-1.07-.17-1.44-.52-.38-.34-.58-.79-.58-1.34 0-.51.18-.94.55-1.3a1.85 1.85 0 0 1 1.33-.53c.56 0 1.02.19 1.36.55.34.37.52.84.52 1.41v1.73zm4.32 2.39c-.23 0-.43.08-.6.24s-.25.35-.25.58a.78.78 0 0 0 .25.59.83.83 0 0 0 .6.24.86.86 0 0 0 .62-.25c.17-.17.25-.36.25-.58s-.08-.41-.25-.58a.86.86 0 0 0-.62-.24"></path></g><path d="M151.66 34.72h1.43v6.82h-1.43z" fill="#FFFFFF"></path><g clip-path="url(#svg2_C1)" fill="#FFFFFF"><path d="M152.6 33.46a.52.52 0 0 1-.38-.16.49.49 0 0 1-.16-.38.43.43 0 0 1 .16-.35c.1-.1.23-.14.38-.14.2 0 .35.07.46.21l.44-.41c-.27-.28-.58-.42-.93-.42-.31 0-.58.1-.8.3a.96.96 0 0 0-.33.73.93.93 0 0 0 .24.62h-.57v.63h2.51v-.63h-1.03z"></path><path d="M24.48,26.09l-5.71,5.71c-.81.81-1.88,1.25-3.02,1.25s-2.22-.44-3.03-1.25l-.06-.06,5.65-5.65-5.65-5.65.06-.06c1.67-1.67,4.38-1.67,6.05,0l5.71,5.71ZM33.88,5.61v45.22h.08c2.36,0,4.28-1.92,4.28-4.28V1.33h-.08c-2.36,0-4.28,1.92-4.28,4.28M20.22,8.19l-.08.03,7.22,17.86-7.22,17.85.08.03c.52.21,1.06.31,1.6.31,1.69,0,3.3-1.01,3.97-2.68l6.27-15.52-6.27-15.53c-.88-2.19-3.38-3.25-5.57-2.36M59.47,20.43l-.06-.06c-1.67-1.67-4.38-1.67-6.05,0l-5.71,5.71,5.71,5.71c.83.83,1.93,1.25,3.03,1.25s2.19-.42,3.03-1.25l.06-.06-5.65-5.65,5.65-5.65ZM51.99,8.22l-.08-.03c-2.19-.88-4.69.18-5.57,2.36l-6.27,15.52,6.27,15.53c.43,1.06,1.24,1.89,2.3,2.34.54.23,1.1.34,1.67.34s1.09-.1,1.6-.31l.08-.03-7.22-17.86,7.22-17.86Z" fill="#FFFFFF"></path><path d="M91.26 9.41a1.61 1.61 0 0 0-1.61 1.61V27.5a1.61 1.61 0 0 0 1.61 1.61h6.86c5.43 0 9.85-4.42 9.85-9.85s-4.42-9.85-9.85-9.85h-6.86zm6.86 16.07h-4.84V13.04h4.84a6.23 6.23 0 0 1 6.22 6.22 6.23 6.23 0 0 1-6.22 6.22m-14.27 3.63h4.02l-8.14-18.66c-.28-.64-.92-1.05-1.62-1.05h-1.26a1.76 1.76 0 0 0-1.62 1.06l-8.14 18.65h4.02l1.71-3.96h9.31v.03l1.71 3.93zm-3.2-7.39h-6.33l3.17-7.31 3.17 7.31zm69.43 7.4h3.63V9.42h-3.9l-6.87 11.06-6.86-11.06h-3.91v19.7h3.63V15.41l5.64 8.97c.3.49.86.79 1.5.79s1.21-.31 1.5-.79l5.64-8.97v13.71zm-24.37-7.17v6.81l.17-.05c1.97-.55 3.29-2.06 3.29-3.76v-6.46h-6.66c-1.83 0-3.34 1.49-3.36 3.32v.14h6.56zm-5.33-12.88a10.2 10.2 0 0 0-10.19 10.18c0 5.9 4.4 10.19 10.47 10.19 1.3 0 2.38-.1 3.37-.32v-3.73c-.83.31-1.88.45-3.37.45-4 0-6.79-2.71-6.79-6.59a6.52 6.52 0 0 1 6.51-6.51 6.48 6.48 0 0 1 4.88 2.22l.09.1 2.69-2.51-.09-.1c-1.93-2.16-4.7-3.39-7.58-3.39"></path></g><path d="M166.55 44.54V9.4" fill="none" stroke="#FFFFFF" stroke-width=".25"></path><g clip-path="url(#svg2_D1)" fill="#FFFFFF"><path d="M193.68 23.66c0-5.3 1.61-8.17 4.91-8.17 2.65 0 4.21 1.85 4.72 5.33 1.86-1.27 3.63-2.71 5.26-4.35-1.7-4.4-5.14-7.1-9.98-7.1-7.11 0-11.19 5.81-11.19 14.3 0 1.42.12 2.76.34 4.02 1.99-.53 4.02-1.17 6.04-1.94-.06-.64-.1-1.33-.1-2.08M184.4 9.36h-.55a5.73 5.73 0 0 0-5.73 5.73V29.5l6.28-1.07V9.36z"></path></g><g clip-path="url(#svg2_E1)"><path transform="matrix(.982935 -.183951 .183951 .982935 -1.61 37.03)" d="M185.95 14.62h25.62V39.8h-25.62z" fill="url(#svg2_F1)"></path></g><g clip-path="url(#svg2_G1)"><path transform="matrix(.982935 -.183951 .183951 .982935 -3.01 33.91)" d="M177.3 27.94h7.93v10.51h-7.93z" fill="url(#svg2_H1)"></path></g><g clip-path="url(#svg2_I1)" fill="#FFFFFF"><path d="M193.28 41.89c0-.32.31-.47.62-.47s.62.13.75.45l.51-.29c-.22-.46-.69-.73-1.26-.73-.71 0-1.24.43-1.24 1.05 0 1.27 1.96.84 1.96 1.59 0 .34-.32.48-.69.48-.44 0-.76-.21-.87-.55l-.53.3c.2.48.69.82 1.4.82.75 0 1.31-.4 1.31-1.05 0-1.29-1.96-.85-1.96-1.6m-2.08-.36v-.59h-.61v3.51h.61v-1.86c0-.83.57-1.09 1.09-1.07v-.64c-.44 0-.87.16-1.09.65m-3.4 2.42c-.7 0-1.24-.54-1.24-1.26s.54-1.26 1.24-1.26 1.25.54 1.25 1.26-.54 1.26-1.25 1.26m1.25-3.01v.6c-.28-.43-.73-.69-1.33-.69-.98 0-1.78.81-1.78 1.85s.8 1.85 1.78 1.85c.6 0 1.05-.27 1.33-.69v.6h.61v-3.51h-.61zm-5.34.49c.53 0 1.02.32 1.13 1.02h-2.34a1.16 1.16 0 0 1 1.21-1.02m-1.22 1.55h2.94l.02-.27c0-.98-.69-1.85-1.75-1.85s-1.84.81-1.84 1.85.75 1.85 1.88 1.85c.7 0 1.23-.32 1.54-.79l-.52-.29c-.18.29-.53.51-1.01.51-.65 0-1.15-.36-1.27-.99m-.23-3.46h-.73l-1.33 2.3-1.33-2.3h-.73l1.73 2.92v1.99h.65v-1.99l1.74-2.93z"></path></g></svg>                        <adgm-footer-category>
+                            <h3 slot="title">About</h3>
+                                    <a href='/about' >Overview</a>
+                                    <a href='/about/jurisdiction' >Jurisdiction</a>
+                                    <a href='/about/authorities' >Authorities</a>
+                                    <a href='/initiatives' >Initiatives</a>
+                                    <a href='https://academy.adgm.com'  target="_blank" >ADGM Academy</a>
+                                    <a href='https://disputeresolution.adgm.com'  target="_blank" >Dispute Resolution</a>
+                                    <a href='/careers' >Careers</a>
+                                    <a href='https://assets.adgm.com/download/assets/ADGM&#x2B;Brand&#x2B;Book_2025.pdf/8dcd54d6356111f0aef28a0f7419fcea'  target="_blank" >ADGM Brand Book</a>
+                        </adgm-footer-category>
+                        <adgm-footer-category>
+                            <h3 slot="title">Business</h3>
+                                    <a href='/business' >Overview</a>
+                                    <a href='/business-areas' >Business areas</a>
+                                    <a href='/setting-up' >Setting up</a>
+                                    <a href='/operating-in-adgm' >Operating in</a>
+                                    <a href='/public-registers' >Public registers</a>
+                                    <a href='/legal-framework' >Legal framework</a>
+                        </adgm-footer-category>
+                        <adgm-footer-category>
+                            <h3 slot="title">eServices</h3>
+                                    <a href='/operating-in-adgm/e-services/accessrp' >AccessRP</a>
+                                    <a href='/operating-in-adgm/e-services/accessadgm-government-services-portal'  target="_blank" >ACCESSADGM</a>
+                                    <a href='/operating-in-adgm/e-services/online-registry-solution'  target="_blank" >Online Registry Solution</a>
+                                    <a href='/operating-in-adgm/e-services/electronic-prudential-reporting' >Electronic Prudential Reporting</a>
+                                    <a href='/operating-in-adgm/e-services/fsra-connect'  target="_blank" >FSRA Connect</a>
+                        </adgm-footer-category>
+                        <adgm-footer-category>
+                            <h3 slot="title">Discover</h3>
+                                    <a href='/media' >Media</a>
+                                    <a href='/media/announcements' >News</a>
+                                    <a href='/events' >Events</a>
+                                    <a href='/spotlight' >Spotlight</a>
+                                    <a href='/think-by-adgm' >Podcasts</a>
+                                    <a href='/media/publications' >Publications</a>
+                                    <a href='/document-repository' >Documents</a>
+                        </adgm-footer-category>
+                        <adgm-footer-category>
+                            <h3 slot="title">Contact &amp; Support</h3>
+                                    <a href='/contact-us/make-an-enquiry' >Make an enquiry</a>
+                                    <a href='/contact-us/speaking-up' >Speaking Up</a>
+                                    <a href='/faqs' >Frequently Asked Questions</a>
+                        </adgm-footer-category>
+                <span slot="legalText">
+&#xA9; 2026 ADGM. All rights reserved.                </span>
+                <adgm-footer-legal-links slot="legalLinks">
+                            <a href='/sitemap' >Sitemap</a>
+                            <a href='/information/terms-and-conditions' >Terms and conditions</a>
+                            <a href='/information/privacy-policy' >Privacy policy</a>
+                            <a href='/information/cookies-policy' >Cookies policy</a>
+                </adgm-footer-legal-links>
+                <adgm-footer-social-links slot="socialLinks">
+                            <a href='https://www.linkedin.com/company/adgm' target="_blank">
+                                <adgm-icon icon="socialLinkedIn"></adgm-icon>
+                            </a>
+                            <a href='https://x.com/adglobalmarket'>
+                                <adgm-icon icon="socialTwitter"></adgm-icon>
+                            </a>
+                            <a href='https://www.instagram.com/adgm' target="_blank">
+                                <adgm-icon icon="socialInstagram"></adgm-icon>
+                            </a>
+                            <a href='https://www.youtube.com/abudhabiglobalmarket'>
+                                <adgm-icon icon="socialYouTube"></adgm-icon>
+                            </a>
+                </adgm-footer-social-links>
+        </adgm-footer>
+
+    <!-- Scroll to Top Button -->
+    <div class="back-to-top">
+        <adgm-back-to-top>
+            <adgm-icon-button size="s" variant="tertiary" icon="chevronUpL">
+                <button class="button --variant-tertiary --size-s" type="button">
+                    <slot name="icon">
+                        <adgm-icon color="currentColor" icon="chevronUpL" size="s20"></adgm-icon>
+                    </slot>
+                </button>
+            </adgm-icon-button>
+        </adgm-back-to-top>
+    </div>
+<!-- Chatbot Implementation -->
+
+            
+        </adgm-page>
+    </adgm-application>
+        <adgm-cookie-notification class="cookie-hide">
+                <adgm-body>
+                    <p>We use cookies and similar technologies that are necessary to operate the website. Additional cookies are used to perform analysis of website usage. By continuing to use our website, you consent to our use of cookies. For more information, please read our <a href="/information/cookies-policy">Cookies Policy</a>.</p>
+                </adgm-body>
+            <adgm-spacer height="rBodyXS"></adgm-spacer>
+            <adgm-flex gap="s8" direction="row">
+                    <adgm-button id="cookie-reject" size="s" outlined>Reject cookies</adgm-button>
+                    <adgm-button id="cookie-accept" size="s">Accept cookies</adgm-button>
+
+
+            </adgm-flex>
+        </adgm-cookie-notification>
+    <!--Footer Client Resources-->
+    <script defer="defer" src="/Util/Find/epi-util/find.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){if(typeof FindApi === 'function'){var api = new FindApi();api.setApplicationUrl('/');api.setServiceApiBaseUrl('/find_v2/');api.processEventFromCurrentUri();api.bindWindowEvents();api.bindAClickEvent();api.sendBufferedEvents();}})
+</script>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+
+
+        <script src="/js/hideheaderfooter.js"></script>
+
+</body>
+</html>
+<script>
+        // Get the button
+        var mybutton = document.querySelector('.back-to-top');
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() { scrollFunction() };
+
+        if (navigator.platform === "iPhone") {
+            document.body.classList?.add("iphone");
+        }
+
+        const cookieNotification = document.querySelector(".iphone adgm-cookie-notification");
+        if (cookieNotification) {
+            const cookieContainer = cookieNotification.shadowRoot.querySelector(".container");
+
+            if (cookieContainer) {
+                cookieContainer.style.marginBottom = "50%";
+            }
+        }
+
+        function scrollFunction() {
+            if (mybutton) {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    mybutton.style.display = "block";
+                } else {
+                    mybutton.style.display = "none";
+                }
+            }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document smoothly
+        if (mybutton !== null) {
+            mybutton.onclick = function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        const cookieReject = document.getElementById('cookie-reject');
+        const cookieAccept = document.getElementById('cookie-accept');
+        var showPopUp;
+        // Function to create a cookie with a 1-year expiry
+        function createCookie(cname, cvalue) {
+            var d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year in milliseconds
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;secure";
+        }
+
+        function getCookie(cookieName) {
+            if (typeof document !== "undefined") {  // Check if running in a browser environment
+                var cookieNameEQ = cookieName + '=';
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i].trim(); // Trim any leading spaces
+                    if (c.indexOf(cookieNameEQ) === 0) {  // Check if the cookie starts with the cookie name
+                        return c.substring(cookieNameEQ.length, c.length);  // Return the cookie value
+                    }
+                }
+                return '';  // Return empty string if cookie not found
+            }
+            return null;  // Return null if not in a browser environment
+        }
+        // Function to check the cookie and set the popup state
+        function checkCookieAndSetPopup() {
+            var cookieRejected = getCookie("cookies_rejected");
+            var cookieAccepted = getCookie("cookies_accepted");
+
+            if (cookieRejected || cookieAccepted) {
+                document.querySelector('.cookie-hide').style.visibility = "hidden";
+            } else {
+                document.querySelector('.cookie-hide').style.visibility = 'visible';
+            }
+        }
+
+        if (cookieReject !== null) {
+            cookieReject.addEventListener('click', () => {
+                document.querySelector('.cookie-hide').style.visibility = "hidden";
+                createCookie("cookies_rejected", "rejected")
+
+            })
+        }
+
+        if (cookieAccept !== null) {
+            cookieAccept.addEventListener('click', () => {
+                document.querySelector('.cookie-hide').style.visibility = "hidden";
+                createCookie("cookies_accepted", "accepted")
+            })
+        }
+        window.onload = checkCookieAndSetPopup;
+
+        const articleCards = document.querySelectorAll('adgm-article-card');
+        articleCards?.forEach((card, idx) => {
+            const links = card?.shadowRoot?.querySelectorAll('.content adgm-link-button');
+            var target = card?.getAttribute('target');
+            if (target !== undefined && target !== null) {
+                links[0]?.setAttribute('target', target);
+            }
+        })
+
+        const iconCards = document.querySelectorAll('adgm-icon-card');
+        iconCards?.forEach((card, idx) => {
+            const links = card?.shadowRoot?.querySelectorAll('.content adgm-link-button');
+            var target = card?.getAttribute('target');
+            if (target !== undefined && target !== null) {
+                links[0]?.setAttribute('target', target);
+            }
+        })
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const header = document.querySelector("adgm-navigation")
+                  if(header) {
+                    header.updateComplete.then(() => {
+                        header.firstUpdated();
+                    })
+                  }
+
+            function updateLinks(root) {
+            if (!root) return;
+
+            root.querySelectorAll('a[target="_blank"]').forEach(anchor => {
+              anchor.setAttribute("rel", "noopener");
+            });
+          }
+
+          function scanAllElements(root = document) {
+            root.querySelectorAll("*").forEach(element => {
+              element.querySelectorAll('a[target="_blank"]').forEach(anchor => {
+                anchor.setAttribute("rel", "noopener");
+              });
+              if (element.shadowRoot) {
+                updateLinks(element.shadowRoot); // Check for <a> in shadowRoot
+                scanAllElements(element.shadowRoot); // Recursively scan deeper shadow DOMs
+              }
+            });
+          }
+
+      // Initial scan for all elements in the page
+
+
+      setTimeout(() => {
+        scanAllElements()
+      });
+
+      // Watch for dynamically added elements
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1) { // Ensure it's an element
+               setTimeout(() => {
+                scanAllElements(node)
+              });
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+        document.addEventListener('click', e => {
+      const path = e.composedPath?.() || [];
+      if (!path.some(el => el.tagName === 'ADGM-LINK-BUTTON')) return;
+      const anchor = (path.find(el => el.tagName === 'A'));
+      if (!anchor) return;
+      const host       = anchor.getRootNode().host;
+      const elementText = host.textContent.trim();
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event:                   'gtm.adgmLinkClick',
+        'gtm.element':           anchor,
+        'gtm.elementId':         anchor.id || '',
+        'gtm.elementClasses':    anchor.className || '',
+        'gtm.elementTarget':     anchor.target || '',
+        'gtm.elementUrl':        anchor.href,
+        'gtm.elementText':       elementText,
+        'gtm.willOpenInNewWindow': anchor.target === '_blank',
+          eventCallback:          () => { },
+        eventTimeout:            2000
+      });
+    });
+
+        // Function to update query parameters in the URL, usually for searching and filtering
+    function updateQueryParams(params, { replace = false } = {}) {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        for (const [key, value] of Object.entries(params)) {
+
+            const isEmpty =
+                value === null ||
+                value === undefined ||
+                value === "" ||
+                value === 0 ||
+                value === "0";
+
+            if (isEmpty) {
+                searchParams.delete(key);
+                continue;
+            }
+
+            if (Array.isArray(value)) {
+                searchParams.delete(key);
+                value.forEach(v => {
+                    if (v !== null && v !== "" && v !== 0 && v !== "0") {
+                        searchParams.append(key, v);
+                    }
+                });
+            } else {
+                searchParams.set(key, value);
+            }
+        }
+
+        searchParams.sort();
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+
+        if (replace) {
+            window.history.replaceState({}, "", newUrl);
+        } else {
+            window.history.pushState({}, "", newUrl);
+        }
+    }
+
+</script>

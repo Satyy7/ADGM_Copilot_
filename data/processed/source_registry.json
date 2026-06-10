@@ -1,0 +1,162 @@
+{
+  "generated_at": "2026-06-10T11:30:52.405387Z",
+  "source_document": "Data Sources.docx",
+  "sources": [
+    {
+      "source_id": "57c3a05fcfdf2e00",
+      "category": "Company Formation & Governance",
+      "document_type": "General Incorporation, AoA, MoA, Registers, UBO, Board Resolutions",
+      "url": "https://www.adgm.com/registration-authority/registration-and-incorporation",
+      "source_format": "html",
+      "collection": "guidance",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "551f3e35d06100ef",
+      "category": "Company Formation",
+      "document_type": "Resolution for Incorporation (LTD - Multiple Shareholders)",
+      "url": "https://assets.adgm.com/download/assets/adgm-ra-resolution-multiple-incorporate-shareholders-LTD-incorporation-v2.docx/186a12846c3911efa4e6c6223862cd87",
+      "source_format": "docx",
+      "collection": "templates",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "d9904d76fc5887cb",
+      "category": "Company Formation & Compliance",
+      "document_type": "Incorporation, SPV, LLC, Other Forms & Templates",
+      "url": "https://www.adgm.com/setting-up",
+      "source_format": "html",
+      "collection": "guidance",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "d165a24267b35de4",
+      "category": "Policy & Guidance",
+      "document_type": "Guidance, Templates, Policy Statements",
+      "url": "https://www.adgm.com/legal-framework/guidance-and-policy-statements",
+      "source_format": "html",
+      "collection": "guidance",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "380bca9c4e464fd2",
+      "category": "ADGM Company Set-up",
+      "document_type": "Checklist – Company Set-up (Various Entities)",
+      "url": "https://www.adgm.com/documents/registration-authority/registration-and-incorporation/checklist/branch-non-financial-services-20231228.pdf",
+      "source_format": "pdf",
+      "collection": "checklists",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "4cc7bc66d75302fd",
+      "category": "ADGM Company Set-up",
+      "document_type": "Checklist – Private Company Limited",
+      "url": "https://www.adgm.com/documents/registration-authority/registration-and-incorporation/checklist/private-company-limited-by-guarantee-non-financial-services-20231228.pdf",
+      "source_format": "pdf",
+      "collection": "checklists",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "d6de8f259310ec6a",
+      "category": "Employment & HR",
+      "document_type": "Standard Employment Contract Template (2024 update)",
+      "url": "https://assets.adgm.com/download/assets/ADGM+Standard+Employment+Contract+Template+-+ER+2024+(Feb+2025).docx/ee14b252edbe11efa63b12b3a30e5e3a",
+      "source_format": "docx",
+      "collection": "templates",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "a81988b9e2127d84",
+      "category": "Employment & HR",
+      "document_type": "Standard Employment Contract Template (2019 short version)",
+      "url": "https://assets.adgm.com/download/assets/ADGM+Standard+Employment+Contract+-+ER+2019+-+Short+Version+(May+2024).docx/33b57a92ecfe11ef97a536cc36767ef8",
+      "source_format": "docx",
+      "collection": "templates",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "8146ddd665e35755",
+      "category": "Data Protection",
+      "document_type": "Appropriate Policy Document Template",
+      "url": "https://www.adgm.com/documents/office-of-data-protection/templates/adgm-dpr-2021-appropriate-policy-document.pdf",
+      "source_format": "pdf",
+      "collection": "templates",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "b7077e27700f1457",
+      "category": "Compliance & Filings",
+      "document_type": "Annual Accounts & Filings",
+      "url": "https://www.adgm.com/operating-in-adgm/obligations-of-adgm-registered-entities/annual-filings/annual-accounts",
+      "source_format": "html",
+      "collection": "guidance",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "33d07ea97de9b431",
+      "category": "Letters/Permits",
+      "document_type": "Application for Official Letters & Permits",
+      "url": "https://www.adgm.com/operating-in-adgm/post-registration-services/letters-and-permits",
+      "source_format": "html",
+      "collection": "guidance",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "49e984501ae3da17",
+      "category": "Regulatory Guidance",
+      "document_type": "Incorporation Package, Filings, Templates",
+      "url": "https://en.adgm.thomsonreuters.com/rulebook/7-company-incorporation-package",
+      "source_format": "html",
+      "collection": "regulations",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    },
+    {
+      "source_id": "d468ce9096195b86",
+      "category": "Regulatory Template",
+      "document_type": "Shareholder Resolution – Amendment of Articles",
+      "url": "https://assets.adgm.com/download/assets/Templates_SHReso_AmendmentArticles-v1-20220107.docx/97120d7c5af911efae4b1e183375c0b2?forcedownload=1",
+      "source_format": "docx",
+      "collection": "templates",
+      "authority": "ADGM",
+      "jurisdiction": "ADGM",
+      "official_source": true,
+      "notes": null
+    }
+  ]
+}

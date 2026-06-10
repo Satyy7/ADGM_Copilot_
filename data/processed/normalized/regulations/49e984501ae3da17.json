@@ -1,0 +1,44 @@
+{
+  "source": {
+    "source_id": "49e984501ae3da17",
+    "category": "Regulatory Guidance",
+    "document_type": "Incorporation Package, Filings, Templates",
+    "url": "https://en.adgm.thomsonreuters.com/rulebook/7-company-incorporation-package",
+    "source_format": "html",
+    "collection": "regulations",
+    "authority": "ADGM",
+    "jurisdiction": "ADGM",
+    "official_source": true,
+    "notes": null
+  },
+  "title": "Incorporation Package, Filings, Templates",
+  "downloaded_path": "data\\raw\\regulations\\49e984501ae3da17.html",
+  "file_hash": "71613a00559b95464c584e70e59b656e1418d34471870cd55c4605284e00b0ec",
+  "extracted_at": "2026-06-10T11:36:37.648595Z",
+  "sections": [
+    {
+      "heading": "7. The company incorporation package",
+      "section_path": [
+        "7. The company incorporation package"
+      ],
+      "text": "(1) This Rule applies to a company incorporation package. (2) The articles of association are viewed by selecting the \"articles of association\" link in the incorporation template. (3) Model articles can be viewed by selecting the \"model articles\" link in the incorporation template.",
+      "page_number": null,
+      "tables": [],
+      "links": [],
+      "metadata": {}
+    },
+    {
+      "heading": "7. The company incorporation package",
+      "section_path": [
+        "7. The company incorporation package"
+      ],
+      "text": "(4) Articles of association delivered with a company incorporation package (if any) must be authenticated by the initial members on delivery to the Registrar in accordance with Rule 12 .",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/node/16415"
+      ],
+      "metadata": {}
+    }
+  ]
+}

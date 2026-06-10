@@ -1,0 +1,53 @@
+{
+  "source": {
+    "source_id": "d468ce9096195b86",
+    "category": "Regulatory Template",
+    "document_type": "Shareholder Resolution – Amendment of Articles",
+    "url": "https://assets.adgm.com/download/assets/Templates_SHReso_AmendmentArticles-v1-20220107.docx/97120d7c5af911efae4b1e183375c0b2?forcedownload=1",
+    "source_format": "docx",
+    "collection": "templates",
+    "authority": "ADGM",
+    "jurisdiction": "ADGM",
+    "official_source": true,
+    "notes": null
+  },
+  "title": "Shareholder Resolution – Amendment of Articles",
+  "downloaded_path": "data\\raw\\templates\\d468ce9096195b86.docx",
+  "file_hash": "49ce8a91116d959577811597f623a63068d90e1c90ce23714e2306d1ce9bbc9f",
+  "extracted_at": "2026-06-10T11:36:37.659606Z",
+  "sections": [
+    {
+      "heading": "OF",
+      "section_path": [
+        "OF"
+      ],
+      "text": "{insert company name}",
+      "page_number": null,
+      "tables": [],
+      "links": [],
+      "metadata": {}
+    },
+    {
+      "heading": "DATED",
+      "section_path": [
+        "DATED"
+      ],
+      "text": "{insert date} We, being the shareholders of {insert Company Name], a [private company limited by shares/restricted scope company] organised and existing under the laws of Abu Dhabi Global Market, with registration number [xxxxxxxxx] having its registered address at [insert registered office address] (the “Company”), hereby consent to the adoption of the following resolutions:",
+      "page_number": null,
+      "tables": [],
+      "links": [],
+      "metadata": {}
+    },
+    {
+      "heading": "AMENDMENTS TO THE ARTICLES OF ASSOCIATION:",
+      "section_path": [
+        "AMENDMENTS TO THE ARTICLES OF ASSOCIATION:"
+      ],
+      "text": "RESOLVED, that the draft articles of association annexed to this resolution be adopted as the articles of association of the Company in substitution for, and to the exclusion of, the Company’s existing articles of association. FURTHER RESOVED, that {insert authorised persons name(s)} is/are, and each acting alone is, hereby authorized to do and perform any and all such acts, including execution of any and all documents, as said person shall deem necessary or advisable, to carry out the purposes of the foregoing resolutions. _____________________________ _________________________________ [insert Shareholder’s name] [insert Shareholder’s name]",
+      "page_number": null,
+      "tables": [],
+      "links": [],
+      "metadata": {}
+    }
+  ]
+}

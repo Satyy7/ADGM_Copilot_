@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-06-10T11:36:37.666124+00:00",
+  "total_chunks": 170,
+  "total_sources": 13,
+  "chunks_by_collection": {
+    "guidance": 49,
+    "templates": 97,
+    "checklists": 22,
+    "regulations": 2
+  },
+  "chunks_by_format": {
+    "html": 51,
+    "docx": 72,
+    "pdf": 47
+  },
+  "empty_chunks": 0,
+  "duplicate_chunk_hashes": 0,
+  "metadata_missing_required_fields": 0,
+  "failures": []
+}

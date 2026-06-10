@@ -1,0 +1,17 @@
+{
+  "completed_at": "2026-06-10T19:52:30.173405+00:00",
+  "dry_run": false,
+  "chunks_file": "data\\processed\\chunks.jsonl",
+  "target_collection": "templates",
+  "embedding_model": "gemini-embedding-001",
+  "embedding_dimension": 768,
+  "collections": [
+    {
+      "collection": "templates",
+      "total_chunks": 97,
+      "upserted": 97,
+      "skipped_empty_vector": 0,
+      "errors": 0
+    }
+  ]
+}

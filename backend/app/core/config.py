@@ -47,8 +47,11 @@ class Settings(BaseSettings):
     redis_password: SecretStr | None = None
 
     gemini_api_key: SecretStr | None = None
-    gemini_model: str = "gemini-2.5-pro"
+    gemini_model: str = "gemini-2.0-flash"
     gemini_embedding_model: str = "gemini-embedding-001"
+
+    groq_api_key: SecretStr | None = None
+    groq_model: str = "llama-3.3-70b-versatile"
 
     @computed_field  # type: ignore[prop-decorator]
     @property

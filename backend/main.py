@@ -7,6 +7,7 @@ analytics will register here after their lower-level services are validated.
 
 from fastapi import FastAPI
 
+from backend.app.api.router import api_router
 from backend.app.core.config import get_settings
 from backend.app.core.logging import configure_logging
 from backend.app.db.health import HealthReport, check_infrastructure_health
@@ -19,6 +20,7 @@ app = FastAPI(
     debug=settings.app_debug,
     version="0.1.0",
 )
+app.include_router(api_router)
 
 
 @app.get("/health", response_model=HealthReport)

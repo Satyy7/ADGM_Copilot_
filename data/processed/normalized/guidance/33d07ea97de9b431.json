@@ -1,0 +1,33 @@
+{
+  "source": {
+    "source_id": "33d07ea97de9b431",
+    "category": "Letters/Permits",
+    "document_type": "Application for Official Letters & Permits",
+    "url": "https://www.adgm.com/operating-in-adgm/post-registration-services/letters-and-permits",
+    "source_format": "html",
+    "collection": "guidance",
+    "authority": "ADGM",
+    "jurisdiction": "ADGM",
+    "official_source": true,
+    "notes": null
+  },
+  "title": "Application for Official Letters & Permits",
+  "downloaded_path": "data\\raw\\guidance\\33d07ea97de9b431.html",
+  "file_hash": "a0c0dfd4439379f74312a390ff3627b70203f203baab0c191c6d1bc982a148b4",
+  "extracted_at": "2026-06-10T11:36:37.645594Z",
+  "sections": [
+    {
+      "heading": "Letters and Permits",
+      "section_path": [
+        "Letters and Permits"
+      ],
+      "text": "We use cookies and similar technologies that are necessary to operate the website. Additional cookies are used to perform analysis of website usage. By continuing to use our website, you consent to our use of cookies. For more information, please read our Cookies Policy .",
+      "page_number": null,
+      "tables": [],
+      "links": [
+        "/information/cookies-policy"
+      ],
+      "metadata": {}
+    }
+  ]
+}
