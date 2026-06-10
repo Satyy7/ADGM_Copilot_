@@ -1,0 +1,48 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: adgm_postgres
+
+    environment:
+      POSTGRES_DB: adgm_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: adgm_qdrant
+
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: adgm_redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  redis_data:
