@@ -138,6 +138,20 @@ class GroqClient:
         )
         return response.choices[0].message.content or ""
 
+    def generate_text(self, prompt: str) -> str:
+        """Raw single-turn generation without the compliance system instruction.
+
+        Used by the re-ranker and other utility tasks that only need a short
+        structured response (e.g. a ranked list of passage numbers).
+        """
+        response = self._client.chat.completions.create(
+            model=self._model_name,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=256,
+        )
+        return response.choices[0].message.content or ""
+
 
 # ── Gemini client (primary) ────────────────────────────────────────────────────
 
@@ -255,6 +269,37 @@ class GeminiClient:
                     groq_exc,
                 )
                 raise groq_exc from gemini_exc
+
+    def generate_text(self, prompt: str) -> str:
+        """Raw single-turn generation without the compliance system instruction.
+
+        Used by the re-ranker and other utility tasks (classification,
+        structured extraction) that need a short, deterministic response.
+        Falls back to Groq on Gemini failure, same as ``generate_compliance_answer``.
+        """
+        config = types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=256,
+        )
+        try:
+            response = self._client.models.generate_content(
+                model=self._gemini_model,
+                contents=prompt,
+                config=config,
+            )
+            self._active_model = f"gemini/{self._gemini_model}"
+            return self._extract_text(response)
+        except Exception as exc:
+            logger.warning(
+                "Gemini generate_text failed (%s: %s), trying Groq.",
+                type(exc).__name__,
+                str(exc)[:120],
+            )
+            if self._fallback is None:
+                raise
+            result = self._fallback.generate_text(prompt)
+            self._active_model = f"groq/{self._fallback.model_name}"
+            return result
 
     # ── Static helpers ─────────────────────────────────────────────────────────
 

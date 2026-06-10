@@ -1,4 +1,4 @@
-"""Compliance chat API route — Phase 6 hybrid search RAG.
+"""Compliance chat API route — Phase 7 hybrid search + LLM re-ranking.
 
 Purpose
 -------
@@ -8,9 +8,9 @@ query to PostgreSQL, and returns a structured ``RAGResponse``.
 
 Architecture Integration
 ------------------------
-* Phase 6: ``_get_pipeline`` now builds a ``HybridRetriever`` (dense + BM25
-  via RRF) instead of a bare ``QdrantRetriever``. The pipeline and endpoint
-  are otherwise unchanged.
+* Phase 7: ``_get_pipeline`` builds the full retrieval stack:
+    QdrantRetriever + BM25Retriever → HybridRetriever (RRF) → RerankedRetriever (LLM)
+  The pipeline and endpoint are otherwise unchanged from Phase 6.
 * Phase 8+: this route will delegate to a LangGraph intent router. The
   endpoint signature (``ChatRequest`` in, ``RAGResponse`` out) stays the same
   so the frontend Streamlit page requires no changes during that upgrade.
@@ -40,6 +40,7 @@ from backend.app.services.embeddings import get_embeddings_service
 from backend.app.services.generation import GeminiClient
 from backend.app.services.hybrid_retriever import HybridRetriever
 from backend.app.services.rag import BaselineRAGPipeline
+from backend.app.services.reranker import LLMReranker, RerankedRetriever
 from backend.app.services.retrieval import QdrantRetriever
 
 router = APIRouter(prefix="/chat", tags=["Compliance Chat"])
@@ -52,7 +53,11 @@ _query_log_repo: BaseRepository = BaseRepository(QueryLog)
 
 @lru_cache(maxsize=1)
 def _get_pipeline() -> BaselineRAGPipeline:
-    """Build and cache the Phase 6 hybrid RAG pipeline for the process lifetime.
+    """Build and cache the Phase 7 retrieval stack for the process lifetime.
+
+    Stack: QdrantRetriever + BM25Retriever → HybridRetriever (RRF)
+                                           → RerankedRetriever (LLM, top-20 → top-5)
+                                           → BaselineRAGPipeline → GeminiClient
 
     ``lru_cache`` ensures all heavy construction (Qdrant client, BM25 index,
     Gemini client) happens exactly once per process.
@@ -61,10 +66,15 @@ def _get_pipeline() -> BaselineRAGPipeline:
     settings = get_settings()
     embeddings = get_embeddings_service(settings=settings)
     qdrant = get_qdrant_client()
+
     dense = QdrantRetriever(qdrant_client=qdrant, embeddings_service=embeddings)
-    sparse = BM25Retriever()  # loads chunks.jsonl once; ~170 docs, <5 MB
-    retriever = HybridRetriever(dense=dense, sparse=sparse)
-    gemini = GeminiClient(settings=settings)
+    sparse = BM25Retriever()                          # loads chunks.jsonl; ~170 docs
+    hybrid = HybridRetriever(dense=dense, sparse=sparse)
+
+    gemini = GeminiClient(settings=settings)          # also used as reranker LLM
+    reranker = LLMReranker(client=gemini)
+    retriever = RerankedRetriever(base=hybrid, reranker=reranker, candidate_pool=20)
+
     return BaselineRAGPipeline(retriever=retriever, gemini_client=gemini)
 
 
@@ -84,7 +94,7 @@ def compliance_chat(
     request: ChatRequest,
     session: Session = Depends(get_session),
 ) -> RAGResponse:
-    """Phase 6 hybrid RAG: embed → Qdrant+BM25 RRF → Gemini/Groq → cited answer."""
+    """Phase 7: embed → Qdrant+BM25 RRF → LLM re-rank → Gemini/Groq → cited answer."""
     try:
         response = _get_pipeline().run(request)
     except Exception as exc:
