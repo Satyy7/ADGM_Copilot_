@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from backend.app.api.routes import (
+    analytics,
     audit_logs,
     cases,
     chat,
@@ -24,6 +25,7 @@ api_router.include_router(chat.router)
 api_router.include_router(reviews.router)
 api_router.include_router(cases.router)          # Phase 11: historical case search
 api_router.include_router(generated_clauses.router)
+api_router.include_router(analytics.router)      # Phase 12: Text2SQL analytics
 
 # Persistence endpoints
 api_router.include_router(users.router)

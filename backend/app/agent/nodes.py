@@ -210,13 +210,36 @@ def build_nodes(retriever: Retriever, gemini: object) -> dict[str, object]:
             }
 
     def handle_analytics(state: AgentState) -> dict:
-        return {
-            "answer": _STUB_MESSAGES[INTENT_ANALYTICS],
-            "sources": [],
-            "model": "n/a",
-            "retrieved_chunks": [],
-            "collections_searched": [],
-        }
+        """Route analytics questions through the Phase 12 Text2SQL sub-graph."""
+        from backend.app.agent.analytics.graph import get_compiled_analytics_graph  # lazy
+        question = state.get("question", "")
+        try:
+            analytics_graph = get_compiled_analytics_graph()
+            analytics_state: dict = analytics_graph.invoke({
+                "question":     question,
+                "preview_only": False,
+                "confirmed_sql": "",
+            })
+            answer = analytics_state.get("answer", "")
+            model  = analytics_state.get("model", "unknown")
+            sql    = analytics_state.get("generated_sql", "")
+            # Surface the SQL in the answer for transparency when routed via chat
+            if sql and not analytics_state.get("preview_only"):
+                answer = f"{answer}\n\n*SQL executed:* `{sql}`"
+            return {
+                "answer":               answer,
+                "sources":              [],
+                "model":                model,
+                "retrieved_chunks":     [],
+                "collections_searched": [],
+            }
+        except Exception as exc:
+            logger.error("Analytics sub-graph failed: %s", exc)
+            return {
+                "answer":  f"Analytics query failed: {exc}",
+                "sources": [],
+                "model":   "error",
+            }
 
     return {
         "route_intent": route_intent,
