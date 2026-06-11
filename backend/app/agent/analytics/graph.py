@@ -70,13 +70,13 @@ class AnalyticsState(TypedDict, total=False):
 
     # ── Set by validate_sql ────────────────────────────────────────────────────
     sql_safe: bool
-    sql_rejection_reason: str
+    sql_rejection_reason: str | None
 
     # ── Set by execute_sql ─────────────────────────────────────────────────────
     query_results: list[dict]
     row_count: int
     columns: list[str]
-    execution_error: str
+    execution_error: str | None
 
     # ── Set by format_answer ───────────────────────────────────────────────────
     answer: str

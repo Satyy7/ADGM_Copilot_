@@ -213,7 +213,7 @@ export default function AnalyticsPage() {
                       </button>
                     </div>
                   )}
-                  {!approving && result.query_results !== null && (
+                  {!approving && result.query_results.length > 0 && (
                     <span className="text-xs text-jade-600 flex items-center gap-1">
                       <CheckCircle2 size={10} /> Executed
                     </span>

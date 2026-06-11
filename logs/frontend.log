@@ -69,3 +69,57 @@
  GET / 200 in 291ms
  ○ Compiling /_error ...
  ✓ Compiled /_error in 6.5s (1922 modules)
+ GET /clauses 200 in 667ms
+ ○ Compiling /analytics ...
+ ✓ Compiled /analytics in 2.9s (1144 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1476ms (1922 modules)
+ GET /chat 200 in 425ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1900ms (1909 modules)
+ GET /chat 404 in 2237ms
+ GET /_next/static/css/app/layout.css?v=1781196195456 404 in 105ms
+ GET /_next/static/chunks/main-app.js?v=1781196195456 404 in 197ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 196ms
+ GET /_next/static/chunks/app/layout.js 404 in 195ms
+ GET /chat 404 in 56ms
+ GET /_next/static/css/app/layout.css?v=1781196199381 404 in 156ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 162ms
+ GET /_next/static/chunks/main-app.js?v=1781196199381 404 in 168ms
+ GET /_next/static/chunks/app/layout.js 404 in 162ms
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 6s
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 15s (1067 modules)
+ GET /chat 200 in 15682ms
+ GET /chat 200 in 174ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1461ms (1300 modules)
+ GET /chat 200 in 807ms
+ ○ Compiling /clauses ...
+ ✓ Compiled /clauses in 3.7s (1314 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1608ms (1316 modules)
+ ○ Compiling /review ...
+ ✓ Compiled /review in 4.5s (1366 modules)
+ ✓ Compiled in 11.2s (1352 modules)
+ GET /chat 200 in 1013ms
+ GET /chat 200 in 112ms
+ GET /chat 200 in 123ms
+ GET /chat 200 in 65ms
+ GET /chat 200 in 72ms
+ GET /chat 200 in 40ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 940ms (1354 modules)
+ GET /chat 200 in 336ms
+ GET /chat 200 in 42ms
+ GET /chat 200 in 40ms
+ ✓ Compiled in 738ms (766 modules)
+ ✓ Compiled in 285ms (766 modules)
+ GET /chat 200 in 63ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 747ms (1354 modules)
+[?25h

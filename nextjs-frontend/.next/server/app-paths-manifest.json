@@ -1,4 +1,8 @@
 {
+  "/chat/page": "app/chat/page.js",
+  "/page": "app/page.js",
+  "/review/page": "app/review/page.js",
   "/clauses/page": "app/clauses/page.js",
-  "/chat/page": "app/chat/page.js"
+  "/analytics/page": "app/analytics/page.js",
+  "/cases/page": "app/cases/page.js"
 }

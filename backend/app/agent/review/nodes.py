@@ -202,11 +202,6 @@ def build_review_nodes(retriever: Retriever, gemini: object) -> dict[str, Any]:
             gaps_brief=gaps_brief,
         )
         try:
-            summary = gemini.generate_compliance_answer(  # type: ignore[union-attr]
-                question=f"Write an executive summary for a {doc_type} compliance review.",
-                chunks=[],
-            )
-            # generate_compliance_answer needs chunks — use generate_text instead
             summary = gemini.generate_text(prompt).strip()  # type: ignore[union-attr]
         except Exception as exc:
             logger.warning("generate_report summary failed (%s).", exc)

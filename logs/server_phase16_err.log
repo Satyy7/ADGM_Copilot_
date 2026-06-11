@@ -1573,3 +1573,4 @@ During task with name 'generate' and id 'c10ba250-955d-4d6d-9999-cf3bae9811df'
 2026-06-11 22:30:31,428 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
 2026-06-11 22:30:33,433 INFO [backend.app.agent.self_rag.nodes] Self-RAG answer grade: UNGROUNDED
 2026-06-11 22:30:33,437 WARNING [backend.app.agent.self_rag.nodes] Self-RAG: answer is UNGROUNDED — replacing with conservative response.
+2026-06-11 23:20:24,223 INFO [httpx] HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"

@@ -1,0 +1,9 @@
+
+> adgm-compliance-copilot@1.0.0 dev
+> next dev --port 3000
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.7s
