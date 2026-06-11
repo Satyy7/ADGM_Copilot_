@@ -33,7 +33,10 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from typing import TYPE_CHECKING
+import time
+from typing import TYPE_CHECKING, Callable, TypeVar
+
+_T = TypeVar("_T")
 
 from google import genai
 from google.genai import types
@@ -93,6 +96,37 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
     return "\n\n".join(parts)
 
 
+# ── Groq retry helper ─────────────────────────────────────────────────────────
+
+def _groq_with_retry(fn: Callable[[], _T], max_retries: int = 3, base_delay: float = 10.0) -> _T:
+    """Call fn(), retrying on Groq RateLimitError with exponential backoff.
+
+    Delays: 10s → 20s → 40s before each retry (covers a 1-minute rate-limit window).
+    Raises the final RateLimitError if all retries are exhausted.
+    """
+    from groq import RateLimitError
+
+    for attempt in range(max_retries + 1):
+        try:
+            return fn()
+        except RateLimitError as exc:
+            if attempt == max_retries:
+                logger.error(
+                    "Groq rate limit exceeded after %d retries. "
+                    "Check your GROQ_API_KEY tier or reduce request frequency.",
+                    max_retries,
+                )
+                raise
+            wait = base_delay * (2 ** attempt)
+            logger.warning(
+                "Groq rate limited — waiting %.0fs before retry %d/%d.",
+                wait, attempt + 1, max_retries,
+            )
+            time.sleep(wait)
+
+    raise RuntimeError("unreachable")  # type: ignore[return-value]
+
+
 # ── Groq client ────────────────────────────────────────────────────────────────
 
 class GroqClient:
@@ -133,16 +167,20 @@ class GroqClient:
         prompt = _USER_TEMPLATE.format(context=context, question=question)
 
         logger.info("Generating answer via Groq (model=%s).", self._model_name)
-        response = self._client.chat.completions.create(
-            model=self._model_name,
-            messages=[
-                {"role": "system", "content": _SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.1,
-            max_tokens=2048,
-        )
-        return response.choices[0].message.content or ""
+
+        def _call() -> str:
+            response = self._client.chat.completions.create(
+                model=self._model_name,
+                messages=[
+                    {"role": "system", "content": _SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.1,
+                max_tokens=2048,
+            )
+            return response.choices[0].message.content or ""
+
+        return _groq_with_retry(_call)
 
     def generate_text(self, prompt: str) -> str:
         """Raw single-turn generation without the compliance system instruction.
@@ -150,13 +188,16 @@ class GroqClient:
         Used by the re-ranker and other utility tasks that only need a short
         structured response (e.g. a ranked list of passage numbers).
         """
-        response = self._client.chat.completions.create(
-            model=self._model_name,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            max_tokens=256,
-        )
-        return response.choices[0].message.content or ""
+        def _call() -> str:
+            response = self._client.chat.completions.create(
+                model=self._model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                max_tokens=2048,
+            )
+            return response.choices[0].message.content or ""
+
+        return _groq_with_retry(_call)
 
 
 # ── Gemini client (primary) ────────────────────────────────────────────────────
@@ -310,7 +351,7 @@ class GeminiClient:
         # ── LLM call ───────────────────────────────────────────────────────────
         config = types.GenerateContentConfig(
             temperature=0.0,
-            max_output_tokens=256,
+            max_output_tokens=2048,
         )
         result: str
         try:

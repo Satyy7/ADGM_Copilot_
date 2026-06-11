@@ -56,7 +56,7 @@ class HistoricalReviewIndexer:
                 "document_type":         report.document_type,
                 "compliance_score":      report.compliance_score,
                 "violation_count":       len(report.violations),
-                "gap_count":             len(report.gaps),
+                "gap_count":             len(report.recommendations),
                 "violation_types":       list({v.violation_type for v in report.violations}),
                 "regulation_references": list({
                     v.regulation_reference
@@ -121,14 +121,14 @@ def _build_review_text(report: "ReviewReport") -> str:
             for v in report.violations[:5]
         ]
         parts.append("Violations:\n" + "\n".join(v_lines))
-    if report.gaps:
-        g_lines = [f"- {g.missing_provision}" for g in report.gaps[:5]]
+    if report.recommendations:
+        g_lines = [f"- {r.title}" for r in report.recommendations[:5]]
         parts.append("Missing provisions:\n" + "\n".join(g_lines))
     return "\n".join(parts)
 
 
 def _point_id(report: "ReviewReport") -> str:
     """Deterministic UUID from document name + score + issue count."""
-    raw = f"{report.document_name}|{report.compliance_score}|{report.total_issues}"
+    raw = f"{report.document_name}|{report.compliance_score}|{len(report.violations) + len(report.recommendations)}"
     hex_digest = hashlib.sha256(raw.encode()).hexdigest()
     return str(uuid.UUID(hex_digest[:32]))

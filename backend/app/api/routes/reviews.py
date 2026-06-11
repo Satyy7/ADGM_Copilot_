@@ -31,7 +31,7 @@ from backend.app.models.review import Review
 from backend.app.schemas.review import ReviewCreate, ReviewRead, ReviewUpdate
 from backend.app.schemas.review_report import (
     DetectedViolation,
-    IdentifiedGap,
+    Recommendation,
     ReviewReport,
 )
 from backend.app.services.document_extractor import extract_text
@@ -130,8 +130,8 @@ async def analyze_document(
     raw_violations = final_state.get("violations", [])
     raw_gaps       = final_state.get("gaps", [])
 
-    violations = [_coerce_violation(v) for v in raw_violations if isinstance(v, dict)]
-    gaps       = [_coerce_gap(g)       for g in raw_gaps       if isinstance(g, dict)]
+    violations      = [_coerce_violation(v)       for v in raw_violations if isinstance(v, dict)]
+    recommendations = [_coerce_recommendation(g)  for g in raw_gaps       if isinstance(g, dict)]
 
     report = ReviewReport(
         document_name=filename,
@@ -139,8 +139,7 @@ async def analyze_document(
         compliance_score=final_state.get("compliance_score", 0.0),
         summary=final_state.get("summary", ""),
         violations=violations,
-        gaps=gaps,
-        total_issues=len(violations) + len(gaps),
+        recommendations=recommendations,
         model=final_state.get("model", "unknown"),
         latency_ms=latency_ms,
     )
@@ -159,8 +158,10 @@ async def analyze_document(
 
 def _coerce_violation(v: dict) -> DetectedViolation:
     """Coerce a raw LLM dict into a ``DetectedViolation``, filling missing keys."""
+    heading = v.get("clause_heading", "Unknown clause")
     return DetectedViolation(
-        clause_heading=v.get("clause_heading", "Unknown clause"),
+        clause_heading=heading,
+        clause_reference=heading or None,
         clause_excerpt=v.get("clause_excerpt", ""),
         violation_type=v.get("violation_type", "non_compliant_clause"),
         severity=v.get("severity", "medium"),
@@ -171,13 +172,22 @@ def _coerce_violation(v: dict) -> DetectedViolation:
     )
 
 
-def _coerce_gap(g: dict) -> IdentifiedGap:
-    """Coerce a raw LLM dict into an ``IdentifiedGap``, filling missing keys."""
-    return IdentifiedGap(
-        missing_provision=g.get("missing_provision", "Unknown provision"),
-        severity=g.get("severity", "medium"),
-        regulation_reference=g.get("regulation_reference"),
-        recommendation=g.get("recommendation", ""),
+def _coerce_recommendation(g: dict) -> Recommendation:
+    """Convert a raw LLM gap dict into a ``Recommendation`` for the frontend."""
+    provision = g.get("missing_provision", "Missing provision")
+    reg_ref   = g.get("regulation_reference")
+    severity  = g.get("severity", "medium")
+    action    = g.get("recommendation", "")
+
+    description = "This required provision is absent from the document."
+    if reg_ref:
+        description = f"Required by {reg_ref}. This provision is absent from the document."
+
+    return Recommendation(
+        title=provision,
+        description=description,
+        priority=severity,
+        action_required=action or None,
     )
 
 

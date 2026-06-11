@@ -49,6 +49,6 @@ def search_similar_cases(request: CaseSearchRequest) -> CaseSearchResult:
 
     return CaseSearchResult(
         query=request.query,
-        similar_cases=cases,
-        total_found=len(cases),
+        results=cases,
+        count=len(cases),
     )

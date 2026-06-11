@@ -33,5 +33,5 @@ class CaseSearchResult(SchemaBase):
     """Response from the similar-case search endpoint."""
 
     query: str
-    similar_cases: list[SimilarCase]
-    total_found: int
+    results: list[SimilarCase]
+    count: int

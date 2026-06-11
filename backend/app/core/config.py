@@ -6,7 +6,7 @@ cache, and model configuration.
 """
 
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -38,19 +38,19 @@ class Settings(BaseSettings):
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
     qdrant_grpc_port: int = 6334
-    qdrant_api_key: SecretStr | None = None
+    qdrant_api_key: Optional[SecretStr] = None
     qdrant_https: bool = False
 
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_db: int = 0
-    redis_password: SecretStr | None = None
+    redis_password: Optional[SecretStr] = None
 
-    gemini_api_key: SecretStr | None = None
+    gemini_api_key: Optional[SecretStr] = None
     gemini_model: str = "gemini-2.0-flash"
     gemini_embedding_model: str = "gemini-embedding-001"
 
-    groq_api_key: SecretStr | None = None
+    groq_api_key: Optional[SecretStr] = None
     groq_model: str = "llama-3.3-70b-versatile"
 
     @computed_field  # type: ignore[prop-decorator]

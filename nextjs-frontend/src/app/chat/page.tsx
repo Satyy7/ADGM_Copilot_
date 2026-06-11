@@ -142,7 +142,7 @@ export default function ChatPage() {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `**Error:** ${err instanceof Error ? err.message : "Request failed. Is the backend running on port 8001?"}`,
+        content: `**Error:** ${err instanceof Error ? err.message : "Request failed. Is the backend running on port 8000?"}`,
         timestamp: new Date(),
       }]);
     } finally {

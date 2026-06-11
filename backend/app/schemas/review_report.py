@@ -21,6 +21,7 @@ class DetectedViolation(SchemaBase):
     """One compliance violation found in the reviewed document."""
 
     clause_heading: str
+    clause_reference: str | None = None  # alias for clause_heading, used by frontend
     clause_excerpt: str
     violation_type: str   # non_compliant_clause | missing_disclosure | inadequate_provision | prohibited_term
     severity: str         # high | medium | low
@@ -31,12 +32,21 @@ class DetectedViolation(SchemaBase):
 
 
 class IdentifiedGap(SchemaBase):
-    """A required provision that is absent from the document."""
+    """A required provision absent from the document (internal, used by graph state)."""
 
     missing_provision: str
     severity: str         # high | medium | low
     regulation_reference: str | None = None
     recommendation: str
+
+
+class Recommendation(SchemaBase):
+    """An actionable improvement recommendation derived from a compliance gap."""
+
+    title: str
+    description: str
+    priority: str          # immediate | high | medium | low
+    action_required: str | None = None
 
 
 class ReviewReport(SchemaBase):
@@ -47,8 +57,7 @@ class ReviewReport(SchemaBase):
     compliance_score: float         # 0-100
     summary: str
     violations: list[DetectedViolation]
-    gaps: list[IdentifiedGap]
-    total_issues: int               # len(violations) + len(gaps)
+    recommendations: list[Recommendation]
     model: str
     latency_ms: float
     similar_cases: list[SimilarCase] = Field(default_factory=list)  # Phase 11
