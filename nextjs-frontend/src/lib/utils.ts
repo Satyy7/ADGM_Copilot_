@@ -11,10 +11,10 @@ export function formatLatency(ms: number): string {
 }
 
 export function scoreColor(score: number): string {
-  if (score >= 80) return "#34d4a0";
-  if (score >= 60) return "#f0c050";
-  if (score >= 40) return "#ffb040";
-  return "#ff5c6e";
+  if (score >= 80) return "#059669";
+  if (score >= 60) return "#D97706";
+  if (score >= 40) return "#EA580C";
+  return "#E11D48";
 }
 
 export function scoreLabel(score: number): string {
@@ -26,21 +26,21 @@ export function scoreLabel(score: number): string {
 
 export function severityColor(severity: string): { bg: string; text: string; border: string } {
   switch (severity.toLowerCase()) {
-    case "critical": return { bg: "rgba(232,58,80,0.12)", text: "#ff5c6e", border: "rgba(232,58,80,0.3)" };
-    case "high":     return { bg: "rgba(255,140,0,0.12)",  text: "#ffb040", border: "rgba(255,140,0,0.3)" };
-    case "medium":   return { bg: "rgba(240,192,80,0.12)", text: "#f0c050", border: "rgba(240,192,80,0.3)" };
-    case "low":      return { bg: "rgba(52,212,160,0.12)", text: "#34d4a0", border: "rgba(52,212,160,0.3)" };
-    default:         return { bg: "rgba(136,153,187,0.12)", text: "#8899bb", border: "rgba(136,153,187,0.3)" };
+    case "critical": return { bg: "#FFF1F2", text: "#BE123C", border: "#FECDD3" };
+    case "high":     return { bg: "#FFF7ED", text: "#C2410C", border: "#FED7AA" };
+    case "medium":   return { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A" };
+    case "low":      return { bg: "#ECFDF5", text: "#047857", border: "#A7F3D0" };
+    default:         return { bg: "#FAF8F2", text: "#6B6259", border: "#EDE9DF" };
   }
 }
 
 export function priorityColor(priority: string): { bg: string; text: string; border: string } {
   switch (priority.toLowerCase()) {
-    case "immediate": return { bg: "rgba(232,58,80,0.12)", text: "#ff5c6e", border: "rgba(232,58,80,0.3)" };
-    case "high":      return { bg: "rgba(255,140,0,0.12)",  text: "#ffb040", border: "rgba(255,140,0,0.3)" };
-    case "medium":    return { bg: "rgba(240,192,80,0.12)", text: "#f0c050", border: "rgba(240,192,80,0.3)" };
-    case "low":       return { bg: "rgba(52,212,160,0.12)", text: "#34d4a0", border: "rgba(52,212,160,0.3)" };
-    default:          return { bg: "rgba(136,153,187,0.12)", text: "#8899bb", border: "rgba(136,153,187,0.3)" };
+    case "immediate": return { bg: "#FFF1F2", text: "#BE123C", border: "#FECDD3" };
+    case "high":      return { bg: "#FFF7ED", text: "#C2410C", border: "#FED7AA" };
+    case "medium":    return { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A" };
+    case "low":       return { bg: "#ECFDF5", text: "#047857", border: "#A7F3D0" };
+    default:          return { bg: "#FAF8F2", text: "#6B6259", border: "#EDE9DF" };
   }
 }
 
@@ -61,11 +61,11 @@ export function truncate(text: string, max: number): string {
 
 export function collectionBadgeColor(collection: string): string {
   const map: Record<string, string> = {
-    regulations:        "rgba(212,160,48,0.15)",
-    guidance:           "rgba(52,212,160,0.12)",
-    templates:          "rgba(100,149,237,0.15)",
-    checklists:         "rgba(147,112,219,0.15)",
-    historical_reviews: "rgba(255,140,0,0.12)",
+    regulations:        "#FFFBEB",
+    guidance:           "#ECFDF5",
+    templates:          "#F0F9FF",
+    checklists:         "#F5F3FF",
+    historical_reviews: "#FFF7ED",
   };
-  return map[collection] ?? "rgba(136,153,187,0.12)";
+  return map[collection] ?? "#FAF8F2";
 }

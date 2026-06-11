@@ -1,0 +1,71 @@
+
+> adgm-compliance-copilot@1.0.0 dev
+> next dev --port 3000
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.2s (552 modules)
+ GET / 200 in 5476ms
+ GET / 200 in 76ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 4.7s (1099 modules)
+ GET /chat 200 in 162ms
+ ○ Compiling /review ...
+ ✓ Compiled /review in 648ms (1139 modules)
+ GET /review 200 in 862ms
+ ✓ Compiled /clauses in 477ms (1151 modules)
+ GET /clauses 200 in 762ms
+ ○ Compiling /analytics ...
+ ✓ Compiled /analytics in 1773ms (2181 modules)
+ GET /analytics 200 in 2159ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1103ms (2191 modules)
+ GET /cases 200 in 1309ms
+ ✓ Compiled in 3.2s (2183 modules)
+ ✓ Compiled in 1015ms (2183 modules)
+ GET / 200 in 256ms
+ ✓ Compiled in 1618ms (2183 modules)
+ ✓ Compiled in 1438ms (2183 modules)
+ ✓ Compiled in 758ms (2183 modules)
+ ✓ Compiled in 1028ms (2183 modules)
+ ✓ Compiled in 993ms (2183 modules)
+ ○ Compiling /review ...
+ ✓ Compiled /review in 1242ms (1098 modules)
+ ✓ Compiled /cases in 498ms (1104 modules)
+ ✓ Compiled in 810ms (2205 modules)
+ ✓ Compiled in 1457ms (2205 modules)
+ GET /chat 200 in 763ms
+ ✓ Compiled in 1270ms (2205 modules)
+ ✓ Compiled in 1612ms (2205 modules)
+ ✓ Compiled in 847ms (2205 modules)
+ ✓ Compiled in 991ms (2205 modules)
+ ✓ Compiled in 1820ms (2205 modules)
+ ✓ Compiled in 1417ms (2205 modules)
+ ✓ Compiled in 1541ms (2205 modules)
+ ✓ Compiled in 2.1s (2205 modules)
+ ✓ Compiled in 749ms (2205 modules)
+ ✓ Compiled in 1352ms (2205 modules)
+ ✓ Compiled in 1959ms (2198 modules)
+ ✓ Compiled in 1390ms (2198 modules)
+ ✓ Compiled in 1221ms (2198 modules)
+ GET / 200 in 338ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 726ms (1104 modules)
+ GET /chat 200 in 1437ms
+ GET /review 200 in 132ms
+ GET /clauses 200 in 109ms
+ GET /analytics 200 in 403ms
+ GET /cases 200 in 108ms
+ GET /cases 200 in 185ms
+ GET /review 200 in 79ms
+ ✓ Compiled in 3.3s (1689 modules)
+ ✓ Compiled in 972ms (1689 modules)
+ ✓ Compiled in 1031ms (1689 modules)
+ GET /review 200 in 179ms
+ GET / 200 in 291ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 6.5s (1922 modules)

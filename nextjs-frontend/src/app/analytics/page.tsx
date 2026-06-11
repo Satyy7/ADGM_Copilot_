@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3, Play, Eye, CheckCircle2, XCircle,
-  AlertTriangle, Database, Clock, Cpu, Table2,
+  AlertTriangle, Database, Clock, Loader2, Table2,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -12,7 +11,7 @@ import {
 import TopBar from "@/components/layout/TopBar";
 import { runAnalyticsQuery } from "@/lib/api";
 import type { AnalyticsResult } from "@/types";
-import { cn, highlightSql, formatLatency } from "@/lib/utils";
+import { highlightSql, formatLatency } from "@/lib/utils";
 
 const EXAMPLE_QUERIES = [
   "How many compliance reviews have been completed this month?",
@@ -25,16 +24,15 @@ const EXAMPLE_QUERIES = [
 function SqlBlock({ sql }: { sql: string }) {
   return (
     <pre
-      className="bg-navy-950/80 border border-white/6 rounded-xl p-4 text-xs font-mono leading-relaxed overflow-x-auto"
+      className="sql-block overflow-x-auto"
       dangerouslySetInnerHTML={{ __html: highlightSql(sql) }}
     />
   );
 }
 
 function ResultsTable({ columns, rows }: { columns: string[]; rows: Record<string, unknown>[] }) {
-  if (!rows.length) return <p className="text-sm text-slate-500 text-center py-6">Query returned 0 rows.</p>;
+  if (!rows.length) return <p className="text-sm text-[var(--text-3)] text-center py-6">Query returned 0 rows.</p>;
 
-  // Detect if any column looks numeric for a bar chart
   const numericCol = columns.find(c =>
     rows.every(r => typeof r[c] === "number" || (typeof r[c] === "string" && !isNaN(Number(r[c]))))
   );
@@ -43,22 +41,21 @@ function ResultsTable({ columns, rows }: { columns: string[]; rows: Record<strin
 
   return (
     <div className="space-y-5">
-      {/* Chart */}
       {canChart && (
-        <div className="glass rounded-xl p-4">
-          <p className="text-xs text-slate-500 mb-3">Visual — {numericCol}</p>
+        <div className="card p-4">
+          <p className="section-label mb-3">{numericCol}</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={rows} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey={labelCol!} tick={{ fill: "#6b7ea8", fontSize: 10 }} />
-              <YAxis tick={{ fill: "#6b7ea8", fontSize: 10 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#EDE9DF" />
+              <XAxis dataKey={labelCol!} tick={{ fill: "#9B9083", fontSize: 10 }} />
+              <YAxis tick={{ fill: "#9B9083", fontSize: 10 }} />
               <Tooltip
-                contentStyle={{ background: "#0d1526", border: "1px solid rgba(212,160,48,0.2)", borderRadius: 8, fontSize: 11 }}
-                labelStyle={{ color: "#f0c050" }}
+                contentStyle={{ background: "#FFFFFF", border: "1px solid #EDE9DF", borderRadius: 8, fontSize: 11 }}
+                labelStyle={{ color: "#D97706", fontWeight: 600 }}
               />
               <Bar dataKey={numericCol!} radius={[4, 4, 0, 0]}>
                 {rows.map((_, i) => (
-                  <Cell key={i} fill={`hsl(${200 + i * 15}, 70%, 60%)`} />
+                  <Cell key={i} fill={`hsl(${35 + i * 18}, 80%, ${55 + (i % 3) * 8}%)`} />
                 ))}
               </Bar>
             </BarChart>
@@ -66,13 +63,12 @@ function ResultsTable({ columns, rows }: { columns: string[]; rows: Record<strin
         </div>
       )}
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-white/6">
+      <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-white/6 bg-navy-800/60">
+            <tr className="border-b border-[var(--border)] bg-[var(--surface-alt)]">
               {columns.map(c => (
-                <th key={c} className="text-left px-4 py-2.5 text-slate-400 font-semibold capitalize whitespace-nowrap">
+                <th key={c} className="text-left px-4 py-2.5 text-[var(--text-2)] font-semibold capitalize whitespace-nowrap">
                   {c.replace(/_/g, " ")}
                 </th>
               ))}
@@ -80,9 +76,9 @@ function ResultsTable({ columns, rows }: { columns: string[]; rows: Record<strin
           </thead>
           <tbody>
             {rows.map((row, i) => (
-              <tr key={i} className="border-b border-white/4 hover:bg-white/2 transition-colors">
+              <tr key={i} className="border-b border-[var(--border)] hover:bg-amber-50/40 transition-colors">
                 {columns.map(c => (
-                  <td key={c} className="px-4 py-2.5 text-slate-300 whitespace-nowrap max-w-[260px] truncate">
+                  <td key={c} className="px-4 py-2.5 text-[var(--text-2)] whitespace-nowrap max-w-[260px] truncate">
                     {String(row[c] ?? "—")}
                   </td>
                 ))}
@@ -104,51 +100,38 @@ export default function AnalyticsPage() {
 
   async function handleQuery(previewOnly = true) {
     if (!question.trim() || loading) return;
-    setError(null);
-    setApproving(false);
-    setLoading(true);
+    setError(null); setApproving(false); setLoading(true);
     try {
       const r = await runAnalyticsQuery(question, previewOnly);
       setResult(r);
       if (previewOnly && r.sql_safe) setApproving(true);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Query failed");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
 
   async function handleApprove() {
     if (!result?.generated_sql) return;
-    setApproving(false);
-    setLoading(true);
-    try {
-      const r = await runAnalyticsQuery(question, false, result.generated_sql);
-      setResult(r);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Execution failed");
-    } finally {
-      setLoading(false);
-    }
+    setApproving(false); setLoading(true);
+    try { setResult(await runAnalyticsQuery(question, false, result.generated_sql)); }
+    catch (e: unknown) { setError(e instanceof Error ? e.message : "Execution failed"); }
+    finally { setLoading(false); }
   }
 
-  function reset() {
-    setResult(null);
-    setError(null);
-    setApproving(false);
-    setQuestion("");
-  }
+  function reset() { setResult(null); setError(null); setApproving(false); setQuestion(""); }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <TopBar title="Analytics" subtitle="Natural language → SQL → Human approval → Results" />
+      <TopBar title="Analytics" subtitle="Ask data questions in plain English and explore your compliance data" />
 
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5 page-enter">
         {/* Query input */}
-        <div className="glass rounded-2xl p-5 space-y-4">
+        <div className="card p-5 space-y-4">
           <div className="flex items-center gap-2">
-            <BarChart3 size={16} className="text-orange-400" />
-            <h3 className="text-sm font-semibold text-white">Ask a data question</h3>
+            <div className="w-8 h-8 rounded-lg bg-coral-50 border border-coral-100 flex items-center justify-center" style={{ background: "#FFF7ED", borderColor: "#FED7AA" }}>
+              <BarChart3 size={14} className="text-orange-600" />
+            </div>
+            <h3 className="font-display text-sm font-semibold text-[var(--text)]">Ask a data question</h3>
           </div>
 
           <div className="flex gap-3">
@@ -157,32 +140,29 @@ export default function AnalyticsPage() {
               onChange={e => setQuestion(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleQuery(true)}
               placeholder="e.g. How many reviews have a compliance score below 60?"
-              className="flex-1 bg-navy-800/80 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-orange-400/40 transition-all"
+              className="flex-1 min-w-0 bg-[var(--surface-alt)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-3)] focus:outline-none focus:border-amber-300 focus:bg-white transition-all"
             />
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <button
               onClick={() => handleQuery(true)}
               disabled={!question.trim() || loading}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap border"
+              style={
                 question.trim() && !loading
-                  ? "bg-orange-400/15 border border-orange-400/25 text-orange-300 hover:bg-orange-400/25"
-                  : "bg-navy-700/50 border border-white/5 text-slate-600 cursor-not-allowed"
-              )}
+                  ? { background: "#FFF7ED", borderColor: "#FED7AA", color: "#EA580C" }
+                  : { background: "var(--surface-alt)", borderColor: "var(--border)", color: "var(--text-3)", cursor: "not-allowed" }
+              }
             >
-              {loading ? <Cpu size={14} className="animate-spin-slow" /> : <Eye size={14} />}
+              {loading ? <Loader2 size={13} className="animate-spin" /> : <Eye size={13} />}
               {loading ? "Processing…" : "Preview SQL"}
-            </motion.button>
+            </button>
           </div>
 
-          {/* Example queries */}
           <div className="flex flex-wrap gap-1.5">
             {EXAMPLE_QUERIES.map(q => (
               <button
                 key={q}
                 onClick={() => setQuestion(q)}
-                className="text-[10px] px-2.5 py-1 rounded-lg bg-navy-800/60 border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/12 transition-all"
+                className="text-[10.5px] px-2.5 py-1 rounded-lg bg-[var(--surface-alt)] border border-[var(--border)] text-[var(--text-3)] hover:text-amber-700 hover:border-amber-200 hover:bg-amber-50 transition-all"
               >
                 {q.length > 50 ? q.slice(0, 48) + "…" : q}
               </button>
@@ -191,112 +171,99 @@ export default function AnalyticsPage() {
         </div>
 
         {error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="rounded-xl border border-crimson-500/30 bg-crimson-500/8 p-4 text-sm text-crimson-400 flex items-start gap-2"
-          >
-            <XCircle size={14} className="flex-shrink-0 mt-0.5" />
-            {error}
-          </motion.div>
+          <div className="card rounded-xl p-4 border-rose-200 text-sm text-rose-700 flex items-start gap-2" style={{ background: "#FFF1F2" }}>
+            <XCircle size={13} className="flex-shrink-0 mt-0.5" /> {error}
+          </div>
         )}
 
-        <AnimatePresence mode="wait">
-          {result && (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
-            >
-              {/* SQL safety status */}
-              {!result.sql_safe && (
-                <div className="rounded-xl border border-crimson-500/30 bg-crimson-500/8 p-4 flex items-start gap-3">
-                  <AlertTriangle size={16} className="text-crimson-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-crimson-400">Query Blocked</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{result.sql_rejection_reason}</p>
-                  </div>
+        {result && (
+          <div className="space-y-4">
+            {/* Safety blocked */}
+            {!result.sql_safe && (
+              <div className="card rounded-xl p-4 border-rose-200 flex items-start gap-3" style={{ background: "#FFF1F2" }}>
+                <AlertTriangle size={15} className="text-rose-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-rose-700">Query Blocked</p>
+                  <p className="text-xs text-rose-500 mt-0.5">{result.sql_rejection_reason}</p>
                 </div>
-              )}
-
-              {/* SQL preview + approval */}
-              {result.generated_sql && result.sql_safe && (
-                <div className="glass rounded-2xl overflow-hidden">
-                  <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
-                    <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-                      <Database size={12} className="text-orange-400" /> Generated SQL
-                    </span>
-                    {approving && (
-                      <div className="flex items-center gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={handleApprove}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-jade-400/15 border border-jade-400/25 text-jade-400 text-xs font-medium hover:bg-jade-400/25 transition-all"
-                        >
-                          <Play size={11} /> Approve & Run
-                        </motion.button>
-                        <button
-                          onClick={reset}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-navy-700/60 border border-white/8 text-slate-400 text-xs hover:text-slate-200 transition-all"
-                        >
-                          <XCircle size={11} /> Cancel
-                        </button>
-                      </div>
-                    )}
-                    {!approving && result.query_results !== null && (
-                      <span className="text-xs text-jade-400 flex items-center gap-1">
-                        <CheckCircle2 size={11} /> Executed
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <SqlBlock sql={result.generated_sql} />
-                    {approving && (
-                      <p className="text-xs text-gold-400/80 mt-3 flex items-center gap-1.5">
-                        <AlertTriangle size={11} /> Review the SQL above before approving execution.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Answer narrative */}
-              {result.answer && (
-                <div className="glass rounded-2xl p-5">
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <BarChart3 size={13} className="text-orange-400" />
-                    <span className="text-xs font-medium text-slate-400">Answer</span>
-                    {result.row_count !== null && result.row_count !== undefined && (
-                      <span className="ml-auto text-xs text-slate-600 flex items-center gap-1">
-                        <Table2 size={10} /> {result.row_count} rows
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">{result.answer}</p>
-                </div>
-              )}
-
-              {/* Results table */}
-              {result.query_results && result.columns && result.query_results.length > 0 && (
-                <div className="glass rounded-2xl p-5">
-                  <div className="flex items-center gap-1.5 mb-4">
-                    <Table2 size={13} className="text-orange-400" />
-                    <span className="text-xs font-medium text-slate-400">Results</span>
-                    <span className="ml-auto text-xs text-slate-600">{result.row_count} rows returned</span>
-                  </div>
-                  <ResultsTable columns={result.columns} rows={result.query_results as Record<string, unknown>[]} />
-                </div>
-              )}
-
-              <div className="flex items-center justify-between text-xs text-slate-600">
-                <span className="flex items-center gap-1"><Clock size={10} /> Model: {result.model}</span>
-                <button onClick={reset} className="hover:text-slate-400 transition-colors">← New query</button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+
+            {/* SQL + approval */}
+            {result.generated_sql && result.sql_safe && (
+              <div className="card rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)] bg-[var(--surface-alt)]">
+                  <span className="text-xs font-medium text-[var(--text-2)] flex items-center gap-1.5">
+                    <Database size={11} className="text-orange-500" /> Generated SQL
+                  </span>
+                  {approving && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleApprove}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border"
+                        style={{ background: "#ECFDF5", borderColor: "#A7F3D0", color: "#059669" }}
+                      >
+                        <Play size={10} /> Approve & Run
+                      </button>
+                      <button
+                        onClick={reset}
+                        className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5"
+                      >
+                        <XCircle size={10} /> Cancel
+                      </button>
+                    </div>
+                  )}
+                  {!approving && result.query_results !== null && (
+                    <span className="text-xs text-jade-600 flex items-center gap-1">
+                      <CheckCircle2 size={10} /> Executed
+                    </span>
+                  )}
+                </div>
+                <div className="p-5">
+                  <SqlBlock sql={result.generated_sql} />
+                  {approving && (
+                    <p className="text-xs text-amber-600 mt-3 flex items-center gap-1.5">
+                      <AlertTriangle size={10} /> Review the SQL above before approving execution.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Answer narrative */}
+            {result.answer && (
+              <div className="card p-5">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <BarChart3 size={12} className="text-orange-500" />
+                  <span className="section-label">Answer</span>
+                  {result.row_count != null && (
+                    <span className="ml-auto text-[10.5px] text-[var(--text-3)] flex items-center gap-1">
+                      <Table2 size={9} /> {result.row_count} rows
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-[var(--text-2)] leading-relaxed">{result.answer}</p>
+              </div>
+            )}
+
+            {/* Results table */}
+            {result.query_results && result.columns && result.query_results.length > 0 && (
+              <div className="card p-5">
+                <div className="flex items-center gap-1.5 mb-4">
+                  <Table2 size={12} className="text-orange-500" />
+                  <span className="section-label">Results</span>
+                  <span className="ml-auto text-[10.5px] text-[var(--text-3)]">{result.row_count} rows returned</span>
+                </div>
+                <ResultsTable columns={result.columns} rows={result.query_results as Record<string, unknown>[]} />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-[11px] text-[var(--text-3)]">
+              <span className="flex items-center gap-1"><Clock size={9} /> {result.model}</span>
+              <button onClick={reset} className="hover:text-amber-700 transition-colors">← New query</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

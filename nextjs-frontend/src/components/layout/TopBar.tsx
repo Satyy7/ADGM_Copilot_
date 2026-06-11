@@ -1,6 +1,5 @@
 "use client";
-import { Bell, Search, User } from "lucide-react";
-import { useState } from "react";
+import { Bell, Sparkles } from "lucide-react";
 
 interface TopBarProps {
   title: string;
@@ -8,37 +7,34 @@ interface TopBarProps {
 }
 
 export default function TopBar({ title, subtitle }: TopBarProps) {
-  const [search, setSearch] = useState("");
-
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-navy-900/60 backdrop-blur-md flex-shrink-0">
-      <div>
-        <h1 className="text-lg font-semibold text-white">{title}</h1>
-        {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+    <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-white/80 backdrop-blur-sm flex-shrink-0 sticky top-0 z-20">
+      <div className="flex items-center gap-3">
+        <div>
+          <h1 className="font-display font-semibold text-[17px] text-[var(--text)] leading-tight">{title}</h1>
+          {subtitle && <p className="text-[11px] text-[var(--text-3)] mt-0.5">{subtitle}</p>}
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Search bar */}
-        <div className="relative hidden md:flex items-center">
-          <Search className="absolute left-3 text-slate-500 w-3.5 h-3.5" />
-          <input
-            type="text"
-            placeholder="Quick search…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-52 bg-navy-800/80 border border-white/8 rounded-xl pl-9 pr-4 py-1.5 text-sm text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-gold-500/40 focus:bg-navy-800 transition-all"
-          />
+      <div className="flex items-center gap-2.5">
+        {/* AI badge */}
+        <div className="hidden sm:flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-full px-3 py-1">
+          <Sparkles size={11} className="text-amber-600" />
+          <span className="text-[11px] font-semibold text-amber-700">AI Assistant</span>
         </div>
 
-        {/* Notifications */}
-        <button className="relative w-9 h-9 rounded-xl bg-navy-800/80 border border-white/8 flex items-center justify-center text-slate-400 hover:text-slate-200 hover:border-gold-500/20 transition-all">
-          <Bell size={15} />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-gold-400" />
+        {/* Notification */}
+        <button className="relative w-8 h-8 rounded-xl bg-[var(--surface-alt)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-[var(--text)] hover:border-[var(--border-strong)] transition-all">
+          <Bell size={14} />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-500" />
         </button>
 
         {/* User avatar */}
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-500/25 flex items-center justify-center cursor-pointer hover:border-gold-500/40 transition-all">
-          <User size={15} className="text-gold-400" />
+        <div
+          className="w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer text-white font-bold text-xs flex-shrink-0"
+          style={{ background: "linear-gradient(135deg,#D97706 0%,#92400E 100%)" }}
+        >
+          A
         </div>
       </div>
     </header>

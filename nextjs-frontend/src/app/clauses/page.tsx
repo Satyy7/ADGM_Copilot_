@@ -1,22 +1,21 @@
 "use client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Wand2, Copy, Check, BookOpen, Clock, Cpu, ChevronDown } from "lucide-react";
+import { FileText, Copy, Check, BookOpen, Clock, Loader2, ChevronDown, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import TopBar from "@/components/layout/TopBar";
 import { generateClause } from "@/lib/api";
 import type { ClauseResult } from "@/types";
-import { cn, formatLatency, collectionBadgeColor } from "@/lib/utils";
+import { formatLatency, collectionBadgeColor } from "@/lib/utils";
 
 const DOC_TYPES = [
-  { value: "articles_of_association", label: "Articles of Association" },
-  { value: "memorandum_of_association", label: "Memorandum of Association" },
-  { value: "employment_contract", label: "Employment Contract" },
-  { value: "board_resolution", label: "Board Resolution" },
-  { value: "shareholder_resolution", label: "Shareholder Resolution" },
-  { value: "ubo_declaration", label: "UBO Declaration" },
-  { value: "", label: "General / Other" },
+  { value: "articles_of_association",  label: "Articles of Association" },
+  { value: "memorandum_of_association",label: "Memorandum of Association" },
+  { value: "employment_contract",       label: "Employment Contract" },
+  { value: "board_resolution",          label: "Board Resolution" },
+  { value: "shareholder_resolution",    label: "Shareholder Resolution" },
+  { value: "ubo_declaration",           label: "UBO Declaration" },
+  { value: "",                          label: "General / Other" },
 ];
 
 const EXAMPLES = [
@@ -37,17 +36,10 @@ export default function ClausesPage() {
 
   async function handleGenerate() {
     if (!request.trim() || loading) return;
-    setError(null);
-    setResult(null);
-    setLoading(true);
-    try {
-      const r = await generateClause(request, docType);
-      setResult(r);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Generation failed");
-    } finally {
-      setLoading(false);
-    }
+    setError(null); setResult(null); setLoading(true);
+    try { setResult(await generateClause(request, docType)); }
+    catch (e: unknown) { setError(e instanceof Error ? e.message : "Generation failed"); }
+    finally { setLoading(false); }
   }
 
   function handleCopy() {
@@ -59,83 +51,73 @@ export default function ClausesPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <TopBar title="Clause Generator" subtitle="ADGM-compliant legal clauses with full citations" />
+      <TopBar title="Clause Generator" subtitle="Draft ADGM-compliant legal clauses with precise regulatory references" />
 
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto px-6 py-6 page-enter">
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 page-enter">
-            {/* Left panel — input */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left — input */}
             <div className="space-y-4">
-              <div className="glass rounded-2xl p-5 space-y-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <Wand2 size={16} className="text-purple-400" />
-                  <h3 className="text-sm font-semibold text-white">Clause Request</h3>
+              <div className="card p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-violet-50 border border-violet-200 flex items-center justify-center">
+                    <Sparkles size={14} className="text-violet-600" />
+                  </div>
+                  <h3 className="font-display text-sm font-semibold text-[var(--text)]">Clause Request</h3>
                 </div>
 
-                {/* Document type */}
                 <div>
-                  <label className="text-xs text-slate-500 block mb-1.5">Document Type</label>
+                  <label className="section-label block mb-1.5">Document Type</label>
                   <div className="relative">
                     <select
                       value={docType}
                       onChange={e => setDocType(e.target.value)}
-                      className="w-full bg-navy-800/80 border border-white/8 rounded-xl px-4 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-purple-400/40 appearance-none cursor-pointer"
+                      className="input-base appearance-none pr-8 cursor-pointer"
                     >
-                      {DOC_TYPES.map(d => (
-                        <option key={d.value} value={d.value} className="bg-navy-900">{d.label}</option>
-                      ))}
+                      {DOC_TYPES.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
                     </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-3)] pointer-events-none" />
                   </div>
                 </div>
 
-                {/* Request textarea */}
                 <div>
-                  <label className="text-xs text-slate-500 block mb-1.5">Describe the clause you need</label>
+                  <label className="section-label block mb-1.5">Describe the clause you need</label>
                   <textarea
                     value={request}
                     onChange={e => setRequest(e.target.value)}
                     placeholder="e.g. Draft a UBO beneficial ownership disclosure clause…"
                     rows={5}
-                    className="w-full bg-navy-800/80 border border-white/8 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-purple-400/40 resize-none transition-all"
+                    className="input-base resize-none"
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handleGenerate}
                   disabled={!request.trim() || loading}
-                  className={cn(
-                    "w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all",
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all border"
+                  style={
                     request.trim() && !loading
-                      ? "bg-purple-500/20 border border-purple-400/30 text-purple-300 hover:bg-purple-500/30"
-                      : "bg-navy-700/50 border border-white/5 text-slate-600 cursor-not-allowed"
-                  )}
+                      ? { background: "#F5F3FF", borderColor: "#DDD6FE", color: "#7C3AED" }
+                      : { background: "var(--surface-alt)", borderColor: "var(--border)", color: "var(--text-3)", cursor: "not-allowed" }
+                  }
                 >
-                  {loading ? (
-                    <><Cpu size={15} className="animate-spin-slow" /> Generating…</>
-                  ) : (
-                    <><Wand2 size={15} /> Generate Clause</>
-                  )}
-                </motion.button>
+                  {loading ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> Generate Clause</>}
+                </button>
 
                 {error && (
-                  <div className="rounded-xl border border-crimson-500/30 bg-crimson-500/8 p-3 text-xs text-crimson-400">
-                    {error}
-                  </div>
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">{error}</div>
                 )}
               </div>
 
-              {/* Example prompts */}
-              <div className="glass rounded-2xl p-4">
-                <p className="text-xs text-slate-500 mb-3 font-medium">Example requests</p>
-                <div className="space-y-1.5">
+              {/* Examples */}
+              <div className="card p-4">
+                <p className="section-label mb-3">Example requests</p>
+                <div className="space-y-1">
                   {EXAMPLES.map(ex => (
                     <button
                       key={ex}
                       onClick={() => setRequest(ex)}
-                      className="w-full text-left text-xs text-slate-500 hover:text-slate-300 px-3 py-2 rounded-lg hover:bg-white/4 transition-all leading-relaxed"
+                      className="w-full text-left text-[12px] text-[var(--text-2)] hover:text-amber-700 px-3 py-2 rounded-lg hover:bg-amber-50 transition-all leading-relaxed"
                     >
                       → {ex}
                     </button>
@@ -144,111 +126,91 @@ export default function ClausesPage() {
               </div>
             </div>
 
-            {/* Right panel — output */}
+            {/* Right — output */}
             <div className="space-y-4">
               {!result && !loading && (
-                <div className="glass rounded-2xl p-12 flex flex-col items-center justify-center text-center gap-4 h-full min-h-[300px]">
-                  <div className="w-14 h-14 rounded-2xl bg-purple-400/10 border border-purple-400/20 flex items-center justify-center animate-float">
-                    <Wand2 size={22} className="text-purple-400" />
+                <div className="card rounded-2xl p-12 flex flex-col items-center justify-center text-center gap-4 min-h-[300px]">
+                  <div className="w-14 h-14 rounded-2xl bg-violet-50 border border-violet-200 flex items-center justify-center">
+                    <Sparkles size={22} className="text-violet-500" />
                   </div>
-                  <p className="text-sm text-slate-500 max-w-xs">
-                    Your generated clause will appear here, formatted with ADGM-specific regulatory language and citations.
+                  <p className="text-sm text-[var(--text-3)] max-w-xs">
+                    Your generated clause will appear here, formatted with ADGM regulatory language and citations.
                   </p>
                 </div>
               )}
 
               {loading && (
-                <div className="glass rounded-2xl p-12 flex flex-col items-center justify-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-purple-400/10 border border-purple-400/20 flex items-center justify-center">
-                    <Cpu size={22} className="text-purple-400 animate-spin-slow" />
+                <div className="card rounded-2xl p-12 flex flex-col items-center justify-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-violet-50 border border-violet-200 flex items-center justify-center">
+                    <Loader2 size={22} className="text-violet-500 animate-spin" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-white mb-1">Retrieving regulatory context…</p>
-                    <p className="text-xs text-slate-500">HyDE → Hybrid Search → Re-rank → Generate</p>
+                    <p className="font-display text-sm font-semibold text-[var(--text)] mb-1">Generating your clause…</p>
+                    <p className="text-xs text-[var(--text-3)]">Searching regulations · Drafting · Verifying citations</p>
                   </div>
-                  <div className="w-48 h-1 rounded-full bg-navy-700 overflow-hidden">
+                  <div className="w-48 h-1.5 rounded-full bg-[var(--border)] overflow-hidden">
                     <div className="h-full shimmer rounded-full" />
                   </div>
                 </div>
               )}
 
-              <AnimatePresence>
-                {result && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-3"
-                  >
-                    {/* Output card */}
-                    <div className="glass rounded-2xl overflow-hidden">
-                      {/* Toolbar */}
-                      <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
-                        <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-                          <Wand2 size={12} className="text-purple-400" /> Generated Clause
+              {result && (
+                <div className="space-y-3">
+                  <div className="card rounded-2xl overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)] bg-[var(--surface-alt)]">
+                      <span className="text-xs font-medium text-[var(--text-2)] flex items-center gap-1.5">
+                        <Sparkles size={11} className="text-violet-500" /> Generated Clause
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10.5px] text-[var(--text-3)] flex items-center gap-1">
+                          <Clock size={9} /> {formatLatency(result.latency_ms)}
                         </span>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-slate-600 flex items-center gap-1">
-                            <Clock size={10} /> {formatLatency(result.latency_ms)}
-                          </span>
-                          <button
-                            onClick={handleCopy}
-                            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors"
-                          >
-                            {copied ? <><Check size={12} className="text-jade-400" /> Copied</> : <><Copy size={12} /> Copy</>}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Clause text */}
-                      <div className="px-5 py-4 prose-adgm max-h-[420px] overflow-y-auto">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.clause_text}</ReactMarkdown>
+                        <button
+                          onClick={handleCopy}
+                          className="flex items-center gap-1.5 text-xs text-[var(--text-3)] hover:text-amber-700 transition-colors"
+                        >
+                          {copied ? <><Check size={11} className="text-jade-600" /> Copied</> : <><Copy size={11} /> Copy</>}
+                        </button>
                       </div>
                     </div>
+                    <div className="px-5 py-4 prose-adgm max-h-[420px] overflow-y-auto">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.clause_text}</ReactMarkdown>
+                    </div>
+                  </div>
 
-                    {/* Sources */}
-                    {result.citations.length > 0 && (
-                      <div className="glass rounded-2xl overflow-hidden">
-                        <button
-                          onClick={() => setShowSources(!showSources)}
-                          className="w-full flex items-center justify-between px-5 py-3 text-left"
-                        >
-                          <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-                            <BookOpen size={12} className="text-gold-400" />
-                            Regulatory Sources ({result.citations.length})
-                          </span>
-                          <ChevronDown size={13} className={cn("text-slate-500 transition-transform", showSources && "rotate-180")} />
-                        </button>
-                        <AnimatePresence>
-                          {showSources && (
-                            <motion.div
-                              initial={{ height: 0 }}
-                              animate={{ height: "auto" }}
-                              exit={{ height: 0 }}
-                              className="overflow-hidden"
+                  {result.citations.length > 0 && (
+                    <div className="card rounded-2xl overflow-hidden">
+                      <button
+                        onClick={() => setShowSources(!showSources)}
+                        className="w-full flex items-center justify-between px-5 py-3 text-left"
+                      >
+                        <span className="text-xs font-medium text-[var(--text-2)] flex items-center gap-1.5">
+                          <BookOpen size={11} className="text-amber-600" />
+                          Regulatory Sources ({result.citations.length})
+                        </span>
+                        <ChevronDown size={12} className={`text-[var(--text-3)] transition-transform ${showSources ? "rotate-180" : ""}`} />
+                      </button>
+                      {showSources && (
+                        <div className="px-5 pb-4 space-y-2">
+                          {result.citations.map((s, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2.5 p-2.5 rounded-lg text-xs border border-[var(--border)]"
+                              style={{ background: collectionBadgeColor(s.collection) }}
                             >
-                              <div className="px-5 pb-4 space-y-2">
-                                {result.citations.map((s, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex items-center gap-2.5 p-2.5 rounded-lg text-xs"
-                                    style={{ background: collectionBadgeColor(s.collection) }}
-                                  >
-                                    <BookOpen size={11} className="text-gold-400 flex-shrink-0" />
-                                    <div>
-                                      <p className="text-slate-300 font-medium">{s.source_title}</p>
-                                      {s.rule_reference && <p className="text-gold-400 text-[10px] mt-0.5">{s.rule_reference}</p>}
-                                    </div>
-                                  </div>
-                                ))}
+                              <BookOpen size={10} className="text-amber-600 flex-shrink-0" />
+                              <div>
+                                <p className="text-[var(--text)] font-medium">{s.source_title}</p>
+                                {s.rule_reference && <p className="text-amber-700 text-[10px] mt-0.5">{s.rule_reference}</p>}
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

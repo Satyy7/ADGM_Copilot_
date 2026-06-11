@@ -1,10 +1,9 @@
 "use client";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  MessageSquare, FileSearch, Wand2, BarChart3,
-  FolderSearch, TrendingUp, Shield, Zap,
-  ArrowRight, Database, Clock,
+  MessageSquare, FileSearch, FileText, BarChart3,
+  Gavel, ArrowRight, Database, Shield, Zap, Clock,
+  TrendingUp, Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import TopBar from "@/components/layout/TopBar";
@@ -15,89 +14,68 @@ const CAPABILITIES = [
   {
     href: "/chat",
     icon: MessageSquare,
-    title: "Compliance Chat",
+    title: "AI Copilot",
     description: "Ask any ADGM regulatory question and get precise, cited answers from the official knowledge base.",
-    color: "#34d4a0",
-    gradient: "from-jade-400/10 to-transparent",
-    badge: "RAG · HyDE · CRAG · Self-RAG",
+    badge: "Intelligent Q&A",
+    accent: "#D97706",
+    bg: "#FFFBEB",
+    border: "#FDE68A",
   },
   {
     href: "/review",
     icon: FileSearch,
     title: "Document Review",
-    description: "Upload PDF or DOCX. Six specialist AI agents analyse for violations, gaps, and generate a compliance score.",
-    color: "#7dd3fc",
-    gradient: "from-blue-400/10 to-transparent",
-    badge: "6 AI Agents · Score · Citations",
+    description: "Upload PDF or DOCX. Six specialist AI agents analyse violations, gaps, and generate a compliance score.",
+    badge: "Automated Analysis",
+    accent: "#0284C7",
+    bg: "#F0F9FF",
+    border: "#BAE6FD",
   },
   {
     href: "/clauses",
-    icon: Wand2,
+    icon: FileText,
     title: "Clause Generator",
-    description: "Draft ADGM-compliant legal clauses with precise article references, ready for Articles of Association or contracts.",
-    color: "#c084fc",
-    gradient: "from-purple-400/10 to-transparent",
-    badge: "Template RAG · Cited",
+    description: "Draft ADGM-compliant legal clauses with precise article references for contracts or articles of association.",
+    badge: "Cited Drafting",
+    accent: "#7C3AED",
+    bg: "#F5F3FF",
+    border: "#DDD6FE",
   },
   {
     href: "/analytics",
     icon: BarChart3,
     title: "Analytics",
-    description: "Ask data questions in plain English. The AI writes SQL, shows you a preview, and waits for your approval.",
-    color: "#fb923c",
-    gradient: "from-orange-400/10 to-transparent",
-    badge: "Text2SQL · Human-in-Loop",
+    description: "Ask data questions in plain English. The AI generates a query, shows a preview, and waits for your approval.",
+    badge: "Natural Language Queries",
+    accent: "#EA580C",
+    bg: "#FFF7ED",
+    border: "#FED7AA",
   },
   {
     href: "/cases",
-    icon: FolderSearch,
-    title: "Similar Cases",
-    description: "Find historical compliance reviews matching your scenario. Semantic search across all past documents.",
-    color: "#f472b6",
-    gradient: "from-pink-400/10 to-transparent",
-    badge: "Vector Search · Dense",
+    icon: Gavel,
+    title: "Case Search",
+    description: "Find historical compliance reviews matching your scenario using intelligent semantic search.",
+    badge: "Semantic Search",
+    accent: "#DB2777",
+    bg: "#FDF2F8",
+    border: "#FBCFE8",
   },
 ];
 
 const STATS = [
-  { label: "Knowledge Chunks",   value: "12,500+", icon: Database,    color: "#d4a030" },
-  { label: "Avg Compliance Score", value: "74/100", icon: Shield,     color: "#34d4a0" },
-  { label: "Retrieval Stack",    value: "5-Layer",  icon: Zap,        color: "#c084fc" },
-  { label: "Avg Latency",        value: "~8s",      icon: Clock,      color: "#7dd3fc" },
+  { label: "Knowledge Chunks",   value: "12,500+", icon: Database, accent: "#D97706", bg: "#FFFBEB" },
+  { label: "Avg Compliance Score", value: "74/100", icon: Shield,  accent: "#059669", bg: "#ECFDF5" },
+  { label: "AI Capabilities",   value: "6 Tools",  icon: Zap,      accent: "#7C3AED", bg: "#F5F3FF" },
+  { label: "Avg Response Time",  value: "~8s",     icon: Clock,    accent: "#0284C7", bg: "#F0F9FF" },
 ];
-
-function StatCard({ label, value, icon: Icon, color, delay }: typeof STATS[0] & { delay: number }) {
-  const [displayed, setDisplayed] = useState("—");
-  useEffect(() => {
-    const t = setTimeout(() => setDisplayed(value), delay * 100 + 300);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: delay * 0.1, duration: 0.4 }}
-      className="glass glass-hover rounded-2xl p-5 flex items-center gap-4"
-    >
-      <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: `${color}18`, border: `1px solid ${color}30` }}
-      >
-        <Icon size={20} style={{ color }} />
-      </div>
-      <div>
-        <p className="text-xl font-bold text-white">{displayed}</p>
-        <p className="text-xs text-slate-500 mt-0.5">{label}</p>
-      </div>
-    </motion.div>
-  );
-}
 
 export default function DashboardPage() {
   const [cache, setCache] = useState<CacheStats | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     getCacheStats().then(setCache).catch(() => null);
   }, []);
 
@@ -105,131 +83,124 @@ export default function DashboardPage() {
     <div className="flex flex-col h-full overflow-hidden">
       <TopBar title="Dashboard" subtitle="ADGM Compliance Intelligence Platform" />
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative overflow-hidden rounded-2xl border border-gold-500/20 bg-gradient-to-br from-gold-500/8 via-navy-800/50 to-transparent p-8"
-        >
-          {/* Decorative glow */}
-          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-gold-500/5 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-jade-400/5 blur-3xl pointer-events-none" />
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-7 page-enter">
 
-          <div className="relative flex items-start justify-between flex-wrap gap-4">
+        {/* Hero banner */}
+        <div
+          className="relative overflow-hidden rounded-2xl border border-amber-200 px-8 py-7"
+          style={{ background: "linear-gradient(135deg, #FFFBEB 0%, #FEF9F0 50%, #FEFDF5 100%)" }}
+        >
+          {/* Decorative circles */}
+          <div className="absolute -top-10 -right-10 w-52 h-52 rounded-full bg-amber-100/60 blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-amber-50 blur-xl pointer-events-none" />
+
+          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="status-dot" />
-                <span className="text-xs text-slate-400 font-medium">All systems operational</span>
+                <span className="text-[11px] font-semibold text-amber-700 tracking-wide uppercase">All systems operational</span>
               </div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Welcome to{" "}
-                <span className="text-gold-gradient">ADGM Nexus</span>
+              <h2 className="font-display text-3xl font-bold text-[var(--text)] mb-2 leading-tight">
+                Welcome to <span className="text-amber-700">ADGM Nexus</span>
               </h2>
-              <p className="text-slate-400 text-sm max-w-lg leading-relaxed">
+              <p className="text-sm text-[var(--text-2)] max-w-md leading-relaxed">
                 Enterprise-grade AI compliance platform for the Abu Dhabi Global Market.
-                16-phase intelligence stack — from hybrid retrieval to self-grading answers.
+                Ask questions, review documents, draft clauses, run analytics, and search precedents — all in one place.
               </p>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {["HyDE", "CRAG", "Self-RAG", "Redis Cache", "Text2SQL"].map(tag => (
-                  <span key={tag} className="px-2.5 py-1 rounded-lg text-xs font-medium bg-navy-700/80 border border-white/8 text-slate-400">
-                    {tag}
-                  </span>
-                ))}
-              </div>
             </div>
             <Link href="/chat">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors shadow-gold-sm"
-              >
-                Start Chatting <ArrowRight size={15} />
-              </motion.button>
+              <button className="btn-amber flex items-center gap-2 whitespace-nowrap">
+                <Sparkles size={14} /> Start Chatting <ArrowRight size={14} />
+              </button>
             </Link>
           </div>
-        </motion.div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STATS.map((s, i) => <StatCard key={s.label} {...s} delay={i} />)}
         </div>
 
-        {/* Capabilities grid */}
-        <div>
-          <h3 className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2">
-            <TrendingUp size={14} /> Capabilities
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {CAPABILITIES.map(({ href, icon: Icon, title, description, color, gradient, badge }, i) => (
-              <motion.div
-                key={href}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.07, duration: 0.35 }}
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {STATS.map(({ label, value, icon: Icon, accent, bg }) => (
+            <div
+              key={label}
+              className={`card p-4 flex items-center gap-3 ${mounted ? "animate-fade-up" : "opacity-0"}`}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: bg, border: `1.5px solid ${accent}30` }}
               >
-                <Link href={href}>
-                  <div className="glass glass-hover rounded-2xl p-5 h-full cursor-pointer group relative overflow-hidden">
-                    {/* Color accent top */}
+                <Icon size={17} style={{ color: accent }} />
+              </div>
+              <div>
+                <p className="font-display text-xl font-bold text-[var(--text)]">{value}</p>
+                <p className="text-[11px] text-[var(--text-3)] mt-0.5">{label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Capabilities */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp size={14} className="text-[var(--text-3)]" />
+            <p className="section-label">Capabilities</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {CAPABILITIES.map(({ href, icon: Icon, title, description, badge, accent, bg, border }) => (
+              <Link key={href} href={href}>
+                <div className="card card-hover p-5 h-full cursor-pointer group relative overflow-hidden">
+                  {/* Top accent stripe */}
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl" style={{ background: accent }} />
+
+                  <div className="flex items-start justify-between mb-3 pt-1">
                     <div
-                      className="absolute top-0 left-0 right-0 h-px opacity-60"
-                      style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-                    />
-
-                    <div className="flex items-start justify-between mb-3">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center"
-                        style={{ background: `${color}18`, border: `1px solid ${color}28` }}
-                      >
-                        <Icon size={18} style={{ color }} />
-                      </div>
-                      <ArrowRight
-                        size={14}
-                        className="text-slate-600 group-hover:text-slate-400 group-hover:translate-x-1 transition-all duration-200 mt-1"
-                      />
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: bg, border: `1.5px solid ${border}` }}
+                    >
+                      <Icon size={17} style={{ color: accent }} />
                     </div>
-
-                    <h4 className="text-sm font-semibold text-white mb-1.5 group-hover:text-gold-300 transition-colors">
-                      {title}
-                    </h4>
-                    <p className="text-xs text-slate-500 leading-relaxed mb-3">{description}</p>
-                    <span className="inline-block text-xs px-2 py-0.5 rounded-md bg-navy-700/60 border border-white/6 text-slate-500">
-                      {badge}
-                    </span>
+                    <ArrowRight
+                      size={13}
+                      className="text-[var(--text-3)] group-hover:translate-x-1 transition-transform duration-200 mt-1"
+                      style={{ color: accent }}
+                    />
                   </div>
-                </Link>
-              </motion.div>
+
+                  <h4 className="font-display text-[14.5px] font-semibold text-[var(--text)] mb-1.5 group-hover:text-amber-700 transition-colors">
+                    {title}
+                  </h4>
+                  <p className="text-[12.5px] text-[var(--text-2)] leading-relaxed mb-3">{description}</p>
+                  <span
+                    className="badge text-[10px]"
+                    style={{ background: bg, borderColor: border, color: accent }}
+                  >
+                    {badge}
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
 
         {/* Cache stats */}
         {cache && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="glass rounded-2xl p-5"
-          >
-            <h3 className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2">
-              <Database size={14} /> Redis Cache Status
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Database size={14} className="text-[var(--text-3)]" />
+              <p className="section-label">Performance Cache</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: "Embeddings",    value: cache.namespaces.embeddings,    ttl: "7 days",   color: "#d4a030" },
-                { label: "LLM Responses", value: cache.namespaces.generate_text,  ttl: "1 hour",   color: "#c084fc" },
-                { label: "Retrieval",     value: cache.namespaces.retrieval,      ttl: "30 min",   color: "#34d4a0" },
-                { label: "Total Keys",    value: cache.total_cached_keys,         ttl: cache.memory.used_memory_human, color: "#7dd3fc" },
-              ].map(({ label, value, ttl, color }) => (
-                <div key={label} className="rounded-xl bg-navy-800/50 border border-white/5 p-3">
-                  <p className="text-lg font-bold" style={{ color }}>{value.toLocaleString()}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{label}</p>
-                  <p className="text-xs text-slate-600 mt-0.5">TTL: {ttl}</p>
+                { label: "Embeddings Cached",  value: cache.namespaces.embeddings,    accent: "#D97706", bg: "#FFFBEB" },
+                { label: "AI Responses Cached", value: cache.namespaces.generate_text, accent: "#7C3AED", bg: "#F5F3FF" },
+                { label: "Searches Cached",    value: cache.namespaces.retrieval,      accent: "#059669", bg: "#ECFDF5" },
+                { label: "Memory Used",        value: cache.memory.used_memory_human,  accent: "#0284C7", bg: "#F0F9FF" },
+              ].map(({ label, value, accent, bg }) => (
+                <div key={label} className="rounded-xl p-3 border border-[var(--border)]" style={{ background: bg }}>
+                  <p className="font-display text-lg font-bold" style={{ color: accent }}>{value}</p>
+                  <p className="text-[11px] text-[var(--text)] font-medium mt-0.5">{label}</p>
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
     </div>
