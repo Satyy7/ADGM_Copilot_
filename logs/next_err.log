@@ -1,0 +1,14 @@
+Failed to proxy http://localhost:8000/api/v1/chat Error: socket hang up
+    at Socket.socketCloseListener (node:_http_client:477:27)
+    at Socket.emit (node:events:536:35)
+    at TCP.<anonymous> (node:net:343:12)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: 'ECONNRESET'
+}
+Error: socket hang up
+    at Socket.socketCloseListener (node:_http_client:477:27)
+    at Socket.emit (node:events:536:35)
+    at TCP.<anonymous> (node:net:343:12)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: 'ECONNRESET'
+}
