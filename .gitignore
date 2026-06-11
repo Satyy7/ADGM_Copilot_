@@ -13,3 +13,7 @@ wheels/
 .env
 
 .env.example
+
+# Node
+node_modules/
+nextjs-frontend/node_modules/
