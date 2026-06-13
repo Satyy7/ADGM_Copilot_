@@ -1,113 +1,361 @@
-# ADGM Compliance Copilot
+# ADGM Nexus
 
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-green)
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
-![LangGraph](https://img.shields.io/badge/LangGraph-purple)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/FastAPI-Backend-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/LangGraph-Multi--Agent-purple?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Qdrant-VectorDB-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge" />
+</p>
 
-AI-powered compliance intelligence platform for organizations operating within the Abu Dhabi Global Market (ADGM).
+<p align="center">
+  <h3 align="center">
+    Enterprise AI Compliance Intelligence Platform for Abu Dhabi Global Market (ADGM)
+  </h3>
+</p>
+
+<p align="center">
+  Multi-Agent AI • RAG • CRAG • Self-RAG • Compliance Review • Analytics • Clause Generation
+</p>
 
 ---
 
 ## Overview
 
-ADGM Compliance Copilot helps compliance teams, legal professionals, and business owners work with ADGM regulations more efficiently.
+ADGM Nexus is an enterprise-grade AI compliance intelligence platform built specifically for organizations operating within the Abu Dhabi Global Market (ADGM).
 
-Instead of manually searching through regulations, guidance notices, and templates, users can ask questions in natural language, review legal documents, generate compliance-focused clauses, and analyze historical compliance data.
+The platform combines:
 
-The platform combines Retrieval-Augmented Generation (RAG), hybrid retrieval, LangGraph workflows, and regulatory knowledge retrieval to provide grounded answers backed by source citations.
+- Retrieval-Augmented Generation (RAG)
+- Hybrid Retrieval
+- Multi-Agent LangGraph Workflows
+- Compliance Auditing
+- Regulatory Knowledge Search
+- Clause Generation
+- Natural Language Analytics
+- Historical Case Search
 
----
-
-## Why I Built This
-
-Compliance work is heavily document-driven and often requires navigating large volumes of regulations and guidance material.
-
-This project started as an experiment to see whether modern RAG techniques and agent-based workflows could simplify regulatory research and document review while maintaining traceability and transparency.
-
-Over time it evolved into a complete compliance intelligence platform with support for:
-
-- Compliance Q&A
-- Document review
-- Clause generation
-- Compliance analytics
-- Historical case search
+to help compliance officers, legal teams, and organizations work with ADGM regulations more efficiently.
 
 ---
 
-## Features
+# 🎥 Watch Demo
 
-### Compliance Chat
+> Replace with your uploaded video URL
 
-Ask questions about ADGM regulations and receive citation-backed responses grounded in retrieved regulatory documents.
+**Demo Video**
 
-### Document Review
+[Watch Demo Here](https://your-demo-link.com)
 
-Upload PDF or DOCX files and receive:
+---
 
-- Compliance score
-- Detected violations
-- Gap analysis
+# 🏗 Architecture
+
+The complete system architecture is shown below.
+
+<p align="center">
+  <img src="./ADGM_NEXUS_Architecture.png" alt="ADGM Nexus Architecture" width="100%">
+</p>
+
+---
+
+# ✨ Features
+
+## AI Compliance Copilot
+
+Ask compliance questions in natural language and receive grounded answers with source citations.
+
+### Example Questions
+
+```text
+What are ADGM UBO disclosure requirements?
+
+Can an ADGM company have a single director?
+
+What documents are required for incorporation?
+```
+
+### Capabilities
+
+- Citation-backed answers
+- Multi-collection retrieval
+- CRAG
+- Self-RAG
+- Hallucination prevention
+- Source attribution
+
+---
+
+## Document Review & Compliance Audit
+
+Upload legal documents and receive:
+
+- Compliance Score
+- Executive Summary
+- Violation Detection
+- Gap Analysis
 - Recommendations
-- Executive summary
+- Regulatory Citations
+- Similar Historical Cases
 
-### Clause Generator
+### Supported Documents
 
-Generate ADGM-compliant clauses using regulations and standard document templates.
-
-### Compliance Analytics
-
-Query compliance data using natural language and generate insights through a secure Text-to-SQL workflow.
-
-### Historical Case Search
-
-Search previous compliance reviews using semantic similarity to identify patterns and similar cases.
+- Articles of Association (AoA)
+- Memorandum of Association (MoA)
+- Employment Contracts
+- Board Resolutions
+- Shareholder Resolutions
+- UBO Declarations
+- Share Purchase Agreements
 
 ---
 
-## Technology Stack
+## Clause Generator
 
-### Frontend
+Generate ADGM-compliant legal clauses.
+
+### Examples
+
+```text
+Draft an arbitration clause.
+
+Generate a board quorum clause.
+
+Create a share capital provision.
+```
+
+---
+
+## Compliance Analytics
+
+Ask questions about compliance data in plain English.
+
+### Examples
+
+```text
+How many violations were found this month?
+
+Which document type has the most violations?
+
+What is the average compliance score?
+```
+
+### Pipeline
+
+Natural Language
+↓
+Generate SQL
+↓
+Validate SQL
+↓
+Execute SQL
+↓
+Generate Narrative Insights
+
+---
+
+## Historical Case Search
+
+Find similar compliance reviews using semantic similarity search.
+
+### Examples
+
+```text
+Find AoA reviews with UBO violations.
+
+Show employment contracts with probation issues.
+
+Find reviews similar to this document.
+```
+
+---
+
+# 🚀 Technology Stack
+
+## Frontend
 
 - Next.js 14
+- React
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
+- React Markdown
+- Lucide React
+- React Dropzone
 
-### Backend
+## Backend
 
 - FastAPI
 - Python 3.12
 - SQLAlchemy
 - Pydantic
-
-### AI & Retrieval
-
 - LangGraph
+
+## AI & Retrieval
+
+- Groq (Llama 3.3 70B)
 - Gemini 2.0 Flash
 - Gemini Embeddings
-- Groq (Fallback LLM)
-- Hybrid Search
-- BM25
-- HyDE
 - CRAG
 - Self-RAG
+- HyDE
+- Hybrid Retrieval
+- BM25
+- Cross Encoder Re-Ranking
 
-### Databases
+## Databases
 
 - PostgreSQL
 - Qdrant
 - Redis
 
-### Infrastructure
+## Infrastructure
 
+- Docker
 - Docker Compose
 - uv
 
 ---
 
-## Project Structure
+# 🧠 Core Architecture
+
+```text
+User
+ │
+ ▼
+Next.js Frontend
+ │
+ ▼
+FastAPI Backend
+ │
+ ▼
+LangGraph Multi-Agent Orchestration
+ │
+ ├── Compliance Chat
+ ├── Document Review
+ ├── Clause Generator
+ ├── Analytics
+ └── Case Search
+ │
+ ├── Groq LLM
+ ├── Gemini Fallback
+ ├── Redis Cache
+ ├── PostgreSQL
+ └── Qdrant
+```
+
+---
+
+# 🔍 Retrieval Architecture
+
+```text
+User Query
+    │
+    ▼
+HyDE
+    │
+    ▼
+Dense Retrieval (Qdrant)
+    │
+    ▼
+BM25 Retrieval
+    │
+    ▼
+Hybrid Fusion (RRF)
+    │
+    ▼
+Cross Encoder Re-ranking
+    │
+    ▼
+Final Context
+    │
+    ▼
+LLM Generation
+```
+
+---
+
+# 🤖 Multi-Agent Pipelines
+
+## Compliance Chat
+
+```text
+route_intent
+      │
+      ▼
+retrieve
+      │
+      ▼
+crag_evaluate
+      │
+      ▼
+self_check_evidence
+      │
+      ▼
+generate
+      │
+      ▼
+self_grade_answer
+```
+
+---
+
+## Document Review
+
+```text
+classify_document
+        │
+        ▼
+extract_clauses
+        │
+        ▼
+retrieve_regulations
+        │
+        ▼
+detect_violations
+        │
+        ▼
+analyse_gaps
+        │
+        ▼
+generate_report
+```
+
+---
+
+## Clause Generation
+
+```text
+parse_request
+      │
+      ▼
+retrieve_context
+      │
+      ▼
+generate_clause
+```
+
+---
+
+## Analytics
+
+```text
+generate_sql
+      │
+      ▼
+validate_sql
+      │
+      ▼
+execute_sql
+      │
+      ▼
+format_answer
+```
+
+---
+
+# 📂 Project Structure
 
 ```text
 ADGM_Compliance_Copilot
@@ -131,63 +379,50 @@ ADGM_Compliance_Copilot
 │   │   ├── lib
 │   │   └── types
 │
-├── data
 ├── docs
 ├── scripts
 ├── tests
 ├── docker
-├── pyproject.toml
-└── uv.lock
+├── ADGM_NEXUS_Architecture.png
+├── README.md
+└── pyproject.toml
 ```
 
 ---
 
-## Getting Started
+# ⚙️ Installation
 
-### Prerequisites
-
-- Python 3.12+
-- Node.js 20+
-- Docker
-- Git
-- uv
-
-### Required API Keys
-
-- Gemini API Key
-- Groq API Key
-
----
-
-## Installation
-
-### Clone Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/your-username/adgm-compliance-copilot.git
+
 cd adgm-compliance-copilot
 ```
 
-### Install Backend Dependencies
+## Backend Setup
 
 ```bash
 uv sync
 ```
 
-### Install Frontend Dependencies
+## Frontend Setup
 
 ```bash
 cd nextjs-frontend
+
 npm install
+
 cd ..
 ```
 
-### Configure Environment Variables
+## Environment Variables
 
-Create a `.env` file:
+Create a `.env` file.
 
 ```env
 GEMINI_API_KEY=your_key
+
 GROQ_API_KEY=your_key
 
 POSTGRES_HOST=localhost
@@ -208,15 +443,15 @@ REDIS_PORT=6379
 docker compose -f docker/docker-compose.yml up -d
 ```
 
-This starts:
+Services Started:
 
 - PostgreSQL
-- Qdrant
 - Redis
+- Qdrant
 
 ---
 
-## Run Database Migrations
+## Run Migrations
 
 ```bash
 alembic upgrade head
@@ -232,38 +467,39 @@ python scripts/ingest_knowledge_base.py
 
 ---
 
-## Run the Application
-
-### Backend
+## Run Backend
 
 ```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Frontend
+---
+
+## Run Frontend
 
 ```bash
 cd nextjs-frontend
+
 npm run dev
 ```
 
 ---
 
-## Local URLs
+# 🌐 Local URLs
 
-Frontend
+### Frontend
 
 ```text
 http://localhost:3000
 ```
 
-Backend
+### Backend
 
 ```text
 http://localhost:8000
 ```
 
-Swagger Docs
+### Swagger Docs
 
 ```text
 http://localhost:8000/docs
@@ -271,54 +507,121 @@ http://localhost:8000/docs
 
 ---
 
-## API Endpoints
+# 🔌 API Endpoints
 
-| Method | Endpoint | Purpose |
-|----------|----------|----------|
-| POST | `/api/v1/chat` | Compliance Q&A |
+| Method | Endpoint | Description |
+|----------|----------|-------------|
+| POST | `/api/v1/chat` | Compliance Chat |
 | POST | `/api/v1/reviews/analyze` | Document Review |
 | POST | `/api/v1/generated-clauses/generate` | Clause Generation |
 | POST | `/api/v1/analytics/query` | Compliance Analytics |
 | POST | `/api/v1/cases/search` | Historical Case Search |
+| GET | `/health` | System Health |
 
 ---
 
-## Documentation
+# 📸 Screenshots
 
-Detailed architecture documentation is available in:
+## Dashboard
 
 ```text
-docs/architecture.md
+docs/screenshots/dashboard.png
+```
+
+## Compliance Chat
+
+```text
+docs/screenshots/chat.png
+```
+
+## Document Review
+
+```text
+docs/screenshots/review.png
+```
+
+## Clause Generator
+
+```text
+docs/screenshots/clauses.png
+```
+
+## Analytics
+
+```text
+docs/screenshots/analytics.png
+```
+
+## Case Search
+
+```text
+docs/screenshots/cases.png
 ```
 
 ---
 
-## Current Limitations
+# 🎯 Highlights
 
-- Generated clauses should always be reviewed by legal professionals.
-- Retrieval quality depends on document chunking and indexing strategy.
-- Regulatory updates require periodic re-indexing.
-- Text-to-SQL workflows currently support read-only operations.
-- Complex compliance scenarios may require multiple retrieval cycles.
+✅ Enterprise Multi-Agent Architecture
+
+✅ LangGraph Workflows
+
+✅ CRAG
+
+✅ Self-RAG
+
+✅ Hybrid Retrieval
+
+✅ HyDE
+
+✅ BM25
+
+✅ Cross-Encoder Re-Ranking
+
+✅ Compliance Auditing
+
+✅ Natural Language Analytics
+
+✅ Historical Case Search
+
+✅ Redis Caching
+
+✅ PostgreSQL Persistence
+
+✅ Qdrant Vector Search
+
+✅ Production-Ready FastAPI Backend
+
+✅ Modern Next.js Frontend
 
 ---
 
-## Future Improvements
+# 🔮 Future Enhancements
 
-- Multi-jurisdiction compliance support
-- Regulatory change monitoring
-- Agent memory
-- Human approval dashboards
+- Multi-Jurisdiction Compliance Support
+- Regulatory Change Monitoring
 - Enterprise SSO
-- Multi-document review workflows
-- Advanced compliance analytics
+- Human Approval Workflows
+- Multi-Document Review
+- Compliance Monitoring Dashboard
+- Agent Memory
 
 ---
 
-## License
+# ⚠ Disclaimer
+
+This platform is intended to assist legal and compliance workflows.
+
+Generated outputs should always be reviewed by qualified legal professionals before being relied upon for regulatory or legal decisions.
+
+---
+
+# 📄 License
 
 MIT License
 
-This project is intended for educational, research, and compliance-assistance purposes.
+---
 
-Users remain responsible for validating legal interpretations and compliance decisions before relying on generated outputs.
+<p align="center">
+Built with ❤️ using FastAPI • LangGraph • Groq • Gemini • Qdrant • PostgreSQL • Redis • Next.js
+</p>
