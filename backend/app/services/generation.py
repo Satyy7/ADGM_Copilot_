@@ -1,31 +1,36 @@
-"""LLM generation service with Gemini-primary / Groq-fallback strategy.
+"""LLM generation service with Groq-primary / Gemini-fallback strategy.
 
 Purpose
 -------
-Provides ``GeminiClient`` as the primary LLM for compliance answer generation.
-When Gemini fails for any reason (quota exhausted, rate limit, API error),
-the client automatically retries the same request using ``GroqClient`` so the
-system stays available even when the Gemini free tier is exhausted.
+Provides ``GeminiClient`` as the unified LLM interface for compliance answer
+generation. Groq is the primary provider (fast, low-latency). When Groq fails
+due to a rate-limit or any error, the client automatically retries via Gemini
+so the system stays available.
 
 Architecture Integration
 ------------------------
 * Phase 5 (baseline): ``BaselineRAGPipeline`` calls ``GeminiClient`` directly.
-  Groq fallback is transparent — the pipeline sees a single client interface.
-* Phase 9+ (agents): LangGraph nodes will call this client for specialised
-  tasks (classification, violation detection, recommendation generation).
-  The fallback strategy applies to all of them automatically.
+  The primary/fallback swap is transparent — the pipeline sees one interface.
+* Phase 9+ (agents): LangGraph nodes call this client for all generation tasks.
+  The fallback strategy applies automatically.
 
 Fallback chain
 --------------
-1. Try Gemini ``generate_content`` (primary).
-2. On any exception → log the error, instantiate ``GroqClient`` lazily, retry.
-3. If Groq also fails → raise the Groq exception.
+1. Try Groq ``chat.completions.create`` (primary — fast, free tier).
+2. On any exception → log the error, retry via Gemini if configured.
+3. If Gemini also fails → raise the Gemini exception.
 4. ``GeminiClient.active_model`` always reflects the provider that answered.
+
+Rate-limit retry
+----------------
+Groq RateLimitErrors are retried with exponential backoff before the fallback
+is triggered. Delays: 2 s → 4 s (max 2 retries, total wait ≤ 6 s).
+This is intentionally short so the frontend does not time out.
 
 Embedding note
 --------------
-Groq does not offer embedding models. The fallback is generation-only.
-``EmbeddingsService`` (embeddings.py) continues to use Gemini exclusively.
+Groq does not offer embedding models. ``EmbeddingsService`` (embeddings.py)
+continues to use Gemini exclusively.
 """
 
 from __future__ import annotations
@@ -37,9 +42,6 @@ import time
 from typing import TYPE_CHECKING, Callable, TypeVar
 
 _T = TypeVar("_T")
-
-from google import genai
-from google.genai import types
 
 from backend.app.core.config import Settings, get_settings
 from backend.app.schemas.rag import RetrievedChunk
@@ -78,10 +80,7 @@ Provide a precise, citation-backed answer using only the regulatory context abov
 # ── Shared helpers ─────────────────────────────────────────────────────────────
 
 def _format_context(chunks: list[RetrievedChunk]) -> str:
-    """Format retrieved chunks into a numbered context block with citation headers.
-
-    Shared between both Gemini and Groq so both providers see identical context.
-    """
+    """Format retrieved chunks into a numbered context block with citation headers."""
     parts: list[str] = []
     for i, chunk in enumerate(chunks, 1):
         header_parts: list[str] = []
@@ -96,13 +95,13 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
     return "\n\n".join(parts)
 
 
-# ── Groq retry helper ─────────────────────────────────────────────────────────
+# ── Groq retry helper ──────────────────────────────────────────────────────────
 
-def _groq_with_retry(fn: Callable[[], _T], max_retries: int = 3, base_delay: float = 10.0) -> _T:
+def _groq_with_retry(fn: Callable[[], _T], max_retries: int = 2, base_delay: float = 2.0) -> _T:
     """Call fn(), retrying on Groq RateLimitError with exponential backoff.
 
-    Delays: 10s → 20s → 40s before each retry (covers a 1-minute rate-limit window).
-    Raises the final RateLimitError if all retries are exhausted.
+    Delays: 2 s → 4 s (max 2 retries, total wait ≤ 6 s).
+    Kept short so the fallback to Gemini triggers quickly on sustained rate limits.
     """
     from groq import RateLimitError
 
@@ -112,8 +111,7 @@ def _groq_with_retry(fn: Callable[[], _T], max_retries: int = 3, base_delay: flo
         except RateLimitError as exc:
             if attempt == max_retries:
                 logger.error(
-                    "Groq rate limit exceeded after %d retries. "
-                    "Check your GROQ_API_KEY tier or reduce request frequency.",
+                    "Groq rate limit exceeded after %d retries — handing off to Gemini fallback.",
                     max_retries,
                 )
                 raise
@@ -127,14 +125,13 @@ def _groq_with_retry(fn: Callable[[], _T], max_retries: int = 3, base_delay: flo
     raise RuntimeError("unreachable")  # type: ignore[return-value]
 
 
-# ── Groq client ────────────────────────────────────────────────────────────────
+# ── Groq client (primary) ──────────────────────────────────────────────────────
 
 class GroqClient:
-    """Groq LLM client used as fallback when Gemini is unavailable.
+    """Groq LLM client — primary provider for fast, low-latency generation.
 
-    Uses the OpenAI-compatible Groq Chat Completions API. The same system
-    prompt and context format as ``GeminiClient`` are applied so answer
-    quality is consistent across providers.
+    Uses the OpenAI-compatible Groq Chat Completions API with the same system
+    prompt and context format so answer quality is consistent across providers.
 
     Parameters
     ----------
@@ -145,9 +142,9 @@ class GroqClient:
     def __init__(self, settings: Settings) -> None:
         if settings.groq_api_key is None:
             raise ValueError(
-                "GROQ_API_KEY is not set. Add it to your .env file to enable the Groq fallback."
+                "GROQ_API_KEY is not set. Add it to your .env file."
             )
-        from groq import Groq  # lazy import — only needed when fallback is triggered
+        from groq import Groq
 
         self._client = Groq(api_key=settings.groq_api_key.get_secret_value())
         self._model_name = settings.groq_model
@@ -185,8 +182,8 @@ class GroqClient:
     def generate_text(self, prompt: str) -> str:
         """Raw single-turn generation without the compliance system instruction.
 
-        Used by the re-ranker and other utility tasks that only need a short
-        structured response (e.g. a ranked list of passage numbers).
+        Used by the re-ranker and other utility tasks (classification,
+        structured extraction) that only need a short, deterministic response.
         """
         def _call() -> str:
             response = self._client.chat.completions.create(
@@ -200,19 +197,99 @@ class GroqClient:
         return _groq_with_retry(_call)
 
 
-# ── Gemini client (primary) ────────────────────────────────────────────────────
+# ── Gemini fallback ────────────────────────────────────────────────────────────
+
+class _GeminiFallback:
+    """Internal Gemini client used only when Groq is unavailable.
+
+    Instantiated lazily during ``GeminiClient.__init__`` if GEMINI_API_KEY is
+    present. All Google SDK imports are kept inside this class so the service
+    starts successfully even when the google-genai package is absent.
+    """
+
+    def __init__(self, settings: Settings) -> None:
+        from google import genai
+        from google.genai import types
+
+        self._genai = genai
+        self._types = types
+        self._client = genai.Client(api_key=settings.gemini_api_key.get_secret_value())  # type: ignore[union-attr]
+        self._model = settings.gemini_model
+        self._gen_config = types.GenerateContentConfig(
+            temperature=0.1,
+            max_output_tokens=2048,
+            top_p=0.95,
+            system_instruction=_SYSTEM_PROMPT,
+        )
+        logger.info("Gemini fallback ready — model=%s", self._model)
+
+    @property
+    def model_name(self) -> str:
+        return self._model
+
+    def generate_compliance_answer(
+        self,
+        question: str,
+        chunks: list[RetrievedChunk],
+    ) -> str:
+        """Generate a cited compliance answer using Gemini."""
+        context = _format_context(chunks)
+        prompt = _USER_TEMPLATE.format(context=context, question=question)
+        logger.info("Generating answer via Gemini fallback (model=%s).", self._model)
+        response = self._client.models.generate_content(
+            model=self._model,
+            contents=prompt,
+            config=self._gen_config,
+        )
+        return self._extract_text(response)
+
+    def generate_text(self, prompt: str) -> str:
+        """Raw single-turn generation without the compliance system instruction."""
+        config = self._types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=2048,
+        )
+        response = self._client.models.generate_content(
+            model=self._model,
+            contents=prompt,
+            config=config,
+        )
+        return self._extract_text(response)
+
+    @staticmethod
+    def _extract_text(response: object) -> str:
+        """Safely extract text from a Gemini response, handling blocked output."""
+        try:
+            text = response.text  # type: ignore[union-attr]
+            if text:
+                return text
+        except (ValueError, AttributeError):
+            pass
+        logger.warning("Gemini returned an empty or blocked response.")
+        return (
+            "The model was unable to generate a response for this query. "
+            "This may be due to content restrictions. Please rephrase your question."
+        )
+
+
+# ── Unified LLM client — Groq primary / Gemini fallback ───────────────────────
 
 class GeminiClient:
-    """Primary Gemini LLM client with automatic Groq fallback.
+    """Unified LLM client: Groq is the primary provider, Gemini is the fallback.
 
-    On any Gemini failure (quota, rate limit, network error), the request is
-    transparently retried via ``GroqClient``. The ``active_model`` property
-    always reflects which provider answered the last request.
+    The class retains the name ``GeminiClient`` for backward compatibility with
+    all existing callers (agents, RAG pipeline, re-ranker). Internally, every
+    generation request tries Groq first; Gemini is only invoked when Groq is
+    unavailable.
 
     Parameters
     ----------
     settings:
-        Application settings. Reads ``gemini_*`` and ``groq_*`` fields.
+        Application settings. ``groq_api_key`` is required; ``gemini_api_key``
+        is optional and enables the fallback.
+    redis_client:
+        Optional Redis connection for ``generate_text`` response caching
+        (Phase 16).
     """
 
     def __init__(
@@ -221,49 +298,44 @@ class GeminiClient:
         redis_client: "redis_lib.Redis | None" = None,
     ) -> None:
         resolved = settings or get_settings()
-        if resolved.gemini_api_key is None:
-            raise ValueError("GEMINI_API_KEY is not set. Add it to your .env file.")
 
-        self._client = genai.Client(api_key=resolved.gemini_api_key.get_secret_value())
-        self._gemini_model = resolved.gemini_model
-        self._generation_config = types.GenerateContentConfig(
-            temperature=0.1,
-            max_output_tokens=2048,
-            top_p=0.95,
-            system_instruction=_SYSTEM_PROMPT,
-        )
+        # ── Primary: Groq (required) ───────────────────────────────────────────
+        if resolved.groq_api_key is None:
+            raise ValueError(
+                "GROQ_API_KEY is not set. Add it to your .env file to enable the primary LLM."
+            )
+        self._primary = GroqClient(settings=resolved)
 
-        # Build Groq fallback if key is present — failure here is non-fatal
-        self._fallback: GroqClient | None = None
-        if resolved.groq_api_key is not None:
+        # ── Fallback: Gemini (optional) ────────────────────────────────────────
+        self._fallback: _GeminiFallback | None = None
+        if resolved.gemini_api_key is not None:
             try:
-                self._fallback = GroqClient(settings=resolved)
+                self._fallback = _GeminiFallback(resolved)
             except Exception as exc:
-                logger.warning("Groq fallback could not be initialised: %s", exc)
+                logger.warning("Gemini fallback could not be initialised: %s", exc)
 
         # Phase 16: Redis for generate_text caching (HyDE, CRAG, Self-RAG, re-ranker)
         self._redis = redis_client
         self._gentext_ttl = 60 * 60  # 1 hour
 
-        # Tracks the provider that answered the most recent request
-        self._active_model: str = self._gemini_model
+        self._active_model: str = f"groq/{self._primary.model_name}"
         logger.info(
-            "GeminiClient ready — primary=%s  fallback=%s  cache=%s",
-            self._gemini_model,
-            self._fallback.model_name if self._fallback else "none",
+            "LLMClient ready — primary=groq/%s  fallback=%s  cache=%s",
+            self._primary.model_name,
+            f"gemini/{self._fallback.model_name}" if self._fallback else "none",
             "redis" if self._redis else "none",
         )
 
     @property
     def model_name(self) -> str:
-        """Primary Gemini model identifier (regardless of which provider answered)."""
-        return self._gemini_model
+        """Primary Groq model identifier."""
+        return self._primary.model_name
 
     @property
     def active_model(self) -> str:
-        """The provider/model that answered the last ``generate_compliance_answer`` call.
+        """The provider/model that answered the last generation call.
 
-        Returns ``"gemini/<model>"`` or ``"groq/<model>"`` so callers can
+        Returns ``"groq/<model>"`` or ``"gemini/<model>"`` so callers can
         surface which backend was used in the API response.
         """
         return self._active_model
@@ -273,65 +345,56 @@ class GeminiClient:
         question: str,
         chunks: list[RetrievedChunk],
     ) -> str:
-        """Generate a cited compliance answer, falling back to Groq on failure.
+        """Generate a cited compliance answer via Groq, falling back to Gemini.
 
         Steps
         -----
-        1. Try Gemini ``generate_content``.
-        2. On any exception: if Groq fallback is configured, log and retry.
-        3. If Groq also fails, raise its exception.
+        1. Try Groq (with up to 2 rate-limit retries, max 6 s wait).
+        2. On any exception: if Gemini fallback is configured, log and retry.
+        3. If Gemini also fails, raise its exception.
         4. Always update ``self._active_model`` to reflect which provider answered.
         """
-        context = _format_context(chunks)
-        prompt = _USER_TEMPLATE.format(context=context, question=question)
-
-        # ── Primary: Gemini ────────────────────────────────────────────────────
+        # ── Primary: Groq ──────────────────────────────────────────────────────
         try:
-            logger.debug("Generating answer via Gemini (model=%s).", self._gemini_model)
-            response = self._client.models.generate_content(
-                model=self._gemini_model,
-                contents=prompt,
-                config=self._generation_config,
-            )
-            answer = self._extract_text(response)
-            self._active_model = f"gemini/{self._gemini_model}"
+            answer = self._primary.generate_compliance_answer(question, chunks)
+            self._active_model = f"groq/{self._primary.model_name}"
             return answer
 
-        except Exception as gemini_exc:
+        except Exception as groq_exc:
             logger.warning(
-                "Gemini generation failed (%s: %s).",
-                type(gemini_exc).__name__,
-                str(gemini_exc)[:200],
+                "Groq generation failed (%s: %s).",
+                type(groq_exc).__name__,
+                str(groq_exc)[:200],
             )
 
-            # ── Fallback: Groq ─────────────────────────────────────────────────
+            # ── Fallback: Gemini ───────────────────────────────────────────────
             if self._fallback is None:
                 logger.error(
-                    "Gemini failed and no Groq fallback is configured. "
-                    "Set GROQ_API_KEY in .env to enable fallback."
+                    "Groq failed and no Gemini fallback is configured. "
+                    "Set GEMINI_API_KEY in .env to enable the fallback."
                 )
                 raise
 
             logger.info(
-                "Retrying with Groq fallback (model=%s).", self._fallback.model_name
+                "Retrying with Gemini fallback (model=%s).", self._fallback.model_name
             )
             try:
                 answer = self._fallback.generate_compliance_answer(question, chunks)
-                self._active_model = f"groq/{self._fallback.model_name}"
+                self._active_model = f"gemini/{self._fallback.model_name}"
                 return answer
-            except Exception as groq_exc:
+            except Exception as gemini_exc:
                 logger.error(
-                    "Groq fallback also failed: %s. Both providers exhausted.",
-                    groq_exc,
+                    "Gemini fallback also failed: %s. Both providers exhausted.",
+                    gemini_exc,
                 )
-                raise groq_exc from gemini_exc
+                raise gemini_exc from groq_exc
 
     def generate_text(self, prompt: str) -> str:
         """Raw single-turn generation without the compliance system instruction.
 
         Used by the re-ranker and other utility tasks (classification,
         structured extraction) that need a short, deterministic response.
-        Falls back to Groq on Gemini failure, same as ``generate_compliance_answer``.
+        Falls back to Gemini on Groq failure.
 
         Phase 16: results are cached in Redis by SHA-256(prompt) with a 1-hour TTL.
         Cache is provider-agnostic — a Groq answer is equally cacheable.
@@ -349,35 +412,28 @@ class GeminiClient:
                 logger.debug("generate_text cache get failed: %s", exc)
 
         # ── LLM call ───────────────────────────────────────────────────────────
-        config = types.GenerateContentConfig(
-            temperature=0.0,
-            max_output_tokens=2048,
-        )
         result: str
         try:
-            response = self._client.models.generate_content(
-                model=self._gemini_model,
-                contents=prompt,
-                config=config,
-            )
-            self._active_model = f"gemini/{self._gemini_model}"
-            result = self._extract_text(response)
+            result = self._primary.generate_text(prompt)
+            self._active_model = f"groq/{self._primary.model_name}"
         except Exception as exc:
             logger.warning(
-                "Gemini generate_text failed (%s: %s), trying Groq.",
+                "Groq generate_text failed (%s: %s), trying Gemini.",
                 type(exc).__name__,
                 str(exc)[:120],
             )
             if self._fallback is None:
                 raise
             result = self._fallback.generate_text(prompt)
-            self._active_model = f"groq/{self._fallback.model_name}"
+            self._active_model = f"gemini/{self._fallback.model_name}"
 
         # ── Cache store ────────────────────────────────────────────────────────
         if self._redis is not None and result:
             try:
                 self._redis.set(cache_key, json.dumps(result), ex=self._gentext_ttl)
-                logger.debug("generate_text cache SET  key=%.20s…  ttl=%ds", cache_key, self._gentext_ttl)
+                logger.debug(
+                    "generate_text cache SET  key=%.20s…  ttl=%ds", cache_key, self._gentext_ttl
+                )
             except Exception as exc:
                 logger.debug("generate_text cache set failed: %s", exc)
 
@@ -387,18 +443,16 @@ class GeminiClient:
         digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:24]
         return f"gentext:{digest}"
 
-    # ── Static helpers ─────────────────────────────────────────────────────────
-
     @staticmethod
     def _extract_text(response: object) -> str:
-        """Safely extract text from a Gemini response, handling blocked output."""
+        """Kept for backward compatibility. Delegates to Gemini response extraction."""
         try:
             text = response.text  # type: ignore[union-attr]
             if text:
                 return text
         except (ValueError, AttributeError):
             pass
-        logger.warning("Gemini returned an empty or blocked response.")
+        logger.warning("Model returned an empty or blocked response.")
         return (
             "The model was unable to generate a response for this query. "
             "This may be due to content restrictions. Please rephrase your question."

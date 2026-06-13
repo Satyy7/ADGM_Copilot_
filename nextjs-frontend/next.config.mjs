@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: "/api/backend/:path*",
-        destination: "http://localhost:8000/api/v1/:path*",
-      },
-    ];
-  },
+  // Proxy to FastAPI backend is handled by the App Router catch-all route at
+  // src/app/api/backend/[...path]/route.ts, which sets a 120-second timeout.
+  // The old rewrite has been removed because rewrites have no timeout control.
 };
 
 export default nextConfig;

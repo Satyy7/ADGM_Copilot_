@@ -67,7 +67,7 @@ Answer:"""
 
 _GROUNDING_CHECK_PROMPT = """\
 You are a compliance accuracy auditor. Verify whether the generated answer \
-is supported by the retrieved regulatory evidence.
+is grounded in the retrieved regulatory evidence.
 
 Question: {question}
 
@@ -77,12 +77,19 @@ Retrieved evidence:
 Generated answer:
 {answer}
 
-Is every material claim in the answer directly supported by or consistent \
-with the retrieved evidence above?
+Mark UNGROUNDED only if the answer does one or more of these:
+- Invents a regulation name, article number, date, or numeric threshold \
+that does NOT appear anywhere in the evidence.
+- Directly contradicts a specific fact stated in the evidence.
+
+Mark GROUNDED if the answer draws reasonable compliance conclusions from \
+the evidence, even if it synthesises across multiple chunks or paraphrases \
+regulatory language. Absence of a specific phrase in the evidence snippet \
+is NOT sufficient reason for UNGROUNDED.
 
 Reply with EXACTLY one word:
-GROUNDED   — all key claims are supported by the evidence
-UNGROUNDED — the answer contains claims not found in or contradicted by the evidence
+GROUNDED   — the answer is consistent with and reasonably derived from the evidence
+UNGROUNDED — the answer invents specific regulatory details or contradicts the evidence
 
 Answer:"""
 
@@ -127,9 +134,9 @@ def build_self_rag_nodes(gemini: object) -> dict[str, Any]:
             logger.info("Self-RAG evidence check: INSUFFICIENT (no chunks).")
             return {"evidence_sufficiency": EVIDENCE_INSUFFICIENT}
 
-        sample  = chunks[:4]
+        sample  = chunks[:6]
         context = "\n".join(
-            f"[{i + 1}] {c.text[:200].strip()}" for i, c in enumerate(sample)
+            f"[{i + 1}] {c.text[:350].strip()}" for i, c in enumerate(sample)
         )
         prompt = _EVIDENCE_CHECK_PROMPT.format(question=question, context=context)
 
@@ -174,14 +181,14 @@ def build_self_rag_nodes(gemini: object) -> dict[str, Any]:
         if "No relevant regulatory context was found" in answer:
             return {"answer_grade": ANSWER_GROUNDED}
 
-        sample  = chunks[:3]
+        sample  = chunks[:5]
         context = "\n".join(
-            f"[{i + 1}] {c.text[:220].strip()}" for i, c in enumerate(sample)
+            f"[{i + 1}] {c.text[:500].strip()}" for i, c in enumerate(sample)
         )
         prompt = _GROUNDING_CHECK_PROMPT.format(
             question=question,
             context=context,
-            answer=answer[:700],
+            answer=answer[:1500],
         )
 
         grade = ANSWER_GROUNDED   # safe default
