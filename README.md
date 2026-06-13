@@ -43,11 +43,15 @@ to help compliance officers, legal teams, and organizations work with ADGM regul
 
 # 🎥 Watch Demo
 
-> Replace with your uploaded video URL
+<p align="center">
+  <a href="https://drive.google.com/file/d/1omrBOgO7hazqdyw3BtRLdMGCgMqt-cZG/view?usp=sharing">
+    <img src="./docs/demo-thumbnail.png" alt="Watch Demo" width="800">
+  </a>
+</p>
 
-**Demo Video**
-
-[Watch Demo Here]([https://your-demo-link.com](https://drive.google.com/file/d/1omrBOgO7hazqdyw3BtRLdMGCgMqt-cZG/view?usp=sharing))
+<p align="center">
+  Click the image above to watch the demo.
+</p>
 
 ---
 
