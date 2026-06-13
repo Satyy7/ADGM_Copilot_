@@ -131,4 +131,4 @@ def _persist_clause(
             ),
         )
     except Exception as exc:
-        logger.warning("Failed to persist generated clause: %s", exc)
+        logger.error("Failed to persist generated clause: %s", exc, exc_info=True)

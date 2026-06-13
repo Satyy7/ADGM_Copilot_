@@ -12,6 +12,7 @@ from backend.app.api.router import api_router
 from backend.app.core.config import get_settings
 from backend.app.core.logging import configure_logging
 from backend.app.db.health import HealthReport, check_infrastructure_health
+from backend.app.db.init_db import init_db
 
 settings = get_settings()
 configure_logging(settings)
@@ -21,6 +22,12 @@ app = FastAPI(
     debug=settings.app_debug,
     version="0.1.0",
 )
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    """Create database tables if they do not already exist."""
+    init_db()
 
 app.add_middleware(
     CORSMiddleware,

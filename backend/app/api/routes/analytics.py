@@ -30,10 +30,12 @@ import logging
 import time
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.agent.analytics.graph import get_compiled_analytics_graph
 from backend.app.api.deps import get_session
+from backend.app.db.postgres import get_postgres_engine
 from backend.app.models.query_log import QueryLog
 from backend.app.repositories.base import BaseRepository
 from backend.app.schemas.analytics_result import AnalyticsRequest, AnalyticsResult
@@ -42,6 +44,40 @@ from backend.app.schemas.query_log import QueryLogCreate
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
+
+_TABLES = [
+    "users", "documents", "reviews", "violations",
+    "recommendations", "generated_clauses", "audit_logs", "query_logs",
+]
+
+
+@router.get(
+    "/debug/counts",
+    summary="Row counts for every compliance table",
+    description=(
+        "Returns the exact row count for each database table directly via SQL. "
+        "No LLM involved. Use this to verify that data is actually being persisted."
+    ),
+    tags=["Analytics"],
+)
+def debug_table_counts() -> dict:
+    """Direct COUNT(*) on every table — bypasses the LLM pipeline entirely."""
+    engine = get_postgres_engine()
+    counts: dict[str, int | str] = {}
+    try:
+        with engine.connect() as conn:
+            for table in _TABLES:
+                try:
+                    row = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).fetchone()
+                    counts[table] = int(row[0]) if row else 0
+                except Exception as exc:
+                    counts[table] = f"ERROR: {exc}"
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database connection failed: {exc}",
+        ) from exc
+    return counts
 
 _query_log_repo: BaseRepository = BaseRepository(QueryLog)
 
@@ -146,4 +182,4 @@ def _persist_query_log(
             ),
         )
     except Exception as exc:
-        logger.warning("Failed to persist analytics query log: %s", exc)
+        logger.error("Failed to persist analytics query log: %s", exc, exc_info=True)

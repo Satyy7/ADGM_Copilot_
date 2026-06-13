@@ -67,7 +67,10 @@ TRUNCATE, CREATE, EXEC, EXECUTE, CALL, GRANT, REVOKE.
 6. For all other queries add LIMIT 50 unless the question asks for more.
 7. Use explicit column names, never SELECT *.
 8. Use table aliases (r for reviews, v for violations, etc.).
-9. For "recent" queries without a time frame, filter: created_at >= NOW() - INTERVAL '30 days'.
+9. ONLY add a date filter when the question explicitly uses time words such as \
+"recent", "today", "this week", "this month", "last N days/weeks/months". \
+For ALL other questions return data from every time period — do NOT add any \
+created_at or date filter unless the user asked for one.
 10. Use ILIKE for case-insensitive text matching.
 11. When joining, always qualify column names with table alias.
 

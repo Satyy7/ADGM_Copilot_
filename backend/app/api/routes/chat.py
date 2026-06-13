@@ -144,4 +144,4 @@ def _persist_query_log(
         )
         _query_log_repo.create(session, log_entry)
     except Exception as exc:
-        logger.warning("Failed to persist query log: %s", exc)
+        logger.error("Failed to persist query log: %s", exc, exc_info=True)
