@@ -19,3 +19,5 @@ node_modules/
 nextjs-frontend/node_modules/
 
 nextjs-frontend/.next/
+
+nextjs-frontend/tsconfig.tsbuildinfo
