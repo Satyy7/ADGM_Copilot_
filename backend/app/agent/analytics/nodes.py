@@ -34,7 +34,11 @@ from typing import Any
 
 from sqlalchemy import text
 
-from backend.app.agent.analytics.prompts import FORMAT_ANSWER_PROMPT, SQL_GENERATION_PROMPT
+from backend.app.agent.analytics.prompts import (
+    FORMAT_ANSWER_PROMPT,
+    SQL_GENERATION_PROMPT,
+    SQL_REPAIR_PROMPT,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -137,8 +141,31 @@ def build_analytics_nodes(gemini: object, engine: object) -> dict[str, Any]:
 
     # ── Node 3: execute_sql ────────────────────────────────────────────────────
 
+    def _run_query(sql: str) -> tuple[list[dict], list[str]]:
+        """Execute sql and return (rows, columns). Raises on any DB error."""
+        with engine.connect() as conn:  # type: ignore[union-attr]
+            result = conn.execute(text(sql))
+            columns: list[str] = list(result.keys())
+            rows = result.fetchall()
+            return _serialize_results([dict(zip(columns, row)) for row in rows]), columns
+
+    def _repair_sql(bad_sql: str, error_msg: str) -> str:
+        """Ask the LLM to fix bad_sql given the PostgreSQL error. Returns '' on failure."""
+        prompt = SQL_REPAIR_PROMPT.format(sql=bad_sql, error=error_msg)
+        try:
+            raw: str = gemini.generate_text(prompt)  # type: ignore[union-attr]
+            fixed = _clean_sql(raw)
+            logger.info("SQL repair attempt: %s", fixed[:120])
+            return fixed
+        except Exception as repair_exc:
+            logger.warning("SQL repair LLM call failed: %s", repair_exc)
+            return ""
+
     def execute_sql(state: dict) -> dict:
         """Execute the validated SQL against PostgreSQL.
+
+        On any SQL execution error, automatically asks the LLM to fix the query
+        and retries once before returning an error to the caller.
 
         Skipped when sql_safe=False or preview_only=True.
         """
@@ -160,14 +187,10 @@ def build_analytics_nodes(gemini: object, engine: object) -> dict[str, Any]:
             }
 
         sql = state.get("generated_sql", "")
+
+        # ── First attempt ──────────────────────────────────────────────────────
         try:
-            with engine.connect() as conn:  # type: ignore[union-attr]
-                result = conn.execute(text(sql))
-                columns: list[str] = list(result.keys())
-                rows = result.fetchall()
-                query_results = _serialize_results(
-                    [dict(zip(columns, row)) for row in rows]
-                )
+            query_results, columns = _run_query(sql)
             logger.info("SQL returned %d rows, %d columns.", len(query_results), len(columns))
             return {
                 "query_results": query_results,
@@ -175,13 +198,66 @@ def build_analytics_nodes(gemini: object, engine: object) -> dict[str, Any]:
                 "columns": columns,
                 "execution_error": "",
             }
-        except Exception as exc:
-            logger.error("SQL execution error: %s | SQL: %s", exc, sql[:120])
+        except Exception as first_exc:
+            logger.warning(
+                "SQL execution failed (attempt 1): %s | SQL: %s",
+                first_exc, sql[:200],
+            )
+
+        # ── Auto-repair: ask LLM to fix the SQL, then retry once ──────────────
+        repaired_sql = _repair_sql(sql, str(first_exc))
+        if not repaired_sql:
+            logger.error("SQL repair produced no output — returning original error.")
             return {
                 "query_results": [],
                 "row_count": 0,
                 "columns": [],
-                "execution_error": str(exc),
+                "execution_error": str(first_exc),
+            }
+
+        # Safety-check the repaired SQL before executing
+        normalised = re.sub(r"--.*", "", repaired_sql, flags=re.MULTILINE)
+        normalised = re.sub(r"/\*.*?\*/", "", normalised, flags=re.DOTALL).strip().upper()
+        if not normalised.startswith("SELECT"):
+            logger.error("Repaired SQL is not a SELECT — aborting retry.")
+            return {
+                "query_results": [],
+                "row_count": 0,
+                "columns": [],
+                "execution_error": str(first_exc),
+            }
+        tokens = set(re.findall(r"[a-z_]+", repaired_sql.lower()))
+        if tokens & _BLOCKED_KEYWORDS:
+            logger.error("Repaired SQL contains blocked keywords — aborting retry.")
+            return {
+                "query_results": [],
+                "row_count": 0,
+                "columns": [],
+                "execution_error": str(first_exc),
+            }
+
+        try:
+            query_results, columns = _run_query(repaired_sql)
+            logger.info(
+                "SQL repair succeeded — %d rows, %d columns.", len(query_results), len(columns)
+            )
+            return {
+                "generated_sql": repaired_sql,  # show the fixed SQL in the frontend
+                "query_results": query_results,
+                "row_count": len(query_results),
+                "columns": columns,
+                "execution_error": "",
+            }
+        except Exception as second_exc:
+            logger.error(
+                "SQL execution failed after repair (attempt 2): %s | SQL: %s",
+                second_exc, repaired_sql[:200],
+            )
+            return {
+                "query_results": [],
+                "row_count": 0,
+                "columns": [],
+                "execution_error": str(second_exc),
             }
 
     # ── Node 4: format_answer ──────────────────────────────────────────────────
