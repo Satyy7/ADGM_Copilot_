@@ -20,14 +20,21 @@ from __future__ import annotations
 
 import logging
 import time
+from datetime import datetime, timezone
+from decimal import Decimal
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from sqlalchemy.orm import Session
 
 from backend.app.agent.cases.indexer import get_indexer
 from backend.app.agent.cases.retriever import get_retriever
 from backend.app.agent.review.graph import get_compiled_review_graph
+from backend.app.api.deps import get_session
 from backend.app.api.routes.crud import build_crud_router
+from backend.app.models.document import Document as DocumentModel
+from backend.app.models.recommendation import Recommendation as RecommendationModel
 from backend.app.models.review import Review
+from backend.app.models.violation import Violation as ViolationModel
 from backend.app.schemas.review import ReviewCreate, ReviewRead, ReviewUpdate
 from backend.app.schemas.review_report import (
     DetectedViolation,
@@ -74,6 +81,7 @@ _ALLOWED_EXT = {".pdf", ".docx", ".doc"}
 )
 async def analyze_document(
     file: UploadFile = File(..., description="PDF or DOCX document to review"),
+    session: Session = Depends(get_session),
 ) -> ReviewReport:
     """Phase 9: 6-agent compliance review — classify → extract → retrieve → detect → gap → report."""
     started_at = time.monotonic()
@@ -151,6 +159,15 @@ async def analyze_document(
     # ── Phase 11: index this review for future similarity searches ────────────
     _index_review(report)
 
+    # ── Persist document + review + violations + recommendations to PostgreSQL ─
+    _persist_review(
+        session=session,
+        filename=filename,
+        ext=ext,
+        mime_type=file.content_type,
+        report=report,
+    )
+
     return report
 
 
@@ -212,3 +229,91 @@ def _index_review(report: ReviewReport) -> None:
         get_indexer().index(report)
     except Exception as exc:
         logger.warning("Review indexing failed: %s", exc)
+
+
+def _persist_review(
+    session: Session,
+    filename: str,
+    ext: str,
+    mime_type: str | None,
+    report: ReviewReport,
+) -> None:
+    """Write document → review → violations → recommendations in one transaction.
+
+    Never raises — a DB failure must not degrade the review response returned
+    to the user.  Errors are logged at ERROR level with full traceback.
+    """
+    try:
+        now = datetime.now(timezone.utc)
+
+        # 1 — Document record
+        doc = DocumentModel(
+            original_filename=filename,
+            file_extension=ext,
+            mime_type=mime_type or "application/octet-stream",
+            extraction_status="completed",
+            detected_document_type=report.document_type or None,
+        )
+        session.add(doc)
+        session.flush()  # assigns doc.id without committing
+
+        # 2 — Review record
+        rev = Review(
+            document_id=doc.id,
+            review_type=report.document_type or "general_review",
+            status="completed",
+            compliance_score=Decimal(str(round(report.compliance_score, 2))),
+            summary=report.summary or None,
+            started_at=now,
+            completed_at=now,
+            report_payload={
+                "model": report.model,
+                "latency_ms": report.latency_ms,
+                "violation_count": len(report.violations),
+                "recommendation_count": len(report.recommendations),
+            },
+        )
+        session.add(rev)
+        session.flush()  # assigns rev.id
+
+        # 3 — Violations
+        for v in report.violations:
+            session.add(ViolationModel(
+                review_id=rev.id,
+                violation_type=v.violation_type or "non_compliant_clause",
+                severity=v.severity or "medium",
+                title=(v.title or "Compliance issue")[:300],
+                description=v.description or "",
+                regulation_reference=(v.regulation_reference or "")[:300] or None,
+                document_excerpt=v.clause_excerpt or None,
+                status="open",
+            ))
+
+        # 4 — Recommendations (from gaps)
+        for r in report.recommendations:
+            rec_text = r.description or r.title
+            if r.action_required:
+                rec_text = f"{rec_text}\n\nAction required: {r.action_required}"
+            session.add(RecommendationModel(
+                review_id=rev.id,
+                title=(r.title or "Recommendation")[:300],
+                recommendation_text=rec_text or r.title,
+                priority=r.priority or "medium",
+                status="open",
+            ))
+
+        session.commit()
+        logger.info(
+            "Persisted review for '%s' — doc=%s  review=%s  violations=%d  recommendations=%d",
+            filename, doc.id, rev.id,
+            len(report.violations), len(report.recommendations),
+        )
+
+    except Exception as exc:
+        logger.error(
+            "Failed to persist review for '%s': %s", filename, exc, exc_info=True
+        )
+        try:
+            session.rollback()
+        except Exception:
+            pass
