@@ -7,6 +7,7 @@ import TopBar from "@/components/layout/TopBar";
 import { sendChatMessage } from "@/lib/api";
 import type { ChatMessage, CitationSource } from "@/types";
 import { collectionBadgeColor, truncate, formatLatency } from "@/lib/utils";
+import { preprocessCitations, citationMarkdownComponents } from "@/components/CitationText";
 
 const SUGGESTIONS = [
   "What are the UBO beneficial ownership disclosure requirements in ADGM?",
@@ -77,7 +78,12 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
             <p>{msg.content}</p>
           ) : (
             <div className="prose-adgm">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={citationMarkdownComponents}
+              >
+                {preprocessCitations(msg.content)}
+              </ReactMarkdown>
             </div>
           )}
         </div>

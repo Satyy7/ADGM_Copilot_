@@ -10,6 +10,7 @@ import TopBar from "@/components/layout/TopBar";
 import { reviewDocument } from "@/lib/api";
 import type { ReviewReport, Violation, Recommendation, SimilarCase } from "@/types";
 import { scoreColor, scoreLabel, severityColor, priorityColor, formatLatency } from "@/lib/utils";
+import { CitationText } from "@/components/CitationText";
 
 /* ── Score Ring ──────────────────────────────────────────────────────────────── */
 function ScoreRing({ score }: { score: number }) {
@@ -57,7 +58,7 @@ function ViolationCard({ v, index }: { v: Violation; index: number }) {
       </button>
       {open && (
         <div className="px-4 pb-3 pt-2 space-y-1.5 bg-white">
-          <p className="text-[12.5px] text-[var(--text-2)] leading-relaxed">{v.description}</p>
+          <CitationText text={v.description} className="text-[12.5px] text-[var(--text-2)] leading-relaxed" />
           {v.clause_reference && (
             <p className="text-xs text-[var(--text-3)]">Clause: <span className="text-amber-700 font-medium">{v.clause_reference}</span></p>
           )}
@@ -82,7 +83,7 @@ function RecommendationCard({ r, index }: { r: Recommendation; index: number }) 
             <span className="text-sm font-medium text-[var(--text)]">{r.title}</span>
             <span className="badge text-[10px]" style={{ background: c.bg, borderColor: c.border, color: c.text }}>{r.priority}</span>
           </div>
-          <p className="text-[12.5px] text-[var(--text-2)] leading-relaxed">{r.description}</p>
+          <CitationText text={r.description} className="text-[12.5px] text-[var(--text-2)] leading-relaxed" />
           {r.action_required && (
             <p className="text-xs text-amber-700 mt-1.5 font-medium">→ {r.action_required}</p>
           )}
@@ -210,7 +211,7 @@ export default function ReviewPage() {
                       </span>
                     </div>
                   </div>
-                  <p className="text-[12.5px] text-[var(--text-2)] leading-relaxed">{report.summary}</p>
+                  <CitationText text={report.summary} className="text-[12.5px] text-[var(--text-2)] leading-relaxed" />
                   <div className="flex flex-wrap gap-3 text-[11px] text-[var(--text-3)]">
                     <span className="flex items-center gap-1"><AlertTriangle size={10} className="text-rose-500" />{violations.length} violations</span>
                     <span className="flex items-center gap-1"><Lightbulb size={10} className="text-amber-500" />{recommendations.length} recommendations</span>

@@ -1,0 +1,1955 @@
+================================================================================
+        ADGM NEXUS — COMPLETE PROJECT DOCUMENTATION
+        Enterprise AI Compliance Intelligence Platform
+        Abu Dhabi Global Market (ADGM) Regulations
+================================================================================
+
+Last Updated : June 2026
+Platform     : ADGM Nexus
+Version      : 0.1.0
+
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+  1.  What Is This Project?
+  2.  Why It Exists — The Problem Being Solved
+  3.  Technology Stack — Everything Used and Why
+  4.  High-Level Architecture — How All Parts Connect
+  5.  Data Layer — PostgreSQL (Structured) + Qdrant (Vectors)
+  6.  Infrastructure Services — LLM, Embeddings, Caching
+  7.  Backend Entry Point — How the Server Starts
+  8.  The 16-Phase Roadmap — What Was Built in Each Phase
+  9.  Feature 1: AI Compliance Chat (Copilot)
+      9a.  What it does
+      9b.  Full lifecycle of a chat request
+      9c.  Every node in the LangGraph pipeline explained
+      9d.  CRAG — Corrective Retrieval Augmented Generation
+      9e.  Self-RAG — Evidence Check + Answer Grounding
+ 10.  Feature 2: Document Review (Compliance Audit)
+      10a. What it does
+      10b. Full lifecycle of a document review request
+      10c. Every node in the 6-agent review pipeline explained
+      10d. How the compliance score is calculated
+      10e. How results are persisted to PostgreSQL
+ 11.  Feature 3: Clause Generator
+      11a. What it does
+      11b. Full lifecycle of a clause generation request
+      11c. Every node in the 3-agent clause pipeline explained
+ 12.  Feature 4: Analytics (Natural Language to SQL)
+      12a. What it does
+      12b. Full lifecycle of an analytics query
+      12c. Every node in the Text2SQL pipeline explained
+      12d. The auto-repair mechanism
+      12e. Human-in-the-loop approval flow
+ 13.  Feature 5: Case Search (Historical Similarity)
+      13a. What it does
+      13b. How cases get into the system
+      13c. Full lifecycle of a case search request
+ 14.  The Retrieval Stack — How Information Is Found
+      14a. Dense vector retrieval (Qdrant)
+      14b. BM25 sparse retrieval
+      14c. Hybrid fusion
+      14d. Cross-encoder re-ranking
+      14e. HyDE (Hypothetical Document Embedding)
+      14f. Redis caching layer
+ 15.  The LLM Layer — Groq Primary, Gemini Fallback
+ 16.  Frontend — Next.js App Structure
+      16a. Pages and what each one does
+      16b. How the frontend talks to the backend
+      16c. The proxy route and why it exists
+ 17.  Database Tables — Every Table Explained
+ 18.  Qdrant Collections — Every Vector Collection Explained
+ 19.  End-to-End Request Lifecycle Examples
+      19a. "What are UBO disclosure requirements?" (Chat)
+      19b. Upload an AoA PDF (Document Review)
+      19c. "Draft an arbitration clause" (Clause Generator)
+      19d. "How many violations were found this month?" (Analytics)
+      19e. "Find similar AoA cases" (Case Search)
+ 20.  Inline Citations — How and Where They Appear
+ 21.  Error Handling and Resilience
+ 22.  Glossary of Terms
+
+================================================================================
+1. WHAT IS THIS PROJECT?
+================================================================================
+
+ADGM Nexus is an enterprise-grade AI compliance intelligence platform built
+specifically for the Abu Dhabi Global Market (ADGM). ADGM is one of the world's
+leading international financial centres, based in Abu Dhabi, UAE. It operates
+under its own legal framework — English common law — with its own set of
+regulations governing companies, employment, financial services, and data
+protection.
+
+This platform gives lawyers, compliance officers, company secretaries, and legal
+teams a set of AI-powered tools to:
+
+  - Answer questions about ADGM regulations instantly (with source citations)
+  - Upload company documents and get a full compliance audit automatically
+  - Draft legally precise clauses for contracts and articles of association
+  - Query their own compliance data using plain English
+  - Search past compliance reviews to find similar historical cases
+
+Everything is grounded. The AI does not guess. Every answer references actual
+ADGM regulations that were retrieved from a knowledge base of official documents
+that were embedded and stored in a vector database.
+
+================================================================================
+2. WHY IT EXISTS — THE PROBLEM BEING SOLVED
+================================================================================
+
+ADGM publishes hundreds of regulations, rulebooks, guidance notes, and
+templates. Reading and cross-referencing all of them manually is:
+
+  - Time-consuming: A single document audit can take days
+  - Error-prone: A compliance officer might miss a regulation that applies
+  - Expensive: Law firms charge high fees for regulatory reviews
+  - Inaccessible: Small companies cannot afford a full legal team on retainer
+
+The platform solves this by:
+
+  a) Ingesting all ADGM regulatory documents into a searchable vector database
+  b) Using large language models (LLMs) to reason over those documents
+  c) Grounding every answer with source citations so users can verify
+  d) Automating the compliance review process through a multi-agent pipeline
+  e) Storing results so teams can track compliance posture over time
+
+================================================================================
+3. TECHNOLOGY STACK — EVERYTHING USED AND WHY
+================================================================================
+
+BACKEND
+-------
+  FastAPI (Python)
+    - Modern async Python web framework
+    - Used for all API endpoints
+    - Chosen for its speed, automatic API documentation (OpenAPI), and
+      excellent support for async I/O which is needed for LLM calls
+
+  LangGraph (LangChain ecosystem)
+    - Framework for building stateful, multi-agent AI pipelines
+    - Used to define the "graph" of AI agent nodes and the transitions
+      between them
+    - Chosen because compliance review requires conditional logic
+      (e.g., "if retrieved context is insufficient, rewrite the query")
+    - Each pipeline is a StateGraph: a directed graph where each node
+      transforms the shared state dictionary
+
+  SQLAlchemy (ORM)
+    - Maps Python classes to PostgreSQL tables
+    - Used for all database operations
+    - Provides session management and transaction control
+    - A "BaseRepository" pattern wraps common CRUD operations
+
+  Pydantic (Data Validation)
+    - Validates all API request and response bodies
+    - Defines the shape of data flowing between agents in pipelines
+    - Catches bad data at the boundary before it reaches the AI pipeline
+
+DATABASES
+---------
+  PostgreSQL
+    - Relational database storing structured compliance data
+    - Tables: users, documents, reviews, violations, recommendations,
+      generated_clauses, audit_logs, query_logs
+    - Used for all data that needs to be queried, counted, joined, and
+      reported on (the Analytics feature runs SQL against this)
+
+  Qdrant (Vector Database)
+    - Stores vector embeddings of regulatory text chunks
+    - Collections: regulations, templates, guidance, checklists,
+      historical_reviews
+    - Used for semantic similarity search — finding relevant regulation
+      text for a given question
+    - Supports both dense (neural embedding) and sparse (BM25) search
+
+  Redis
+    - In-memory cache
+    - Caches: LLM text generation responses, embedding vectors,
+      retrieval search results
+    - Dramatically reduces API costs and response latency on repeated
+      or similar queries
+    - TTL (time to live): 24 hours for LLM responses, 7 days for embeddings
+
+LANGUAGE MODELS
+---------------
+  Groq (Primary LLM — llama-3.3-70b-versatile)
+    - Fastest inference available for large open-source models
+    - Used as the primary LLM for all text generation
+    - llama-3.3-70b is a 70-billion parameter model capable of legal reasoning
+    - Groq's hardware (LPU chips) makes it 10-20x faster than GPU inference
+
+  Google Gemini (Fallback LLM — gemini-2.0-flash)
+    - Used if Groq fails or rate-limits
+    - Also used for embeddings (text-embedding-004, 768 dimensions)
+    - gemini-2.0-flash is fast and highly capable at instruction following
+
+FRONTEND
+--------
+  Next.js 14 (App Router)
+    - React-based framework for the web UI
+    - App Router means each page is a React Server Component by default;
+      pages with interactivity use "use client" directive
+    - Built-in API routes used as a proxy to the backend
+
+  Tailwind CSS
+    - Utility-first CSS framework for styling
+    - All styles are inline class names — no separate CSS files
+
+  React Markdown + remark-gfm
+    - Renders LLM-generated markdown text in chat and clause outputs
+    - remark-gfm adds support for GitHub Flavored Markdown (tables, etc.)
+
+  Lucide React
+    - Icon library used throughout the UI
+
+  react-dropzone
+    - Handles drag-and-drop file uploads in the Document Review page
+
+================================================================================
+4. HIGH-LEVEL ARCHITECTURE — HOW ALL PARTS CONNECT
+================================================================================
+
+  [User Browser]
+       |
+       | HTTP requests (port 3000)
+       v
+  [Next.js Frontend]
+       |
+       | HTTP proxy (Next.js API route, port 3000 → 8000)
+       | AbortController timeout: 120 seconds
+       v
+  [FastAPI Backend] (port 8000)
+       |
+       |--- /api/v1/chat          → Main LangGraph Agent
+       |--- /api/v1/reviews       → Document Review Pipeline
+       |--- /api/v1/generated-clauses → Clause Generator Pipeline
+       |--- /api/v1/analytics     → Text2SQL Pipeline
+       |--- /api/v1/cases         → Historical Case Search
+       |--- /api/v1/cache         → Redis Cache Management
+       |--- /health               → Infrastructure Health Check
+       |
+       |
+  [LangGraph Pipelines]
+       |
+       |--- retrieve -----------> [Qdrant Vector DB] (semantic search)
+       |--- generate -----------> [Groq / Gemini LLM] (text generation)
+       |--- self_rag -----------> [Groq / Gemini LLM] (quality check)
+       |--- crag_evaluate ------> [Groq / Gemini LLM] (context check)
+       |
+       |
+  [PostgreSQL] <--- persist results after every review/clause/query
+  [Redis Cache] <--- cache LLM responses, embeddings, search results
+
+The key design principle: the frontend NEVER calls the LLM directly. All AI
+operations go through the FastAPI backend, which orchestrates LangGraph
+pipelines, which call the LLMs. This means:
+  - API keys are never exposed to the browser
+  - All AI operations are logged and auditable
+  - Caching happens server-side (shared across all users)
+
+================================================================================
+5. DATA LAYER — PostgreSQL (STRUCTURED) + QDRANT (VECTORS)
+================================================================================
+
+WHY TWO DATABASES?
+------------------
+The system needs to store two fundamentally different kinds of data:
+
+  1. STRUCTURED DATA (PostgreSQL)
+     - "What reviews has this company done?"
+     - "How many violations were found last month?"
+     - "What is the average compliance score?"
+     These are questions answered by SQL — joining tables, counting rows,
+     filtering by date. PostgreSQL is perfect for this.
+
+  2. UNSTRUCTURED SEMANTIC DATA (Qdrant)
+     - "Find regulations about UBO disclosure"
+     - "Find past reviews similar to this AoA document"
+     These are questions answered by similarity search — finding chunks of
+     text that are semantically close to a query. Vector databases like
+     Qdrant are built for this.
+
+POSTGRESQL TABLES (8 total)
+---------------------------
+  users              - Platform users (no auth yet; placeholder for future)
+  documents          - Uploaded documents and their metadata
+  reviews            - Compliance review results (scores, summaries)
+  violations         - Individual violations found in a review
+  recommendations    - Remediation actions recommended for each review
+  generated_clauses  - Every clause the system drafted
+  audit_logs         - System activity audit trail
+  query_logs         - Every chat/analytics question asked + the SQL generated
+
+QDRANT COLLECTIONS (5 total)
+-----------------------------
+  regulations        - Chunked text from ADGM regulation documents
+  templates          - ADGM-approved document templates
+  guidance           - ADGM guidance notes and practice directions
+  checklists         - Compliance checklists for document types
+  historical_reviews - Summaries of completed compliance reviews
+
+Each chunk in Qdrant is a 768-dimensional vector (from Gemini embeddings) plus
+a "payload" — metadata like: source_title, rule_reference, heading, collection,
+full chunk text.
+
+================================================================================
+6. INFRASTRUCTURE SERVICES — LLM, EMBEDDINGS, CACHING
+================================================================================
+
+THE LLM SERVICE (backend/app/services/generation.py)
+-----------------------------------------------------
+This is the unified interface all agents use to call the language model.
+It is designed so that no agent knows or cares whether Groq or Gemini responded.
+
+  GroqClient
+    - Calls Groq API with model llama-3.3-70b-versatile
+    - Has a retry mechanism: max 2 retries, base delay 2 seconds
+    - On rate limit (HTTP 429): waits and retries
+    - Max wait time on retries: ~6 seconds total (2s → 4s)
+
+  _GeminiFallback (internal)
+    - Called only when Groq fails after retries
+    - Uses gemini-2.0-flash
+    - Lazy import — Google libraries only loaded if actually needed
+
+  GeminiClient (the public interface)
+    - This is the class ALL agents import and use
+    - Its name "GeminiClient" is kept for backward compatibility even though
+      Groq is now the primary provider
+    - Internally it tries Groq first, then falls back to Gemini
+    - Reports which model actually responded via active_model property
+    - Wraps text generation with Redis caching:
+        * Cache key = SHA256 hash of the prompt
+        * TTL = 24 hours
+        * If same/similar prompt was answered before, returns cached answer
+          instantly without calling any LLM
+
+THE EMBEDDINGS SERVICE (backend/app/services/embeddings.py)
+------------------------------------------------------------
+Used to convert text into 768-dimensional float vectors. These vectors
+numerically represent the "meaning" of text — two semantically similar
+sentences will have vectors that are close together in 768D space.
+
+  Provider: Google Gemini (text-embedding-004)
+  Dimension: 768 floats per text
+
+  Task types (different embedding modes for different uses):
+    RETRIEVAL_DOCUMENT - used when indexing chunks into Qdrant
+    RETRIEVAL_QUERY    - used when embedding a user's question for search
+    SEMANTIC_SIMILARITY - used for comparing document summaries
+
+  Optimisations:
+    - Batching: groups 20 texts together per API call (reduces API calls)
+    - Retry: up to 5 attempts with exponential backoff
+    - Caching: Redis cache with 7-day TTL
+      (vectors for the same text never recomputed)
+
+Why embeddings matter: When you ask "What are ADGM UBO requirements?",
+the system doesn't search for those exact words. It converts the question
+to a 768D vector and finds regulation chunks whose vectors are closest to
+it — this catches synonyms, related concepts, paraphrases.
+
+REDIS CACHE
+-----------
+Redis sits between the agents and the expensive operations (LLM calls,
+embedding API calls, vector searches). Three namespaces:
+
+  embeddings:   SHA256(text) → vector array   (7-day TTL)
+  generate_text: SHA256(prompt) → LLM response (24-hour TTL)
+  retrieval:    SHA256(query+collections) → search results (1-hour TTL)
+
+In production, this means:
+  - A question asked on Monday is answered from cache on Tuesday
+  - Common regulatory questions are effectively free after first call
+  - Embeddings are computed once per chunk, never again
+
+================================================================================
+7. BACKEND ENTRY POINT — HOW THE SERVER STARTS
+================================================================================
+
+File: backend/main.py
+
+When the FastAPI server starts (uvicorn backend.main:app):
+
+  Step 1: Load settings from environment variables (.env file)
+          Settings include: database URLs, API keys, model names,
+          Redis connection, Qdrant connection, log level
+
+  Step 2: Configure structured logging
+          All logs include: timestamp, level, logger name (which module
+          produced the log), and the message
+
+  Step 3: Create FastAPI app with title, version, debug mode
+
+  Step 4: @app.on_event("startup") fires:
+          Calls init_db() which runs SQLAlchemy's create_all()
+          This creates all PostgreSQL tables if they don't exist yet.
+          Safe to run on every startup — it's idempotent.
+
+  Step 5: Add CORS middleware
+          Allows the frontend at localhost:3000 to call the backend at
+          localhost:8000. Without this, browsers would block cross-origin
+          requests.
+
+  Step 6: Register all API routers
+          Each feature area has its own router file:
+            /api/v1/chat          → chat router
+            /api/v1/reviews       → reviews router
+            /api/v1/generated-clauses → clauses router
+            /api/v1/analytics     → analytics router
+            /api/v1/cases         → cases router
+            /api/v1/cache         → cache router
+            + CRUD routers for: users, documents, violations,
+              recommendations, audit_logs, query_logs
+
+  Step 7: Health check endpoint at GET /health
+          Checks: PostgreSQL connectivity, Qdrant collections present,
+          Redis ping. Returns a JSON health report.
+
+================================================================================
+8. THE 16-PHASE ROADMAP — WHAT WAS BUILT IN EACH PHASE
+================================================================================
+
+Phase 1  - Core infrastructure: FastAPI skeleton, PostgreSQL connection,
+           Qdrant connection, Redis connection, configuration management
+Phase 2  - Database models: 8 SQLAlchemy models, BaseRepository CRUD pattern
+Phase 3  - CRUD API routes: Generic REST endpoints for all 8 tables
+Phase 4  - Document ingestion: PDF/DOCX text extraction service
+Phase 5  - Embeddings service: Gemini text-embedding-004 with batching/caching
+Phase 6  - Qdrant retrieval: Dense vector search, hybrid search, re-ranking
+Phase 7  - LLM generation service: Initial Gemini generation with caching
+Phase 8  - Main chat agent: LangGraph graph with route→retrieve→generate
+Phase 9  - Document review pipeline: 6-agent review with compliance scoring
+Phase 10 - Clause generation pipeline: 3-agent clause drafting
+Phase 11 - Historical case search: Qdrant historical_reviews + indexing
+Phase 12 - Analytics (Text2SQL): Natural language → PostgreSQL → narrative
+Phase 13 - Advanced retrieval: HyDE, BM25, hybrid fusion, cross-encoder rerank
+Phase 14 - CRAG: Corrective RAG with query rewriting on poor retrieval
+Phase 15 - Self-RAG: Evidence sufficiency check + answer grounding check
+Phase 16 - LLM provider swap: Groq as primary, Gemini as fallback
+
+================================================================================
+9. FEATURE 1: AI COMPLIANCE CHAT (COPILOT)
+================================================================================
+
+9a. WHAT IT DOES
+----------------
+The chat feature lets users ask any question about ADGM regulations in plain
+English and receive a precise, cited answer. Examples:
+
+  "What are the UBO beneficial ownership disclosure requirements?"
+  "Can an ADGM company have a single director?"
+  "What is the probation period limit in ADGM employment contracts?"
+  "What documents are needed to incorporate a private company?"
+
+The system does NOT just have these answers pre-written. It dynamically:
+  1. Retrieves the most relevant regulation chunks from Qdrant
+  2. Feeds them to an LLM as context
+  3. Instructs the LLM to answer ONLY from that context
+  4. Verifies the answer is grounded (no hallucinations)
+  5. Returns the answer with source citations
+
+This technique is called Retrieval-Augmented Generation (RAG).
+
+9b. FULL LIFECYCLE OF A CHAT REQUEST
+-------------------------------------
+
+  [User types question in the browser]
+           |
+           | POST /api/backend/chat (Next.js proxy route)
+           | Body: { "question": "What are UBO requirements?" }
+           |
+           v
+  [Next.js proxy route (src/app/api/backend/[...path]/route.ts)]
+    - Creates AbortController with 120-second timeout
+    - Forwards the request to FastAPI at localhost:8000/api/v1/chat
+    - Returns 504 Gateway Timeout if FastAPI takes > 120 seconds
+           |
+           v
+  [FastAPI POST /api/v1/chat]
+    - Validates request body with Pydantic
+    - Calls get_compiled_chat_graph() to get the LangGraph state machine
+    - Invokes graph with initial state: { question: "...", collections: [...] }
+           |
+           v
+  [LangGraph — Main Chat Graph]
+    Nodes executed in order:
+    1. route_intent
+    2. retrieve (or rewrite_and_retrieve)
+    3. crag_evaluate
+    4. self_check_evidence
+    5. generate
+    6. self_grade_answer
+           |
+           v
+  [FastAPI formats response]
+    - Extracts: answer, sources, model, latency_ms from final state
+    - Persists to query_logs table (async, fire-and-forget)
+    - Returns ChatResponse JSON to frontend
+           |
+           v
+  [Next.js frontend]
+    - Receives the response
+    - Renders the answer with ReactMarkdown
+    - Renders inline [Source: ...] citations with dark italic styling
+    - Shows CitationChip badges below the message bubble
+
+9c. EVERY NODE IN THE LANGRAPH CHAT PIPELINE EXPLAINED
+-------------------------------------------------------
+
+NODE 1: route_intent
+  What it does:
+    Classifies the user's question into one of 4 intents:
+      - compliance_chat       → answer a regulatory question
+      - compliance_review     → user wants to review a document
+      - clause_generation     → user wants to draft a clause
+      - analytics             → user wants to query compliance data
+
+  How it works:
+    Sends the question to the LLM with a short classification prompt.
+    Parses the response into one of the 4 intent strings.
+
+  Why it exists:
+    The main chat endpoint is general-purpose. If a user types "review my
+    contract" in the chat box, the system should redirect them to the
+    review pipeline, not try to answer it as a regulatory question.
+
+  Output: Sets state["intent"]
+
+  Routing: Based on intent, the graph branches:
+    compliance_chat  → retrieve
+    compliance_review → handle_review → END
+    clause_generation → handle_clause_gen → END
+    analytics        → handle_analytics → END
+
+NODE 2: retrieve
+  What it does:
+    Searches the Qdrant vector database for regulation chunks that are
+    semantically relevant to the user's question.
+
+  How it works (full retrieval stack):
+    a) HyDE (Hypothetical Document Embedding):
+       Before searching, the LLM generates a hypothetical answer to the
+       question. This hypothetical answer is then embedded and used as
+       the search query. Why? Because a hypothetical answer is more
+       similar to actual regulation text than the question itself.
+       e.g., Question: "What are UBO requirements?"
+            HyDE generates: "Under ADGM regulations, UBO disclosure requires
+            identification of beneficial owners holding 25% or more..."
+       That generated text matches regulation chunks much better.
+
+    b) Dense search (Qdrant):
+       Embeds the query (or HyDE text) with Gemini embeddings.
+       Searches all configured Qdrant collections simultaneously.
+       Returns top-K results ranked by cosine similarity score.
+       Collections searched: regulations, templates, guidance, checklists
+
+    c) Sparse search (BM25):
+       Runs a keyword-based BM25 search on the same collections.
+       BM25 is the classic "bag of words" relevance algorithm used by
+       search engines like Elasticsearch. It's good at exact term matching.
+
+    d) Hybrid fusion (Reciprocal Rank Fusion):
+       Combines the ranked lists from dense + sparse search.
+       Each chunk gets a fused score based on its rank in both lists.
+       The combined ranking is usually better than either alone.
+
+    e) Cross-encoder re-ranking:
+       Takes the top-N results from fusion and re-scores them with a
+       cross-encoder model (more expensive but more accurate).
+       The cross-encoder sees BOTH the query and the chunk together,
+       unlike the bi-encoder used in Qdrant which encodes them separately.
+
+    f) Redis caching:
+       The entire retrieval result is cached by (query, collections) hash.
+       Same question asked twice = instant response from cache.
+
+  Output: Sets state["retrieved_chunks"] with top K RetrievedChunk objects
+
+NODE 3: crag_evaluate
+  What it does:
+    Evaluates whether the retrieved chunks are actually relevant to the
+    question. This is the "Corrective" in CRAG (Corrective RAG).
+
+  How it works:
+    Shows the LLM: the question + first 2-3 retrieved chunks.
+    Asks: "Is this context SUFFICIENT, PARTIAL, or IRRELEVANT?"
+
+  Why it exists:
+    Sometimes the retrieval system returns chunks that are tangentially
+    related but don't actually answer the question. Without this check,
+    the LLM would either make something up or give a vague non-answer.
+    With this check, the system knows when retrieval failed.
+
+  Decision logic:
+    SUFFICIENT  → proceed directly to self_check_evidence
+    PARTIAL     → attempt a query rewrite and retrieve again
+    IRRELEVANT  → attempt a query rewrite and retrieve again
+
+NODE 4: rewrite_and_retrieve (only if CRAG said PARTIAL/IRRELEVANT)
+  What it does:
+    Rewrites the user's question into a better search query, then
+    retrieves again with the new query.
+
+  How it works:
+    The LLM takes the original question and reformulates it — expanding
+    acronyms, adding regulatory domain keywords, rephrasing to match
+    how regulation documents are written.
+    e.g., "UBO rules" → "beneficial ownership disclosure requirements ADGM
+    Companies Regulations registered agent notification"
+
+  Output: Replaces state["retrieved_chunks"] with better results
+
+NODE 5: self_check_evidence
+  What it does:
+    A second quality gate. Verifies that the retrieved context contains
+    enough specific information to answer the question.
+
+  How it works:
+    Shows the LLM: the question + retrieved chunks (up to 6 chunks,
+    350 chars each).
+    Asks: "Does this context contain SUFFICIENT information to answer?"
+    Returns: SUFFICIENT or INSUFFICIENT
+
+  Why it's different from crag_evaluate:
+    CRAG checks "did retrieval return relevant documents?"
+    self_check_evidence checks "does the returned context have enough
+    specific detail to actually answer the question?"
+    These can be different — you can retrieve the right document but
+    the specific chunk retrieved might not have the answer.
+
+  Decision logic:
+    SUFFICIENT  → proceed to generate
+    INSUFFICIENT → return a conservative disclaimer: "The retrieved
+    regulatory context does not contain sufficient information..."
+
+NODE 6: generate
+  What it does:
+    The actual answer generation. Takes the question + retrieved chunks
+    + any prior conversation context → produces a cited, grounded answer.
+
+  How it works:
+    Constructs a detailed system prompt:
+      - "You are an expert ADGM compliance assistant"
+      - "Answer based ONLY on the provided regulatory context"
+      - "Cite every regulatory claim using [Source: title, ref]"
+      - "Never speculate beyond what regulations explicitly state"
+    Appends the retrieved chunks as evidence
+    Calls Groq (or Gemini fallback) to generate the answer
+
+  Output: Sets state["answer"] and state["sources"]
+
+NODE 7: self_grade_answer
+  What it does:
+    The final quality check. Verifies the generated answer doesn't
+    contain hallucinated facts.
+
+  How it works:
+    Shows the LLM: the evidence chunks + the generated answer.
+    Asks: "Does this answer invent regulation names, article numbers,
+    dates, or thresholds NOT present in the evidence? Or does it
+    directly contradict a specific fact?"
+    Returns: GROUNDED or UNGROUNDED
+
+  The key insight:
+    Only marks UNGROUNDED if the answer INVENTS specific facts.
+    Synthesis, summarisation, and connecting ideas from multiple chunks
+    is allowed — that's what good legal reasoning looks like.
+    A well-qualified synthesis ("based on Articles 52 and 53...") is
+    GROUNDED even if those exact words don't appear together.
+
+  Decision logic:
+    GROUNDED   → answer flows through to the API response
+    UNGROUNDED → answer is replaced with:
+      "Based on the retrieved regulatory context, I cannot provide a
+      fully verified answer to this question. Please consult the relevant
+      ADGM regulations directly or seek professional legal advice."
+
+  Why this matters:
+    In compliance, a hallucinated regulation number or wrong threshold
+    could lead to genuine legal harm. This node is the last line of
+    defense against the LLM making up plausible-sounding but wrong facts.
+
+9d. CRAG — CORRECTIVE RETRIEVAL AUGMENTED GENERATION
+------------------------------------------------------
+CRAG is a technique that adds a self-correction loop to RAG.
+Standard RAG blindly takes whatever the retriever returns.
+CRAG evaluates the retrieved context and corrects if needed.
+
+In this system, CRAG adds two improvements:
+  1. Context evaluation (crag_evaluate node)
+  2. Query rewriting (rewrite_and_retrieve node)
+
+The graph can loop: retrieve → evaluate → rewrite → retrieve again
+But it only loops once (prevents infinite loops).
+
+9e. SELF-RAG — EVIDENCE CHECK + ANSWER GROUNDING
+-------------------------------------------------
+Self-RAG adds two more quality gates on top of CRAG:
+  1. Before generation: check evidence is sufficient (self_check_evidence)
+  2. After generation: check answer is grounded (self_grade_answer)
+
+Together, CRAG + Self-RAG create a 5-checkpoint quality pipeline:
+  1. Was retrieval relevant? (CRAG evaluate)
+  2. If not, can a better query help? (CRAG rewrite)
+  3. Does the context have enough detail? (Self-RAG evidence check)
+  4. Generate the answer
+  5. Is the answer grounded in evidence? (Self-RAG grade)
+
+================================================================================
+10. FEATURE 2: DOCUMENT REVIEW (COMPLIANCE AUDIT)
+================================================================================
+
+10a. WHAT IT DOES
+-----------------
+Upload any ADGM-related document (PDF or DOCX) and receive a full compliance
+audit. The system:
+  - Identifies what type of document it is
+  - Extracts all significant legal clauses
+  - Maps each clause to the relevant ADGM regulations
+  - Detects violations (clauses that breach regulations)
+  - Identifies gaps (required clauses that are missing)
+  - Generates an executive summary
+  - Calculates a compliance score out of 100
+  - Returns a structured report with violations and recommendations
+  - Indexes the review for future similarity search (Case Search)
+  - Persists everything to PostgreSQL
+
+Document types supported:
+  - Articles of Association (AoA)
+  - Memorandum of Association (MoA)
+  - Employment contracts
+  - UBO declarations
+  - Shareholder resolutions
+  - Board resolutions
+  - Share purchase agreements
+
+10b. FULL LIFECYCLE OF A DOCUMENT REVIEW REQUEST
+-------------------------------------------------
+
+  [User drags/drops a PDF file onto the Document Review page]
+           |
+           | POST /api/backend/reviews/analyze (multipart/form-data)
+           | Body: file binary data
+           |
+           v
+  [Next.js proxy forwards to FastAPI]
+    - Uses req.blob() to handle the binary file data
+    - Forwards with correct Content-Type: multipart/form-data
+           |
+           v
+  [FastAPI POST /api/v1/reviews/analyze]
+    Step 1: Validate file type (must be .pdf or .docx)
+    Step 2: Extract text from the file
+      - PDF: uses PyPDF2 or pdfminer to extract text layer
+      - DOCX: uses python-docx to read paragraph text
+      - Raises HTTP 422 if text extraction fails or produces empty text
+    Step 3: Invoke the 6-agent review LangGraph pipeline
+    Step 4: Build ReviewReport from pipeline output
+    Step 5: Retrieve similar historical cases (Phase 11)
+    Step 6: Index this review into Qdrant historical_reviews (Phase 11)
+    Step 7: Persist document + review + violations + recommendations
+            to PostgreSQL in a single transaction
+    Step 8: Return ReviewReport JSON to frontend
+           |
+           v
+  [LangGraph — 6-Agent Review Pipeline]
+    Runs 6 nodes in sequence:
+    1. classify_document
+    2. extract_clauses
+    3. retrieve_regulations
+    4. detect_violations
+    5. analyse_gaps
+    6. generate_report
+
+10c. EVERY NODE IN THE 6-AGENT REVIEW PIPELINE EXPLAINED
+---------------------------------------------------------
+
+NODE 1: classify_document
+  Input:  Raw document text
+  What it does:
+    Identifies what type of legal document this is.
+    Sends the first ~3000 characters to the LLM and asks it to classify.
+
+  Output possibilities:
+    articles_of_association, memorandum_of_association, employment_contract,
+    ubo_declaration, shareholder_resolution, board_resolution,
+    share_purchase_agreement, general_contract
+
+  Why this matters:
+    Different document types have different applicable regulations.
+    An employment contract must comply with ADGM Employment Regulations.
+    An AoA must comply with ADGM Companies Regulations.
+    The document type determines which regulations are retrieved next.
+
+NODE 2: extract_clauses
+  Input:  Document text + detected document type
+  What it does:
+    Instructs the LLM to read the entire document and extract every
+    meaningful legal clause as a structured JSON array.
+
+  Each clause extracted contains:
+    - clause_heading: The heading/title of the clause (e.g., "Share Capital")
+    - clause_text: The full text of the clause
+    - clause_reference: Where it appears in the document (e.g., "Article 5")
+
+  Why structured extraction?
+    The raw document text is unstructured. We need to compare individual
+    clauses against regulations. If we sent the whole document, the LLM
+    would lose track of which regulation applies to which part.
+    Clause-by-clause extraction makes the mapping precise.
+
+NODE 3: retrieve_regulations
+  Input:  Document type + extracted clause headings
+  What it does:
+    Searches Qdrant for the most relevant ADGM regulations for this
+    specific document type.
+
+  How it works:
+    Builds a search query from the document type and key clause topics.
+    e.g., "articles of association share capital directors ADGM"
+    Searches: regulations, templates, checklists collections
+    Returns top-20 regulation chunks as context for the next nodes
+
+  Why regulations need to be retrieved per-document:
+    The system cannot load ALL ADGM regulations into the LLM context
+    (there are hundreds of regulations, thousands of pages).
+    It retrieves only the most relevant ones for this specific document.
+
+NODE 4: detect_violations
+  Input:  Extracted clauses + retrieved regulation chunks
+  What it does:
+    Compares each extracted clause against the applicable regulations.
+    For each violation found, outputs a structured violation object.
+
+  Each violation contains:
+    - clause_heading: Which clause in the document
+    - clause_excerpt: The problematic text
+    - violation_type: "non_compliant_clause" | "missing_requirement" | etc.
+    - severity: "critical" | "high" | "medium" | "low"
+    - title: Short description of the violation
+    - description: Detailed explanation of what's wrong
+    - regulation_reference: Which ADGM regulation/article was breached
+    - recommendation: What needs to be changed
+
+  Example violation:
+    Clause: "Directors may be removed by a simple majority vote"
+    Regulation: ADGM Companies Regulations Art. 68 requires special resolution
+    Violation: "Director removal requires special resolution (75% majority),
+    not simple majority — this clause is non-compliant with Art. 68"
+
+NODE 5: analyse_gaps
+  Input:  Extracted clauses + retrieved regulations + document type
+  What it does:
+    Looks for REQUIRED provisions that are MISSING from the document.
+    A gap is not a bad clause — it's an absent mandatory clause.
+
+  Each gap identified contains:
+    - missing_provision: What required element is absent
+    - severity: How serious the omission is
+    - regulation_reference: Which regulation requires this provision
+    - recommendation: What clause should be added
+
+  Example gap:
+    An AoA that doesn't have a "Dispute Resolution" clause when ADGM
+    requires one is a gap — the clause isn't wrong, it simply doesn't exist.
+
+NODE 6: generate_report
+  Input:  All outputs from nodes 1-5
+  What it does:
+    a) Writes an executive summary of the document's compliance posture
+    b) Calculates a deterministic compliance score
+
+  Score calculation formula (deterministic, not LLM-generated):
+    base_score = 100
+    Deductions per violation severity:
+      critical: -20 points
+      high:     -10 points
+      medium:   -5 points
+      low:      -2 points
+    Deductions per gap severity:
+      critical: -15 points
+      high:     -8 points
+      medium:   -3 points
+      low:      -1 point
+    Final score = max(0, base_score - total_deductions)
+
+  Why deterministic scoring?
+    If the LLM generated the score, it might vary on repeated runs.
+    A document with the same violations should always get the same score.
+    Compliance officers need to trust the number — it must be repeatable.
+
+10d. HOW RESULTS ARE PERSISTED TO POSTGRESQL
+--------------------------------------------
+After the pipeline completes, _persist_review() runs in a single transaction:
+
+  Transaction order (must be in this order due to foreign keys):
+    1. Create Document record → session.flush() → get doc.id
+    2. Create Review record (with doc.id) → session.flush() → get rev.id
+    3. Create Violation records (each with rev.id)
+    4. Create Recommendation records (each with rev.id)
+    5. session.commit() — writes everything atomically
+
+  If anything fails: session.rollback() — no partial data is written.
+  The review response is still returned to the user even if persistence fails
+  (the failure is logged but the user doesn't lose their review results).
+
+================================================================================
+11. FEATURE 3: CLAUSE GENERATOR
+================================================================================
+
+11a. WHAT IT DOES
+-----------------
+The user describes in plain English what clause they need. The system:
+  1. Parses the request to identify clause type and requirements
+  2. Retrieves relevant ADGM regulations and approved templates
+  3. Drafts a legally precise, ADGM-compliant clause with inline citations
+
+Examples:
+  "Draft an arbitration clause for an ADGM employment contract"
+  "Generate a share capital clause for Articles of Association"
+  "Write a UBO disclosure requirement clause"
+  "Create a board quorum clause under ADGM Companies Regulations"
+
+11b. FULL LIFECYCLE OF A CLAUSE GENERATION REQUEST
+--------------------------------------------------
+
+  [User types clause request in the Clause Generator page]
+           |
+           | POST /api/backend/generated-clauses/generate
+           | Body: { "request_text": "Draft an arbitration clause..." }
+           |
+           v
+  [FastAPI POST /api/v1/generated-clauses/generate]
+    - Validates request
+    - Invokes the 3-agent clause LangGraph pipeline
+    - On success: persists to generated_clauses table
+    - Returns ClauseResult JSON (clause_text, citations, model, latency_ms)
+
+11c. EVERY NODE IN THE 3-AGENT CLAUSE PIPELINE EXPLAINED
+---------------------------------------------------------
+
+NODE 1: parse_request
+  Input:  Free-text clause request
+  What it does:
+    Extracts structured information from the natural language request.
+    The LLM reads the request and outputs a JSON object:
+      {
+        "clause_type": "arbitration_clause",
+        "document_type": "employment_contract",
+        "key_requirements": ["ADGM arbitration rules", "dispute resolution",
+                             "governing law"]
+      }
+
+  Why parse first?
+    If we sent the raw request to the retrieval system, it might search
+    for the wrong things. By structuring the request first, the next node
+    can build precise retrieval queries.
+
+NODE 2: retrieve_context
+  Input:  Parsed clause type, document type, key requirements
+  What it does:
+    Searches Qdrant for:
+      a) Regulations that govern this clause type
+      b) Approved templates that include this clause type
+
+    Collections searched: regulations + templates
+    Why templates? Templates give the LLM examples of how ADGM-approved
+    clauses should be worded — style, structure, approved phrasing.
+
+NODE 3: generate_clause
+  Input:  Original request + parsed requirements + retrieved regulation/template context
+  What it does:
+    Acts as a "legal drafter" — uses the retrieved context to write
+    a precise, professionally worded legal clause.
+
+  The generation prompt instructs:
+    - Write in formal legal language suitable for ADGM documents
+    - Include all required provisions from the retrieved regulations
+    - Cite every regulatory claim using [Source: title, article reference]
+    - Include defined terms where applicable
+    - Structure with numbered sub-clauses if appropriate
+    - Never include provisions not backed by the retrieved context
+
+  Output: A complete legal clause ready to insert into a document,
+          with inline [Source: ...] citations throughout the text.
+
+================================================================================
+12. FEATURE 4: ANALYTICS (NATURAL LANGUAGE TO SQL)
+================================================================================
+
+12a. WHAT IT DOES
+-----------------
+Users can ask questions about their compliance data in plain English.
+The system converts the question to SQL, executes it on PostgreSQL,
+and explains the results in a professional narrative.
+
+Examples:
+  "How many violations were found in total?"
+  "What is the average compliance score across all reviews?"
+  "Which document type has the most violations?"
+  "Show me all reviews with a score below 60"
+  "How many clauses were generated in the last week?"
+
+12b. FULL LIFECYCLE OF AN ANALYTICS QUERY
+-----------------------------------------
+
+  [User types question in Analytics page]
+           |
+           | POST /api/backend/analytics/query
+           | Body: { "question": "...", "preview_only": false }
+           |
+           v
+  [FastAPI POST /api/v1/analytics/query]
+    - Validates request
+    - Invokes the 4-node Text2SQL LangGraph pipeline
+    - Persists to query_logs (fire-and-forget)
+    - Returns AnalyticsResult with: answer, generated_sql, query_results,
+      row_count, columns, model, latency_ms
+
+12c. EVERY NODE IN THE TEXT2SQL PIPELINE EXPLAINED
+---------------------------------------------------
+
+NODE 1: generate_sql
+  Input:  Natural language question
+  What it does:
+    Converts the question to a safe, valid PostgreSQL SELECT statement.
+
+  The LLM is given:
+    - The full database schema (all 8 tables, all columns, all foreign keys)
+    - 13 strict rules:
+        Rule 1:  Only SELECT — never INSERT/UPDATE/DELETE/DROP
+        Rule 2:  Cast UUIDs to TEXT
+        Rule 3:  Format timestamps with TO_CHAR()
+        Rule 4:  Cast NUMERIC to FLOAT for calculations
+        Rule 5:  No LIMIT for pure aggregation queries (COUNT/SUM/AVG)
+        Rule 6:  LIMIT 50 for all other queries
+        Rule 7:  Always use explicit column names, never SELECT *
+        Rule 8:  Use table aliases (r for reviews, v for violations, etc.)
+        Rule 9:  Only add date filters when the question uses time words
+        Rule 10: Use ILIKE for case-insensitive text matching
+        Rule 11: Always qualify column names with table aliases in joins
+        Rule 12: GROUP BY must include every non-aggregated SELECT column
+        Rule 13: Only JOIN on actual foreign key relationships
+
+  Why so many rules?
+    LLMs tend to generate SQL with subtle errors — using columns that don't
+    exist, forgetting GROUP BY requirements, inventing join conditions.
+    These rules prevent the most common failure modes.
+
+  Special case: if the user submitted confirmed_sql (approved SQL from a
+  previous preview), this node skips LLM generation and uses that SQL directly.
+
+NODE 2: validate_sql
+  Input:  Generated SQL string
+  What it does:
+    Runs static safety checks WITHOUT executing the SQL:
+
+    Check 1: Must start with SELECT (after removing comments)
+    Check 2: Must not contain any blocked keywords:
+              DROP, DELETE, INSERT, UPDATE, ALTER, TRUNCATE, CREATE,
+              EXEC, EXECUTE, CALL, GRANT, REVOKE, COMMIT, ROLLBACK,
+              pg_read_file, pg_ls_dir, COPY, lo_export, lo_import
+    Check 3: Enforce LIMIT if missing (unless it's a pure aggregation)
+
+  Why validate separately from execute?
+    Defense in depth. The LLM might be tricked by a malicious prompt into
+    generating a destructive query. This layer catches it before any
+    database connection is opened.
+
+  Output: Sets sql_safe=True/False and sql_rejection_reason
+
+NODE 3: execute_sql
+  Input:  Validated SQL + sql_safe flag
+  What it does:
+    If sql_safe=False: returns the rejection reason, skips execution
+    If sql_safe=True: executes the SQL against PostgreSQL
+
+  Two-attempt mechanism:
+    Attempt 1: Execute the generated SQL
+    If it fails with a database error:
+      - Call _repair_sql() — ask the LLM to fix the broken SQL
+      - Safety-check the repaired SQL (same blocked keyword checks)
+      - Attempt 2: Execute the repaired SQL
+    If that also fails: return the error message
+
+  Why auto-repair?
+    Even with careful prompt engineering, LLMs occasionally generate SQL
+    with syntax errors or invalid column references. Rather than failing
+    immediately, the system tries to self-heal.
+
+  Serialisation:
+    UUIDs → strings
+    datetimes → ISO format strings
+    Decimal → float
+    (All needed so results can be JSON-serialised for the API response)
+
+NODE 4: format_answer
+  Input:  Question + SQL + query results (rows + columns)
+  What it does:
+    Converts raw SQL results into a professional compliance narrative.
+
+  The LLM receives:
+    - The original question
+    - The SQL that was executed
+    - Row count and column names
+    - Up to 5 sample rows of results
+
+  It produces:
+    A 2-4 sentence professional response like:
+    "The database contains 47 compliance violations across 12 review
+    sessions. The most frequently occurring severity level is 'medium',
+    accounting for 23 of the 47 violations. Critical violations represent
+    9% of the total, primarily concentrated in employment contract reviews."
+
+12d. THE AUTO-REPAIR MECHANISM
+-------------------------------
+When SQL fails, _repair_sql() is called:
+  1. Takes the failed SQL + the exact PostgreSQL error message
+  2. Sends both to the LLM along with the full database schema
+  3. Instructs the LLM to fix the specific error
+  4. The most common fixes:
+     - Add missing columns to GROUP BY
+     - Correct invalid JOIN conditions
+     - Fix column alias references in WHERE/GROUP BY
+     - Add missing CAST for NUMERIC arithmetic
+  5. The repaired SQL is safety-checked again before execution
+
+12e. HUMAN-IN-THE-LOOP APPROVAL FLOW
+--------------------------------------
+For sensitive analytics, users can use a two-step process:
+
+  Step 1: POST with preview_only=true
+    → Returns the generated SQL WITHOUT executing it
+    → User can review the SQL in the UI
+
+  Step 2: POST with confirmed_sql="<the SQL from step 1>"
+    → Skips LLM generation, uses the confirmed SQL directly
+    → Executes and returns results
+
+This ensures a human reviews the SQL before it touches the database,
+which is important in regulated environments.
+
+================================================================================
+13. FEATURE 5: CASE SEARCH (HISTORICAL SIMILARITY)
+================================================================================
+
+13a. WHAT IT DOES
+-----------------
+After you run document reviews, every completed review is automatically indexed.
+Case Search lets you search those past reviews by describing a scenario in
+natural language and finding semantically similar historical cases.
+
+Use cases:
+  - "Find cases similar to my AoA with UBO violations"
+  - "Show employment contracts that had probation period issues"
+  - Benchmarking: "What compliance score did similar documents get?"
+  - "What ADGM regulations were cited in similar cases?"
+
+13b. HOW CASES GET INTO THE SYSTEM
+------------------------------------
+After every document review, the review route calls _index_review(report):
+
+  _index_review() calls HistoricalReviewIndexer.index(report):
+
+    Step 1: _ensure_collection()
+      - Checks if "historical_reviews" collection exists in Qdrant
+      - Creates it if not (768-dimension, cosine distance)
+
+    Step 2: _build_review_text(report)
+      Constructs an embedding-ready text representation:
+        "Document type: articles_of_association
+         Compliance score: 72/100
+         Summary: [executive summary text]
+         Violations:
+         [HIGH] Missing UBO disclosure: The document does not include...
+         [MEDIUM] Incorrect quorum requirement: Article 12 specifies...
+         Missing provisions:
+         - Dispute resolution clause
+         - Data protection notice"
+
+    Step 3: Embed this text with Gemini text-embedding-004
+      Produces a 768-dimensional vector representing the "compliance
+      fingerprint" of this review.
+
+    Step 4: Create a Qdrant point with:
+      - vector: the 768D embedding
+      - payload: document_name, document_type, compliance_score,
+                 violation_count, gap_count, violation_types (list),
+                 regulation_references (list), summary, text
+      - id: deterministic UUID from SHA256(name|score|issue_count)
+        (so re-indexing the same document doesn't create duplicates)
+
+    Step 5: Upsert to Qdrant
+      (upsert = insert or update if ID already exists)
+
+13c. FULL LIFECYCLE OF A CASE SEARCH REQUEST
+---------------------------------------------
+
+  [User types a search query in the Case Search page]
+           |
+           | POST /api/backend/cases/search
+           | Body: { "query": "...", "top_k": 5 }
+           |
+           v
+  [FastAPI POST /api/v1/cases/search]
+    - Calls SimilarCasesRetriever.search(query, top_k)
+           |
+           v
+  [SimilarCasesRetriever.search()]
+    Step 1: Embed the query with Gemini (RETRIEVAL_QUERY task type)
+    Step 2: Call Qdrant query_points() on "historical_reviews" collection
+            - Pure dense vector search (no BM25 — review texts are long
+              narrative documents where semantic search is superior)
+            - Returns top_k results with similarity scores
+    Step 3: Convert each Qdrant hit to a SimilarCase object
+    Step 4: Return list of SimilarCase objects
+           |
+           v
+  [Frontend receives CaseSearchResult]
+    - Shows cards in a responsive grid
+    - Each card: document name, type, compliance score badge,
+                 violation count, gap count, similarity bar
+    - Clicking a card opens a modal with:
+        Full summary, violation types (as badges), regulation references
+        (as badges), detailed statistics, cosine similarity explanation
+
+================================================================================
+14. THE RETRIEVAL STACK — HOW INFORMATION IS FOUND
+================================================================================
+
+The retrieval system has 5 layers. Understanding each layer is crucial to
+understanding why the system retrieves the right information.
+
+14a. DENSE VECTOR RETRIEVAL (QDRANT)
+--------------------------------------
+Technique: Bi-encoder semantic search
+How: Both the query and every document chunk are encoded as 768D vectors.
+     Similarity = cosine distance between vectors.
+     Qdrant maintains an HNSW (Hierarchical Navigable Small World) index
+     for approximate nearest-neighbour search at millisecond speed.
+
+Strength: Finds semantically related content even without exact keyword match.
+Weakness: Can miss exact terminology matches (e.g., specific regulation codes).
+
+14b. BM25 SPARSE RETRIEVAL
+----------------------------
+Technique: Classic term frequency-inverse document frequency (TF-IDF variant)
+How: Ranks chunks by: how often query terms appear in the chunk (term frequency),
+     penalised by how common those terms are across all chunks (IDF).
+
+Strength: Exact keyword matching. "Article 52(3)" will score very high
+          in a chunk that mentions "Article 52(3)" explicitly.
+Weakness: Misses synonyms and paraphrases.
+
+14c. HYBRID FUSION (RECIPROCAL RANK FUSION)
+---------------------------------------------
+Combines dense + sparse rankings.
+Formula: score = Σ 1/(rank_in_list + k) for each ranked list
+where k=60 is a constant that dampens the influence of very high ranks.
+
+Result: Chunks that appear in both lists rank highest.
+        Chunks that appear in only one list are still included if strong.
+        This consistently outperforms either single method alone.
+
+14d. CROSS-ENCODER RE-RANKING
+-------------------------------
+After hybrid fusion gives us top-N candidates, a cross-encoder model
+re-scores them. A cross-encoder is a model that takes (query, chunk) as
+a single concatenated input and outputs a relevance score.
+
+Why better than bi-encoder for re-ranking:
+  Bi-encoder: query and chunk encoded SEPARATELY → less accurate
+  Cross-encoder: query and chunk encoded TOGETHER → can see interactions
+  (e.g., the word "not" in the query completely changes relevance of a chunk)
+
+Cost: Cross-encoder is slower — but we only run it on the top 20 candidates,
+      not the full collection.
+
+14e. HYDE (HYPOTHETICAL DOCUMENT EMBEDDING)
+--------------------------------------------
+HyDE runs BEFORE the retrieval stack as a query enhancement:
+
+Standard RAG: embed(question) → search(vector)
+HyDE RAG: LLM(question) → hypothetical_answer → embed(answer) → search(vector)
+
+Why? The gap between "question space" and "answer space" is large.
+"What are UBO requirements?" is semantically distant from regulation text.
+"Under ADGM regulations, UBO disclosure requires beneficial owners holding
+25% or more to register within 14 days..." is semantically close to
+the actual regulation text.
+
+HyDE bridges this gap by hallucinating a plausible answer first, then
+searching for real content that matches that plausible answer.
+The hypothetical answer may be wrong — but its SEMANTIC SPACE is right.
+
+14f. REDIS CACHING LAYER
+--------------------------
+The CachedRetriever wraps the full stack (HyDE → dense → BM25 → hybrid → rerank).
+Cache key: SHA256 hash of (query_text + collections_list + top_k)
+TTL: 1 hour
+
+Same question twice = instant response, no Qdrant query, no embedding call.
+
+================================================================================
+15. THE LLM LAYER — GROQ PRIMARY, GEMINI FALLBACK
+================================================================================
+
+All agents use a single unified client: GeminiClient (in services/generation.py).
+Despite the name, it tries Groq first.
+
+PRIMARY: Groq with llama-3.3-70b-versatile
+  - llama-3.3-70b is Meta's 70-billion parameter open-source model
+  - Groq's LPU (Language Processing Unit) hardware makes inference very fast
+  - Rate limit: Groq has free-tier limits; retries handle transient 429 errors
+  - Retry config: max 2 retries, base delay 2 seconds
+    (Attempt 1 → wait 2s → Attempt 2 → wait 4s → give up)
+  - Total max wait: ~6 seconds before falling back to Gemini
+
+FALLBACK: Google Gemini 2.0 Flash
+  - Triggered if Groq fails after retries
+  - gemini-2.0-flash is fast and highly capable
+  - Also used for EMBEDDINGS regardless of which LLM generated the answer
+
+WHAT GROQ PROVIDES
+  - Speed: Groq is typically 5-10x faster than standard GPU inference
+  - Open model: llama-3.3-70b is not a black box
+  - Cost-effective for high-volume compliance queries
+
+HOW CACHING INTERSECTS
+  - Before any LLM call, the cache is checked
+  - Cache key = SHA256(prompt_text)
+  - If the EXACT same prompt was generated before: return cached answer
+  - This means: same question → same retrieval → same prompt → cache hit
+
+================================================================================
+16. FRONTEND — NEXT.JS APP STRUCTURE
+================================================================================
+
+16a. PAGES AND WHAT EACH ONE DOES
+-----------------------------------
+
+  src/app/page.tsx               → Dashboard (/)
+    - Landing page with hero banner
+    - Grid of 5 capability cards linking to each feature
+    - Live "Performance Cache" stats from Redis (embeddings cached,
+      responses cached, searches cached, memory used)
+
+  src/app/chat/page.tsx          → AI Copilot (/chat)
+    - Chat interface with message history
+    - ReactMarkdown renders AI responses (headings, lists, bold text)
+    - CitationChip badges show sources below AI messages
+    - Inline [Source: ...] citations styled as dark italic with § prefix
+    - 4 suggested questions for new users
+    - "New conversation" clears the message history
+
+  src/app/review/page.tsx        → Document Review (/review)
+    - Drag-and-drop file upload (react-dropzone)
+    - Animated upload progress indicators
+    - Score ring visualisation (SVG circle with compliance score)
+    - Expandable violation cards (click to see details)
+    - Recommendation cards grouped by priority
+    - Similar cases section from Phase 11
+    - Full latency/model attribution display
+
+  src/app/clauses/page.tsx       → Clause Generator (/clauses)
+    - Text input for describing the clause needed
+    - Result card with formatted clause text (ReactMarkdown)
+    - Expandable "Regulatory Sources" section showing source citations
+    - Copy-to-clipboard functionality
+    - Latency display
+
+  src/app/analytics/page.tsx     → Analytics (/analytics)
+    - Natural language input
+    - "Preview SQL" toggle (human-in-the-loop)
+    - SQL display card (shows generated SQL for review)
+    - Results table with column headers and rows
+    - Narrative answer card
+    - Row count and latency display
+
+  src/app/cases/page.tsx         → Case Search (/cases)
+    - Search bar with example query chips
+    - Top-K selector (3, 5, or 10 results)
+    - Results grid of case cards
+    - Click-to-open detail modal showing full case information
+    - Similarity bar visualization for each result
+    - Onboarding state when no search has been run yet
+
+16b. HOW THE FRONTEND TALKS TO THE BACKEND
+------------------------------------------
+All API calls go through: src/lib/api.ts
+
+This file exports typed functions:
+  sendChatMessage(question)   → POST /api/backend/chat
+  reviewDocument(file)        → POST /api/backend/reviews/analyze
+  generateClause(request_text) → POST /api/backend/generated-clauses/generate
+  runAnalyticsQuery(question, preview_only, confirmed_sql)
+                              → POST /api/backend/analytics/query
+  searchCases(query, top_k)  → POST /api/backend/cases/search
+  getCacheStats()             → GET /api/backend/cache/stats
+
+Note: These all call /api/backend/... which is a Next.js API route,
+NOT the FastAPI backend directly. The browser never talks to port 8000.
+
+16c. THE PROXY ROUTE AND WHY IT EXISTS
+----------------------------------------
+File: src/app/api/backend/[...path]/route.ts
+
+This is a Next.js App Router catch-all API route that proxies ALL
+requests from the frontend to the FastAPI backend.
+
+Why not just call localhost:8000 directly from the browser?
+
+  Problem 1: Timeout control
+    Next.js rewrites() (the simple alternative) offer no timeout control.
+    If the FastAPI backend takes 90 seconds for a complex review,
+    the browser would hit its own timeout and show "connection reset".
+    The proxy uses AbortController with a 120-second timeout, and
+    returns a proper HTTP 504 response if FastAPI times out.
+    This means the frontend shows a clean error, not a crash.
+
+  Problem 2: Security
+    In production, the FastAPI backend URL might be an internal service
+    address not accessible from the internet. The Next.js proxy keeps
+    the backend URL server-side.
+
+  How it works:
+    1. Browser requests /api/backend/reviews/analyze (POST)
+    2. [...path] catches → path = ["reviews", "analyze"]
+    3. Proxy builds URL: http://localhost:8000/api/v1/reviews/analyze
+    4. Copies all request headers (except hop-by-hop headers like Host)
+    5. Reads request body with req.blob() (handles both JSON and multipart)
+    6. Fetches from FastAPI with 120s AbortController timeout
+    7. Streams the response back to the browser
+    8. Returns 504 on abort, 502 on network error
+
+================================================================================
+17. DATABASE TABLES — EVERY TABLE EXPLAINED
+================================================================================
+
+TABLE: users
+  Purpose: Platform user accounts (placeholder; no auth system yet)
+  Columns:
+    id            UUID, primary key, auto-generated
+    email         VARCHAR, unique user identifier
+    full_name     VARCHAR
+    organization  VARCHAR, the company/firm they work for
+    role          VARCHAR, "admin" | "officer" | "reviewer"
+    is_active     BOOLEAN, soft delete flag
+    created_at    TIMESTAMPTZ, auto-set on creation
+    updated_at    TIMESTAMPTZ, auto-updated on change
+
+TABLE: documents
+  Purpose: Metadata for every uploaded document
+  Columns:
+    id                    UUID, primary key
+    user_id               UUID, FK → users.id (nullable, no auth yet)
+    original_filename     VARCHAR, the filename as uploaded
+    storage_path          VARCHAR, where the file is stored on disk/S3
+    mime_type             VARCHAR, e.g. "application/pdf"
+    file_size_bytes       BIGINT
+    sha256_hash           VARCHAR, for deduplication
+    detected_document_type VARCHAR, set by classify_document node
+    extraction_status     VARCHAR, "pending"|"completed"|"failed"
+    extracted_text        TEXT, the full extracted text (optional storage)
+    doc_metadata          JSONB, flexible extra metadata
+
+TABLE: reviews
+  Purpose: One record per compliance review run
+  Columns:
+    id               UUID, primary key
+    document_id      UUID, FK → documents.id
+    user_id          UUID, FK → users.id
+    review_type      VARCHAR, same as detected_document_type
+    status           VARCHAR, "pending"|"running"|"completed"|"failed"
+    compliance_score NUMERIC(5,2), 0.00 to 100.00
+    summary          TEXT, executive summary from generate_report node
+    evidence_payload JSONB, raw retrieved regulation chunks
+    report_payload   JSONB, model name, latency, violation count, etc.
+    started_at       TIMESTAMPTZ
+    completed_at     TIMESTAMPTZ
+
+TABLE: violations
+  Purpose: Individual compliance violations found in a review
+  Columns:
+    id                  UUID, primary key
+    review_id           UUID, FK → reviews.id
+    violation_type      VARCHAR, "non_compliant_clause"|"missing_requirement"|etc.
+    severity            VARCHAR, "critical"|"high"|"medium"|"low"
+    title               VARCHAR (max 300 chars)
+    description         TEXT, full explanation of the violation
+    regulation_reference VARCHAR, e.g. "ADGM Companies Regulations Art. 52(3)"
+    document_excerpt    TEXT, the problematic text from the document
+    evidence_payload    JSONB, supporting regulation chunks
+    citation_payload    JSONB, structured citation data
+    status              VARCHAR, "open"|"acknowledged"|"resolved"
+
+TABLE: recommendations
+  Purpose: Remediation actions recommended for violations/gaps
+  Columns:
+    id                   UUID, primary key
+    review_id            UUID, FK → reviews.id
+    violation_id         UUID, FK → violations.id (nullable — gaps have no
+                         parent violation)
+    title                VARCHAR, short description of what to add/fix
+    recommendation_text  TEXT, detailed action instructions
+    priority             VARCHAR, "critical"|"high"|"medium"|"low"
+    citation_payload     JSONB
+    status               VARCHAR, "open"|"in_progress"|"completed"
+
+TABLE: generated_clauses
+  Purpose: Record of every clause the system has drafted
+  Columns:
+    id                UUID, primary key
+    user_id           UUID, FK → users.id (nullable)
+    request_text      TEXT, the original free-text request from the user
+    clause_type       VARCHAR, "arbitration_clause"|"share_capital"|etc.
+    generated_text    TEXT, the full drafted clause
+    model_name        VARCHAR, which LLM generated it (e.g. "groq/llama-3.3-70b")
+    retrieval_payload JSONB, which regulation/template chunks were used
+    citation_payload  JSONB, structured citation data
+    validation_status VARCHAR, "pending"|"validated"|"rejected"
+
+TABLE: audit_logs
+  Purpose: System activity audit trail (who did what and when)
+  Columns:
+    id            UUID, primary key
+    user_id       UUID, FK → users.id
+    action        VARCHAR, e.g. "DOCUMENT_REVIEWED", "CLAUSE_GENERATED"
+    resource_type VARCHAR, e.g. "review", "document", "clause"
+    resource_id   VARCHAR, the UUID of the resource acted on
+    actor_ip      VARCHAR, IP address of the requester
+    details       JSONB, additional action-specific data
+
+TABLE: query_logs
+  Purpose: Full audit trail of every chat and analytics query
+  Columns:
+    id               UUID, primary key
+    user_id          UUID, FK → users.id (nullable)
+    query_type       VARCHAR, "chat" | "analytics"
+    question         TEXT, what the user asked
+    response_text    TEXT, what the system answered
+    generated_sql    TEXT, the SQL generated (analytics queries only)
+    sql_approved     BOOLEAN, was the SQL deemed safe?
+    sql_executed     BOOLEAN, was the SQL actually run?
+    latency_ms       INTEGER, total response time
+    model_name       VARCHAR, which LLM answered
+    retrieval_payload JSONB
+    citation_payload JSONB
+    error_message    TEXT, if something went wrong
+
+================================================================================
+18. QDRANT COLLECTIONS — EVERY VECTOR COLLECTION EXPLAINED
+================================================================================
+
+Qdrant stores "points" — each point is a vector (768 floats) + payload (JSON).
+
+COLLECTION: regulations
+  What's in it: Chunked text from official ADGM regulation documents
+  Document types: Companies Regulations, Employment Regulations, Financial
+                  Services Regulations, Data Protection Regulations,
+                  Insolvency Regulations, Arbitration Regulations
+  Chunk size: Typically 300-500 tokens per chunk
+  Payload keys: source_title, rule_reference, heading, collection, text
+  Used by: Chat retrieval, Document review retrieval, Clause generation
+
+COLLECTION: templates
+  What's in it: ADGM-approved document templates
+  Examples: Model Articles of Association, Employment contract templates,
+            Standard share purchase agreement templates
+  Used by: Clause generation (to provide style/wording examples)
+
+COLLECTION: guidance
+  What's in it: ADGM guidance notes, FAQs, practice directions
+  Examples: "Guidance on UBO Registration", "Employment Law FAQs"
+  Used by: Chat retrieval (guidance often answers "how to comply" questions)
+
+COLLECTION: checklists
+  What's in it: Compliance checklists for specific document types
+  Examples: "AoA Checklist: 15 required provisions", "Employment Contract
+             Minimum Requirements"
+  Used by: Document review (gap analysis — what mandatory items to check for)
+
+COLLECTION: historical_reviews
+  What's in it: Summaries of completed compliance reviews (added dynamically)
+  Each point: Full text representation of a review (document type, score,
+              violations summary, missing provisions)
+  Used by: Case Search feature
+  Created by: HistoricalReviewIndexer.index() called after every review
+  Grows over time: Empty initially, accumulates one point per completed review
+
+================================================================================
+19. END-TO-END REQUEST LIFECYCLE EXAMPLES
+================================================================================
+
+19a. "What are UBO beneficial ownership disclosure requirements?" (Chat)
+------------------------------------------------------------------------
+  T+0ms   Browser: POST /api/backend/chat { question: "..." }
+  T+1ms   Next.js proxy: forwards to FastAPI, starts 120s AbortController
+  T+2ms   FastAPI: invokes LangGraph graph with question in state
+  T+3ms   LangGraph Node 1 (route_intent):
+            LLM classifies → "compliance_chat"
+  T+30ms  LangGraph Node 2 (retrieve):
+            HyDE generates: "UBO disclosure requirements in ADGM include..."
+            Qdrant dense search on regulations collection → top 10 chunks
+            BM25 search → top 10 chunks
+            Hybrid fusion → merged top 15
+            Cross-encoder re-ranking → final top 8 chunks
+            All about: Companies Regs Art. 52-54, UBO Register requirements
+  T+350ms LangGraph Node 3 (crag_evaluate):
+            LLM sees question + 3 chunks → "SUFFICIENT"
+  T+600ms LangGraph Node 4 (self_check_evidence):
+            LLM sees question + 6 chunks → "SUFFICIENT"
+  T+700ms LangGraph Node 5 (generate):
+            LLM generates cited answer: "Under ADGM Companies Regulations
+            2020, Article 52(1)-(3), all ADGM companies must identify and
+            register beneficial owners... [Source: ADGM Companies Regs, Art.52]
+            The UBO threshold is 25% ownership or control... [Source: ...]"
+  T+1800ms LangGraph Node 6 (self_grade_answer):
+             LLM compares answer to evidence → "GROUNDED"
+  T+1900ms FastAPI: builds response, persists to query_logs
+  T+1901ms HTTP response returns to Next.js proxy
+  T+1902ms Browser: renders answer with ReactMarkdown, shows source chips
+
+19b. Upload an AoA PDF (Document Review)
+-----------------------------------------
+  T+0ms     Browser: POST /api/backend/reviews/analyze (multipart/form-data)
+  T+1ms     Next.js proxy: forwards to FastAPI
+  T+10ms    FastAPI: validates .pdf extension
+  T+200ms   Text extraction: PyPDF2 extracts ~8000 words from PDF
+  T+300ms   LangGraph Node 1 (classify_document):
+              LLM reads first 3000 chars → "articles_of_association"
+  T+800ms   LangGraph Node 2 (extract_clauses):
+              LLM extracts 18 clauses as JSON array
+              [{ heading: "Share Capital", text: "...", reference: "Art.3" },
+               { heading: "Directors", text: "...", reference: "Art.7" }, ...]
+  T+1500ms  LangGraph Node 3 (retrieve_regulations):
+              Qdrant search: "articles of association ADGM companies regulations"
+              Returns 20 relevant regulation chunks from Companies Regs 2020
+  T+2000ms  LangGraph Node 4 (detect_violations):
+              LLM compares 18 clauses vs 20 regulation chunks
+              Finds 3 violations:
+                - "Directors may be removed by simple majority" → violates Art.68
+                - "No quorum requirement stated" → violates Art.57
+                - "Share transfer restriction unclear" → violates Art.44
+  T+3200ms  LangGraph Node 5 (analyse_gaps):
+              LLM checks checklist against extracted clauses
+              Finds 2 gaps:
+                - Missing dispute resolution clause (required by Art.95)
+                - Missing data protection notice (required by DP Regs Art.8)
+  T+4000ms  LangGraph Node 6 (generate_report):
+              LLM writes executive summary
+              Score: 100 - 10(high) - 5(medium) - 5(medium) - 8(high gap)
+                        - 3(medium gap) = 69/100
+  T+4500ms  _find_similar_cases(): Qdrant search on historical_reviews
+  T+4600ms  _index_review(): Embeds report, upserts to historical_reviews
+  T+4700ms  _persist_review():
+              Creates Document record (doc_id = uuid1)
+              Creates Review record (review_id = uuid2, score = 69.00)
+              Creates 3 Violation records
+              Creates 5 Recommendation records (3 violations + 2 gaps)
+              session.commit()
+  T+4800ms  HTTP response: ReviewReport JSON sent to browser
+  T+4801ms  Browser: renders score ring (69), violation cards, recommendations
+
+19c. "Draft an arbitration clause for an employment contract" (Clause Generator)
+--------------------------------------------------------------------------------
+  T+0ms    Browser: POST /api/backend/generated-clauses/generate
+  T+1ms    FastAPI: invokes clause LangGraph pipeline
+  T+10ms   Node 1 (parse_request):
+             LLM extracts: { clause_type: "arbitration_clause",
+                            document_type: "employment_contract",
+                            key_requirements: ["ADGM arbitration rules",
+                                              "dispute resolution", "governing law"] }
+  T+400ms  Node 2 (retrieve_context):
+             Qdrant searches: regulations + templates collections
+             Retrieves: ADGM Arbitration Regulations Art. 12-15,
+                        Model Arbitration Clause template,
+                        Employment Regulations dispute resolution provisions
+  T+600ms  Node 3 (generate_clause):
+             LLM drafts: "14. DISPUTE RESOLUTION AND ARBITRATION
+             14.1 Any dispute, controversy or claim arising out of or relating
+             to this Agreement... shall be referred to and finally resolved by
+             arbitration in accordance with the ADGM Arbitration Regulations
+             2015 [Source: ADGM Arbitration Regulations 2015, Article 12(1)].
+             14.2 The seat of arbitration shall be the Abu Dhabi Global Market
+             [Source: ADGM Arbitration Regulations 2015, Article 8(2)]..."
+  T+1800ms FastAPI: persists to generated_clauses table
+  T+1801ms Browser: renders formatted clause with ReactMarkdown,
+           inline citations styled as dark italic with § prefix,
+           source chips in expandable panel below
+
+19d. "How many violations were found this month?" (Analytics)
+--------------------------------------------------------------
+  T+0ms    Browser: POST /api/backend/analytics/query
+           Body: { "question": "How many violations were found this month?" }
+  T+1ms    FastAPI: invokes Text2SQL pipeline
+  T+10ms   Node 1 (generate_sql):
+             LLM generates:
+             SELECT COUNT(*) as violation_count FROM violations v
+             WHERE v.created_at >= DATE_TRUNC('month', CURRENT_DATE)
+             AND v.created_at < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+  T+400ms  Node 2 (validate_sql):
+             ✓ Starts with SELECT
+             ✓ No blocked keywords
+             ✓ No LIMIT needed (pure COUNT aggregation)
+             → sql_safe = True
+  T+401ms  Node 3 (execute_sql):
+             Runs SQL against PostgreSQL
+             Returns: [{ "violation_count": 47 }], 1 row, 1 column
+  T+410ms  Node 4 (format_answer):
+             LLM produces: "This month, a total of 47 compliance violations
+             have been identified across all document reviews conducted on
+             the platform. This represents the complete violation count from
+             the current calendar month to date."
+  T+800ms  FastAPI: persists to query_logs
+  T+801ms  Browser: shows narrative answer + SQL card + results table
+
+19e. "Find similar AoA cases" (Case Search)
+--------------------------------------------
+  T+0ms    Browser: POST /api/backend/cases/search
+           Body: { "query": "articles of association share capital violations",
+                  "top_k": 5 }
+  T+1ms    FastAPI: invokes SimilarCasesRetriever.search()
+  T+10ms   Embed query with Gemini → 768D vector
+  T+200ms  Qdrant query_points() on "historical_reviews":
+             Returns 5 closest vectors with scores:
+             [0.91, 0.87, 0.84, 0.79, 0.72]
+  T+210ms  Convert 5 Qdrant hits to SimilarCase objects
+  T+211ms  HTTP response: { results: [...5 cases...], count: 5 }
+  T+212ms  Browser: renders 5 case cards in grid
+           User clicks card → CaseDetailModal opens
+           Shows: full summary, violation types, regulation references,
+           similarity percentage bar, violation/gap counts
+
+================================================================================
+20. INLINE CITATIONS — HOW AND WHERE THEY APPEAR
+================================================================================
+
+The LLM is always instructed to embed inline citations in this format:
+  [Source: <document title>, <article/rule reference>]
+
+Example in generated text:
+  "All ADGM companies must maintain a register of beneficial owners
+  [Source: ADGM Companies Regulations 2020, Article 52(1)] and notify
+  the Registrar within 14 days of any change [Source: ADGM Companies
+  Regulations 2020, Article 53(3)]."
+
+WHERE THEY APPEAR
+  - Chat answers: every factual claim about regulations
+  - Generated clauses: every provision backed by a regulation
+  - Document review descriptions: violation explanations
+  - Report summaries: executive summary references
+
+HOW THEY ARE STYLED (frontend)
+  The [Source: ...] pattern is transformed before rendering:
+
+  In ReactMarkdown contexts (chat, clauses):
+    preprocessCitations() converts [Source: X, Y] → `§CITE:X, Y`
+    citationMarkdownComponents intercepts the inline code marker
+    Renders as: <span style="color:#1c1917; font-style:italic; font-size:0.82em">
+                  <span style="color:#92400e">§</span>X, Y
+                </span>
+
+  In plain text contexts (review descriptions, summaries):
+    CitationText component splits string on [Source: ...] regex
+    Each citation part rendered as same dark italic span with § prefix
+
+  Visual result:
+    Regular text continues normally...
+    §ADGM Companies Regulations 2020, Article 52(1)...more text
+
+  The § symbol is the international legal "section reference" symbol.
+  Dark near-black italic on the page's lighter text = immediately
+  distinguishable as a citation without being bold or distracting.
+
+================================================================================
+21. ERROR HANDLING AND RESILIENCE
+================================================================================
+
+NEVER FAIL THE USER'S REQUEST FOR BACKGROUND OPERATIONS
+  The review endpoint:
+    - _index_review() failure → logs warning, review still returned
+    - _persist_review() failure → logs error, review still returned
+  The chat endpoint:
+    - query_log persistence failure → logs error, answer still returned
+  The clause endpoint:
+    - clause persistence failure → logs error, clause still returned
+
+  Principle: Background operations (persistence, indexing) must NEVER
+  cause the primary user-facing operation to fail.
+
+LLM FALLBACK CHAIN
+  If Groq fails after retries: automatically switch to Gemini
+  If Gemini also fails: return a graceful error message to the user
+  The user sees an error, not a crash
+
+SQL AUTO-REPAIR
+  If generated SQL fails PostgreSQL execution:
+    Attempt 1 failed → send error to LLM for repair → validate repaired SQL
+    → Attempt 2 with repaired SQL
+  If that also fails: return clear error message, don't crash
+
+SELF-RAG GROUNDING PROTECTION
+  If the LLM generates a hallucinated answer:
+    self_grade_answer detects UNGROUNDED → returns conservative disclaimer
+    User gets a safe non-answer rather than a confident wrong answer
+
+FRONTEND TIMEOUT PROTECTION
+  AbortController with 120 seconds in the Next.js proxy
+  Returns HTTP 504 with clear message if backend takes too long
+  Frontend shows user-friendly error, not browser "connection reset"
+
+QDRANT GRACEFUL DEGRADATION
+  SimilarCasesRetriever.search() catches all exceptions and returns []
+  If historical_reviews collection is empty: returns empty list, not error
+  Missing Qdrant collection → auto-created on first index operation
+
+================================================================================
+22. GLOSSARY OF TERMS
+================================================================================
+
+RAG (Retrieval-Augmented Generation)
+  Technique where the LLM is given relevant documents at query time
+  rather than relying solely on what it learned during training.
+  Makes answers factual and citable.
+
+LangGraph
+  A framework for building multi-step AI pipelines as directed graphs.
+  Each node is a function that transforms shared state.
+  Edges can be conditional (route to different nodes based on state).
+
+Vector Embedding
+  A numerical representation of text as a list of floats (e.g., 768 floats).
+  Semantically similar texts have embeddings that are close together.
+  The foundation of all semantic search in this system.
+
+Cosine Similarity
+  A measure of similarity between two vectors.
+  Score = 1.0 means identical, 0.0 means unrelated, -1.0 means opposite.
+  Used by Qdrant to rank search results.
+
+HNSW (Hierarchical Navigable Small World)
+  The approximate nearest-neighbour index algorithm used by Qdrant.
+  Allows searching millions of vectors in milliseconds.
+
+BM25
+  Best Match 25 — a classic text relevance ranking algorithm.
+  Better than TF-IDF at exact keyword matching.
+  Used alongside dense vectors for hybrid search.
+
+Hybrid Search
+  Combining dense (neural) + sparse (keyword) search results.
+  Reciprocal Rank Fusion merges the two ranked lists into one.
+
+Cross-Encoder
+  A model that scores (query, document) pairs by reading them together.
+  More accurate than bi-encoder (which encodes them separately) but slower.
+  Used for re-ranking the top candidates after initial retrieval.
+
+HyDE (Hypothetical Document Embedding)
+  Generate a hypothetical answer to the question, then embed THAT
+  for search. The hypothetical answer lives in "answer space" which
+  is closer to actual document content than the question itself.
+
+CRAG (Corrective RAG)
+  Extension of RAG that evaluates retrieved context quality.
+  If context is poor, rewrites the query and retrieves again.
+
+Self-RAG
+  Extension that adds self-reflection nodes: check evidence sufficiency
+  before generation and answer grounding after generation.
+
+Groq
+  A hardware company that makes LPU (Language Processing Unit) chips
+  optimized for transformer inference. Much faster than GPU for LLMs.
+
+Gemini
+  Google's multimodal AI model family. Used here for both text generation
+  (fallback) and embeddings (primary).
+
+Qdrant
+  An open-source vector database. Stores vectors and their payloads,
+  supports multiple distance metrics, filtering, and HNSW indexing.
+
+FastAPI
+  A modern Python web framework for building APIs. Uses Python type hints
+  for automatic validation and generates OpenAPI documentation.
+
+LangGraph StateGraph
+  A LangGraph graph that maintains a TypedDict state object.
+  Each node receives the full state and returns a partial update.
+  The graph manages routing between nodes based on state values.
+
+Pydantic
+  Python library for data validation using Python type annotations.
+  All API request/response bodies are Pydantic models.
+  Catches malformed data before it reaches any AI pipeline.
+
+SQLAlchemy
+  Python ORM (Object-Relational Mapper). Maps Python classes to database
+  tables. Handles connection pooling, transactions, and migrations.
+
+UUID
+  Universally Unique Identifier. Every database record uses a UUID
+  as its primary key. Avoids sequential ID guessing and supports
+  distributed systems.
+
+JSONB (PostgreSQL)
+  Binary JSON column type in PostgreSQL. Allows storing flexible
+  structured data (like citation payloads) alongside relational columns.
+  Supports indexing and querying of JSON contents.
+
+Upsert
+  Insert if the record doesn't exist, update if it does.
+  Used in Qdrant indexing — same document re-reviewed doesn't create
+  a duplicate historical record.
+
+Cosine Distance
+  1 - cosine_similarity. The metric used by the historical_reviews
+  Qdrant collection. Smaller distance = more similar.
+
+ADGM
+  Abu Dhabi Global Market. An international financial centre in Abu Dhabi,
+  UAE. Operates under English common law with its own independent
+  regulatory framework. Regulated by the Financial Services Regulatory
+  Authority (FSRA).
+
+UBO (Ultimate Beneficial Owner)
+  The natural person(s) who ultimately own or control a company.
+  ADGM requires registration of any UBO holding 25% or more of shares.
+
+AoA (Articles of Association)
+  The primary constitutional document of a company. Defines the internal
+  rules: share structure, director powers, shareholder rights, voting.
+
+MoA (Memorandum of Association)
+  A founding document stating the company's name, registered address,
+  share capital, and subscriber information.
+
+Deterministic Score
+  A score calculated by a fixed formula (not generated by an LLM).
+  Given the same inputs, always produces the same output.
+  Used for compliance scores to ensure repeatability.
+
+AbortController
+  A browser/Node.js API for cancelling ongoing fetch requests.
+  Used in the Next.js proxy to enforce a 120-second timeout.
+
+Reciprocal Rank Fusion (RRF)
+  An algorithm for combining multiple ranked lists into one.
+  Score for each item = sum of 1/(rank + k) across all lists.
+  Consistently outperforms individual ranking methods in retrieval.
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
+
+Project: ADGM Nexus — Enterprise AI Compliance Intelligence Platform
+Stack:   FastAPI + LangGraph + Groq/Gemini + Qdrant + PostgreSQL +
+         Redis + Next.js 14
+Purpose: AI-powered ADGM regulatory compliance for legal and compliance teams
+
+================================================================================

@@ -7,6 +7,7 @@ import TopBar from "@/components/layout/TopBar";
 import { generateClause } from "@/lib/api";
 import type { ClauseResult } from "@/types";
 import { formatLatency, collectionBadgeColor } from "@/lib/utils";
+import { preprocessCitations, citationMarkdownComponents } from "@/components/CitationText";
 
 const DOC_TYPES = [
   { value: "articles_of_association",  label: "Articles of Association" },
@@ -174,7 +175,12 @@ export default function ClausesPage() {
                       </div>
                     </div>
                     <div className="px-5 py-4 prose-adgm max-h-[420px] overflow-y-auto">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.clause_text}</ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={citationMarkdownComponents}
+                      >
+                        {preprocessCitations(result.clause_text)}
+                      </ReactMarkdown>
                     </div>
                   </div>
 

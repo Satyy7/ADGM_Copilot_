@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {
   MessageSquare, FileSearch, FileText, BarChart3,
-  Gavel, ArrowRight, Database, Shield, Zap, Clock,
+  Gavel, ArrowRight, Database,
   TrendingUp, Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -63,12 +63,6 @@ const CAPABILITIES = [
   },
 ];
 
-const STATS = [
-  { label: "Knowledge Chunks",   value: "12,500+", icon: Database, accent: "#D97706", bg: "#FFFBEB" },
-  { label: "Avg Compliance Score", value: "74/100", icon: Shield,  accent: "#059669", bg: "#ECFDF5" },
-  { label: "AI Capabilities",   value: "6 Tools",  icon: Zap,      accent: "#7C3AED", bg: "#F5F3FF" },
-  { label: "Avg Response Time",  value: "~8s",     icon: Clock,    accent: "#0284C7", bg: "#F0F9FF" },
-];
 
 export default function DashboardPage() {
   const [cache, setCache] = useState<CacheStats | null>(null);
@@ -114,27 +108,6 @@ export default function DashboardPage() {
               </button>
             </Link>
           </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STATS.map(({ label, value, icon: Icon, accent, bg }) => (
-            <div
-              key={label}
-              className={`card p-4 flex items-center gap-3 ${mounted ? "animate-fade-up" : "opacity-0"}`}
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: bg, border: `1.5px solid ${accent}30` }}
-              >
-                <Icon size={17} style={{ color: accent }} />
-              </div>
-              <div>
-                <p className="font-display text-xl font-bold text-[var(--text)]">{value}</p>
-                <p className="text-[11px] text-[var(--text-3)] mt-0.5">{label}</p>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Capabilities */}
